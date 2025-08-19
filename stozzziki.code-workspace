@@ -1,0 +1,116 @@
+// {
+// 	"folders": [
+// 		{
+// 			"path": "."
+// 		},
+// 		{
+// 			"path": "../Велосипеды-ИМ"
+// 		}
+// 	],
+// 	"settings": {
+// 		"liveServer.settings.multiRootWorkspaceName": "stozzziki"
+// 	}
+// }
+
+
+// function submitForm() {
+//   const name = document.querySelector('input[type="text"]').value;
+//   const phone = document.querySelector('input[type="tel"]').value;
+
+//   if (name && phone) {
+//     alert(`Rahmat, ${name}! Siz muvaffaqiyatli ro'yxatdan o'tdingiz.`);
+//     // bu yerda backendga yuborish kodini yozish mumkin
+//   } else {
+//     alert("Iltimos, barcha maydonlarni to‘ldiring.");
+//   }
+// }
+
+
+
+
+
+// script.js - small helpers
+// script.js - ripple + smooth scroll + splitWords + reveal
+'document.addEventListener('DOMContentLoaded', function(){
+
+  /* --- Smooth scroll for in-page anchors --- */
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click', function(ev){
+      ev.preventDefault();
+      const t = document.querySelector(this.getAttribute('href'));
+      if(t) t.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  /* --- Ripple effect for .cta (existing ripple code) --- */
+  document.querySelectorAll('.cta').forEach(btn=>{
+    btn.addEventListener('click', function(e){
+      const ripple = this.querySelector('.ripple-el');
+      if(!ripple) return;
+      ripple.style.transition = 'none';
+      ripple.style.opacity = '0.7';
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 1.8;
+      ripple.style.width = ripple.style.height = size + 'px';
+      const left = e.clientX - rect.left - size/2;
+      const top = e.clientY - rect.top - size/2;
+      ripple.style.left = left + 'px';
+      ripple.style.top = top + 'px';
+      ripple.style.transform = 'translate(0,0) scale(1)';
+      ripple.style.opacity = '0.7';
+      requestAnimationFrame(()=>{
+        ripple.style.transition = 'transform 650ms cubic-bezier(.2,.9,.2,1), opacity 650ms ease';
+        ripple.style.transform = 'translate(0,0) scale(1.0)';
+        ripple.style.opacity = '0';
+      });
+      setTimeout(()=>{ ripple.style.opacity = '0'; }, 700);
+    });
+  });
+
+  /* --- splitWords helper: wraps words in spans.word with stagger delay --- */
+  function splitWords(el, step = 0.06){
+    if(!el) return;
+    if(el.dataset.split) return;
+    const text = el.textContent.trim();
+    if(!text) return;
+    const words = text.split(/\s+/);
+    el.innerHTML = '';
+    words.forEach((w,i) => {
+      const span = document.createElement('span');
+      span.className = 'word';
+      span.style.setProperty('--d', (i * step) + 's');
+      span.textContent = w + (i < words.length - 1 ? '\u00A0' : '');
+      el.appendChild(span);
+    });
+    el.dataset.split = '1';
+  }
+
+  /* --- IntersectionObserver reveal --- */
+  function setupReveal(){
+    const reveals = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){
+      reveals.forEach(r => r.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          const el = entry.target;
+          // optionally split words inside element if it has .split-words
+          el.querySelectorAll('.split-words').forEach(sw => splitWords(sw, 0.06));
+          el.classList.add('in');
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.18 });
+    reveals.forEach(r => io.observe(r));
+  }
+
+  /* Initialize: run split for any .split-words already visible (small fallback) */
+  document.querySelectorAll('.split-words').forEach(sw => {
+    // don't split inside elements that are already split
+    if(!sw.closest('.reveal')) splitWords(sw, 0.06);
+  });
+
+  setupReveal();
+});

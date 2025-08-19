@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IELTS Trainer — White & Orange Theme + TRF</title>
+<meta name="description" content="Offline IELTS trainer demo — white & orange design, printable TRF, profile, recording + typing." />
+<style>
+  :root{
+    --bg:#ffffff;
+    --panel:#ffffff;
+    --muted:#6b6b6b;
+    --accent:#ff7a00; /* orange */
+    --accent-2:#ff9500;
+    --card-border: rgba(0,0,0,0.06);
+    --radius:10px;
+    --elev: 0 6px 18px rgba(15,15,15,0.06);
+    --max-width:1100px;
+    --text:#111;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text);
+    background: linear-gradient(180deg,#ffffff,#fffefc);
+    -webkit-font-smoothing:antialiased;line-height:1.4}
+  .wrap{max-width:var(--max-width);margin:20px auto;padding:18px;display:grid;grid-template-columns:1fr 340px;gap:18px}
+  @media (max-width:1000px){ .wrap{grid-template-columns:1fr;padding:14px} .header-avatar{display:none!important} }
+  header.top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+  .brand{display:flex;align-items:center;gap:12px}
+  /* logo is simple but with layered subtle shadow for "complex" look */
+  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(180deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;cursor:pointer;box-shadow:
+    0 6px 18px rgba(255,122,0,0.12),
+    inset 0 -6px 12px rgba(255,255,255,0.06); transition:transform .18s ease}
+  .logo:active{transform:scale(.98)}
+  .title h1{margin:0;font-size:18px;color:var(--text)}
+  .title .subtitle{color:var(--muted);font-size:13px;margin-top:4px}
+  .card{background:var(--panel);border:1px solid var(--card-border);border-radius:var(--radius);padding:14px;box-shadow:var(--elev);margin-bottom:14px;overflow:clip}
+  nav#tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .tab{padding:8px 14px;border-radius:12px;background:transparent;color:var(--muted);cursor:pointer;border:1px solid transparent;font-weight:700;font-size:13px}
+  .tab.active{background:linear-gradient(180deg, rgba(255,122,0,0.12), rgba(255,149,0,0.08)); color:var(--accent); border-color: rgba(255,122,0,0.12)}
+  .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .muted{color:var(--muted);font-size:13px}
+  .question{margin-top:12px;padding:14px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfcfc);border:1px solid rgba(0,0,0,0.04)}
+  .options{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  label.option{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.04);cursor:pointer}
+  input[type="radio"]{accent-color:var(--accent)}
+  .controls{display:flex;gap:10px;align-items:center;margin-top:12px}
+  .btn{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(255,122,0,0.12)}
+  .btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);color:var(--muted)}
+  .small-ghost{background:transparent;border:1px solid rgba(0,0,0,0.04);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
+  textarea{width:100%;min-height:120px;padding:12px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.04);color:inherit;resize:vertical}
+  .explain{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5}
+  .videos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+  .video-card{background:#fff;border-radius:10px;padding:8px;border:1px solid rgba(0,0,0,0.04)}
+  .video-card iframe{width:100%;height:140px;border-radius:8px;border:0}
+  .video-title{font-weight:700;font-size:13px;color:var(--text);margin-top:6px}
+  .mini{font-size:13px;color:var(--muted)}
+  #cnf{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1200}
+  .mic-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.06);margin-left:8px}
+  .mic-dot.live{background:var(--accent);box-shadow:0 0 8px rgba(255,122,0,0.22)}
+  .header-avatar{width:42px;height:42px;border-radius:8px;overflow:hidden}
+  .header-avatar img{width:100%;height:100%;object-fit:cover}
+
+  /* TRF (print-friendly) simplified but clear */
+  .trf{margin-top:14px;background:#fff;color:#111;border-radius:8px;border:1px solid rgba(0,0,0,0.06);padding:12px}
+  .trf *{font-family:Arial,Helvetica,sans-serif;color:#111}
+  .trf .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .trf .hdr .logo{font-weight:900;font-size:20px;color:var(--accent)}
+  .trf .sec{border:1px solid rgba(0,0,0,0.04);border-radius:8px;padding:10px;margin-top:10px;background:#fff}
+  .trf .grid{display:grid;grid-template-columns:1fr 1fr 1fr 120px;gap:8px}
+  .trf .label{font-size:12px;color:#666}
+  .trf .val{background:#fff;border:1px solid rgba(0,0,0,0.04);border-radius:6px;padding:6px;min-height:36px}
+  .trf .photo{width:110px;height:140px;border:1px solid rgba(0,0,0,0.06);border-radius:6px;object-fit:cover;background:#f7f7f7}
+  .trf .scores{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:8px}
+  .trf .box{border:1px solid rgba(0,0,0,0.04);border-radius:6px;padding:8px;text-align:center;background:#fff}
+  .trf .big{font-size:18px;font-weight:700;color:var(--accent)}
+  .trf .foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:12px;color:#666}
+  .trf .small-muted{font-size:11px;color:#666;margin-top:6px}
+  .trf .sig-row{display:flex;gap:18px;align-items:center;margin-top:12px}
+  .trf .sig{flex:1;border-top:1px solid rgba(0,0,0,0.06);padding-top:6px;text-align:center;font-size:12px;color:#666}
+
+  /* Print rules: show only trfPrint area when printing */
+  @media print{
+    body * { visibility: hidden; }
+    #trfPrint, #trfPrint * { visibility: visible; }
+    #trfPrint { position: absolute; left: 0; top: 0; width: 100%; }
+    @page { size: A4; margin: 18mm; }
+  }
+
+  /* small helpers */
+  .muted-strong{color:#444;font-weight:600}
+  .percent{font-size:12px;color:#666;margin-top:6px}
+</style>
+</head>
+<body>
+<div id="cnf"></div>
+
+<!-- PROFILE MODAL -->
+<div id="profileModal" class="modal-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:2000">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pmTitle" style="background:#fff;border-radius:10px;padding:16px;width:min(640px,94%);box-shadow:0 10px 30px rgba(0,0,0,0.08)">
+    <h3 id="pmTitle" style="margin:0 0 8px 0;color:var(--text)">Profilni sozlash — ism, familiya, rasm va Candidate ID</h3>
+    <div style="margin-top:8px;display:flex;gap:12px;align-items:flex-start">
+      <div style="width:96px">
+        <div class="avatar-preview" id="avatarPreview" style="width:96px;height:96px;border-radius:8px;background:#f7f7f7;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(0,0,0,0.04)"> <span class="mini">No image</span> </div>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="firstName" placeholder="Ism" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;color:var(--text)" />
+          <input id="lastName" placeholder="Familiya" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;color:var(--text)" />
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="candidateId" placeholder="Candidate ID (ixtiyoriy)" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fff;color:var(--text)" />
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="avatarFile" type="file" accept="image/*" />
+          <div class="muted">Rasm tanlang (ixtiyoriy, &lt;2MB tavsiya etiladi)</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <button id="skipProfile" class="small-ghost">O'tkazib yuborish</button>
+      <button id="saveProfile" class="btn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" role="application" aria-label="IELTS trainer application">
+  <header class="top">
+    <div class="brand">
+      <div id="homeLink" class="logo" aria-hidden title="Home (Listening)">IT</div>
+      <div class="title">
+        <h1>IELTS Trainer — White & Orange</h1>
+        <div class="subtitle">Listening, Reading, Writing, Speaking — demo</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="mini">Offline demo</div>
+      <div class="mini" id="lastSaved">Saved: —</div>
+      <div class="header-avatar" id="headerAvatar" title="Your profile image" style="margin-left:6px;display:none"><img src="#" alt="avatar"/></div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="card">
+      <nav id="tabs" role="tablist" aria-label="Sections">
+        <div class="tab active" data-tab="listening" tabindex="0">Listening</div>
+        <div class="tab" data-tab="reading" tabindex="0">Reading</div>
+        <div class="tab" data-tab="writing" tabindex="0">Writing</div>
+        <div class="tab" data-tab="speaking" tabindex="0">Speaking</div>
+        <div class="tab" data-tab="final" tabindex="0">Natija</div>
+        <div class="tab" data-tab="resources" tabindex="0">YouTube kurslar</div>
+      </nav>
+    </div>
+
+    <!-- Listening -->
+    <section class="card" id="listening" role="region">
+      <div class="section-title">
+        <h2 style="margin:0">Listening — 5 savol</h2>
+        <div class="muted">Matnni eshitib, javobni belgilang.</div>
+      </div>
+
+      <div id="listeningQuestions" style="margin-top:12px"></div>
+
+      <div class="controls">
+        <button id="submitListening" class="btn">Baholash</button>
+        <button id="resetListening" class="btn ghost">Tozalash</button>
+        <div style="margin-left:auto;text-align:right">
+          <div class="mini" id="listeningScore">Ball: —</div>
+          <div class="percent" id="listeningPercent">—</div>
+        </div>
+      </div>
+
+      <div id="listeningExplanation" class="explain" aria-live="polite"></div>
+    </section>
+
+    <!-- Reading -->
+    <section class="card" id="reading" role="region" style="display:none">
+      <div class="section-title">
+        <h2 style="margin:0">Reading — Passage + 5 savol</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="playPassage" class="small-ghost">🔊 Play passage</button>
+          <button id="replayPassage" class="small-ghost">↺ Replay</button>
+          <div class="muted">O'qilgan matnni eshitish.</div>
+        </div>
+      </div>
+
+      <div class="question">
+        <strong>Passage:</strong>
+        <p id="passageText" class="muted" style="margin-top:8px;line-height:1.6"></p>
+      </div>
+
+      <div id="readingQuestions" style="margin-top:12px"></div>
+
+      <div class="controls">
+        <button id="submitReading" class="btn">Baholash</button>
+        <button id="resetReading" class="btn ghost">Tozalash</button>
+        <div style="margin-left:auto;text-align:right">
+          <div class="mini" id="readingScore">Ball: —</div>
+          <div class="percent" id="readingPercent">—</div>
+        </div>
+      </div>
+
+      <div id="readingExplanation" class="explain"></div>
+    </section>
+
+    <!-- Writing -->
+    <section class="card" id="writing" role="region" style="display:none">
+      <div class="section-title">
+        <h2 style="margin:0">Writing — 2 topshiriq</h2>
+        <div class="muted">Type yoki audio orqali javob yozing.</div>
+      </div>
+
+      <!-- TASK 1 -->
+      <div class="question" id="wr_q1">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <strong>Task 1:</strong>
+          <div class="muted">Prompt:</div>
+        </div>
+        <div style="margin-top:8px" id="w1_prompt">Summarise the information by selecting and reporting the main features, and make comparisons where relevant.</div>
+
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button class="small-ghost" data-wrk-play="1">🔊 Play prompt</button>
+          <button class="small-ghost" data-wrk-rec="1">🎙️ Start rec</button>
+          <button class="small-ghost" data-wrk-playrec="1" disabled>▶️ Play my</button>
+          <span class="mic-dot" id="wmic1"></span>
+          <button class="small-ghost" data-wrk-toggle="1">📴 Toggle</button>
+          <div class="muted" style="margin-left:auto">Target ~150 words</div>
+        </div>
+
+        <audio id="waudio1" controls style="display:none;margin-top:8px"></audio>
+        <textarea id="w1" placeholder="Task 1 — 150 words..." style="display:none;margin-top:8px"></textarea>
+      </div>
+
+      <!-- TASK 2 -->
+      <div class="question" id="wr_q2">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <strong>Task 2:</strong>
+          <div class="muted">Prompt:</div>
+        </div>
+        <div style="margin-top:8px" id="w2_prompt">Some people think governments should invest more in public transport than in roads. To what extent do you agree or disagree?</div>
+
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button class="small-ghost" data-wrk-play="2">🔊 Play prompt</button>
+          <button class="small-ghost" data-wrk-rec="2">🎙️ Start rec</button>
+          <button class="small-ghost" data-wrk-playrec="2" disabled>▶️ Play my</button>
+          <span class="mic-dot" id="wmic2"></span>
+          <button class="small-ghost" data-wrk-toggle="2">📴 Toggle</button>
+          <div class="muted" style="margin-left:auto">Target ~250 words</div>
+        </div>
+
+        <audio id="waudio2" controls style="display:none;margin-top:8px"></audio>
+        <textarea id="w2" placeholder="Task 2 — 250+ words..." style="display:none;margin-top:8px"></textarea>
+      </div>
+
+      <div class="controls">
+        <button id="submitWriting" class="btn">Baholash</button>
+        <button id="resetWriting" class="btn ghost">Tozalash</button>
+        <div style="margin-left:auto;text-align:right">
+          <div class="mini" id="writingScore">Ball: —</div>
+          <div class="percent" id="writingPercent">—</div>
+        </div>
+      </div>
+
+      <div id="writingFeedback" class="explain"></div>
+    </section>
+
+    <!-- Speaking -->
+    <section class="card" id="speaking" role="region" style="display:none">
+      <div class="section-title">
+        <h2 style="margin:0">Speaking — 3 savol</h2>
+        <div class="muted">Record yoki type qiling.</div>
+      </div>
+
+      <!-- Part 1 -->
+      <div class="question">
+        <strong>Part 1:</strong>
+        <div class="muted" style="margin-top:8px">Introduce yourself and talk about a hobby (20-30 words)</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button class="small-ghost" data-spk-play="1">🔊 Play prompt</button>
+          <button class="small-ghost" data-spk-rec="1">🎙️ Start rec</button>
+          <button class="small-ghost" data-spk-playrec="1" disabled>▶️ Play my</button>
+          <span class="mic-dot" id="smic1"></span>
+          <button class="small-ghost" data-spk-toggle="1">📴 Toggle</button>
+        </div>
+        <audio id="saudio1" controls style="display:none;margin-top:8px"></audio>
+        <textarea id="s1" placeholder="20-30 words..." style="display:none;margin-top:8px"></textarea>
+      </div>
+
+      <!-- Part 2 -->
+      <div class="question">
+        <strong>Part 2:</strong>
+        <div class="muted" style="margin-top:8px">Describe a memorable experience (40-90 words)</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button class="small-ghost" data-spk-play="2">🔊 Play prompt</button>
+          <button class="small-ghost" data-spk-rec="2">🎙️ Start rec</button>
+          <button class="small-ghost" data-spk-playrec="2" disabled>▶️ Play my</button>
+          <span class="mic-dot" id="smic2"></span>
+          <button class="small-ghost" data-spk-toggle="2">📴 Toggle</button>
+        </div>
+        <audio id="saudio2" controls style="display:none;margin-top:8px"></audio>
+        <textarea id="s2" placeholder="40-90 words..." style="display:none;margin-top:8px"></textarea>
+      </div>
+
+      <!-- Part 3 -->
+      <div class="question">
+        <strong>Part 3:</strong>
+        <div class="muted" style="margin-top:8px">Opinion about society and technology (50+ words)</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <button class="small-ghost" data-spk-play="3">🔊 Play prompt</button>
+          <button class="small-ghost" data-spk-rec="3">🎙️ Start rec</button>
+          <button class="small-ghost" data-spk-playrec="3" disabled>▶️ Play my</button>
+          <span class="mic-dot" id="smic3"></span>
+          <button class="small-ghost" data-spk-toggle="3">📴 Toggle</button>
+        </div>
+        <audio id="saudio3" controls style="display:none;margin-top:8px"></audio>
+        <textarea id="s3" placeholder="50+ words..." style="display:none;margin-top:8px"></textarea>
+      </div>
+
+      <div class="controls">
+        <button id="submitSpeaking" class="btn">Baholash</button>
+        <button id="resetSpeaking" class="btn ghost">Tozalash</button>
+        <div style="margin-left:auto;text-align:right">
+          <div class="mini" id="speakingScore">Ball: —</div>
+          <div class="percent" id="speakingPercent">—</div>
+        </div>
+      </div>
+
+      <div id="speakingFeedback" class="explain"></div>
+    </section>
+
+    <!-- Final & TRF -->
+    <section class="card" id="final" role="region" style="display:none">
+      <div class="section-title">
+        <h2 style="margin:0">Umumiy natija & TRF</h2>
+        <div class="muted">Avtomatik baholash (taxminiy)</div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center">
+        <div style="flex:1">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div><strong>Listening:</strong> <span id="f_listening">—</span> <small class="muted" id="f_listening_pct">—</small></div>
+            <div><strong>Reading:</strong> <span id="f_reading">—</span> <small class="muted" id="f_reading_pct">—</small></div>
+            <div><strong>Writing:</strong> <span id="f_writing">—</span> <small class="muted" id="f_writing_pct">—</small></div>
+            <div><strong>Speaking:</strong> <span id="f_speaking">—</span> <small class="muted" id="f_speaking_pct">—</small></div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="mini">Umumiy band</div>
+          <div class="band" id="f_overall" style="font-size:20px;color:var(--accent);font-weight:800">—</div>
+          <div class="percent" id="f_overall_pct">—</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;align-items:center;gap:12px">
+        <div style="flex:1">
+          <div class="mini">Progress</div>
+          <div style="margin-top:8px" class="progress-wrap"><div id="overallProgress" class="progress-bar" style="height:12px;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:8px"></div></div>
+        </div>
+        <div>
+          <button id="exportPdf" class="small-ghost">⤓ Export (print TRF)</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" id="finalTips" class="explain"></div>
+
+      <!-- TRF printable card -->
+      <div id="trfPrint" style="margin-top:14px">
+        <div class="trf" id="trfCard">
+          <div class="hdr">
+            <div class="logo">IELTS — Test Report Form</div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:#666">ACADEMIC — Demo</div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="grid">
+              <div>
+                <div class="label">Family Name</div>
+                <div class="val" id="trf_family">—</div>
+              </div>
+              <div>
+                <div class="label">First Name</div>
+                <div class="val" id="trf_first">—</div>
+              </div>
+              <div>
+                <div class="label">Candidate ID</div>
+                <div class="val" id="trf_id">—</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center">
+                <img id="trf_photo" class="photo" src="" alt="photo"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="scores">
+              <div class="box">
+                <div class="label">Listening</div>
+                <div class="big" id="trf_listening">—</div>
+                <div class="percent" id="trf_listening_pct">—</div>
+              </div>
+              <div class="box">
+                <div class="label">Reading</div>
+                <div class="big" id="trf_reading">—</div>
+                <div class="percent" id="trf_reading_pct">—</div>
+              </div>
+              <div class="box">
+                <div class="label">Writing</div>
+                <div class="big" id="trf_writing">—</div>
+                <div class="percent" id="trf_writing_pct">—</div>
+              </div>
+              <div class="box">
+                <div class="label">Speaking</div>
+                <div class="big" id="trf_speaking">—</div>
+                <div class="percent" id="trf_speaking_pct">—</div>
+              </div>
+              <div class="box">
+                <div class="label">Overall Band</div>
+                <div class="big" id="trf_overall">—</div>
+                <div class="percent" id="trf_overall_pct">—</div>
+              </div>
+              <div class="box">
+                <div class="label">CEFR</div>
+                <div class="big" id="trf_cefr">—</div>
+                <div class="percent" id="trf_note">—</div>
+              </div>
+            </div>
+            <div class="small-muted">Administrator comments: demo result. Not official.</div>
+            <div class="sig-row">
+              <div class="sig">Administrator's signature</div>
+              <div class="sig">Validation stamp</div>
+            </div>
+          </div>
+
+          <div class="foot">
+            <span>Date: <span id="trf_date">—</span></span>
+            <span>Validation: IELTS Demo</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Resources -->
+    <section class="card" id="resources" role="region" style="display:none">
+      <div class="section-title">
+        <h2 style="margin:0">YouTube kurslar (Demo)</h2>
+        <div class="muted">Video previewlar.</div>
+      </div>
+      <div id="resourcesGrid" class="videos-grid"></div>
+    </section>
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="card" role="complementary">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div><strong>Progress & Actions</strong></div>
+      <div class="mini" id="savedIndicator">Saved: No</div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="mini">Current overall</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+        <div style="flex:1;background:#fff;border:1px solid rgba(0,0,0,0.04);border-radius:8px;padding:6px"><div id="sideProgress" style="height:12px;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:8px"></div></div>
+        <div class="band" id="sideOverall" style="padding-left:6px">—</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button id="saveBtn" class="small-ghost">💾 Save</button>
+      <button id="loadBtn" class="small-ghost">📂 Load</button>
+      <button id="clearBtn" class="small-ghost">🗑 Clear</button>
+    </div>
+
+    <div style="margin-top:12px">
+      <div><strong>Quick links</strong></div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <button id="goListening" class="small-ghost">⏱ Listening</button>
+        <button id="goReading" class="small-ghost">📖 Reading</button>
+        <button id="goFinal" class="small-ghost">🏁 Final</button>
+        <button id="editProfile" class="small-ghost">👤 Profilni tahrirlash</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="mini">Keyboard: Enter/Space activates focused tab.</div>
+  </aside>
+
+  <footer class="small" style="grid-column:1/-1;color:var(--muted);font-size:13px;margin-top:8px">Eslatma: demo oflayn va baholash taxminiy. Rasmiy IELTS bahosi inson tomonidan.</footer>
+</div>
+
+<script>
+/* ========== Data & State ========== */
+const listeningData = [
+  { q:"Where will the meeting take place?", a:["In the library","At the train station","In the lecture hall","At the cafe"], correct:2, explain:"Lecture hall is the venue.", audioText:"The meeting will be held in the lecture hall in Building B." },
+  { q:"What time does the event start?", a:["9:00","10:30","11:00","12:00"], correct:1, explain:"Starts at 10:30.", audioText:"The event starts at half past ten, so arrive by ten thirty." },
+  { q:"Which topic will not be covered?", a:["History","Biology","Mathematics","Computer Science"], correct:0, explain:"History is not listed.", audioText:"We will cover biology, mathematics and computer science but not history." },
+  { q:"How much is the admission fee?", a:["Free","5 dollars","10 dollars","20 dollars"], correct:2, explain:"Admission is 10 dollars.", audioText:"There will be a ten dollar admission fee payable at the entrance." },
+  { q:"Who is the main speaker?", a:["Dr. Khan","Ms. Lee","Professor Smith","Mr. Young"], correct:2, explain:"Professor Smith introduced.", audioText:"Our main speaker today is Professor Smith from the university." }
+];
+
+const passage = `Climate-friendly farming has become a focus for many agricultural communities. Over the past decade farmers have adopted practices such as crop rotation, reduced tillage, and the use of cover crops to improve soil health and lower greenhouse gas emissions. Local cooperatives often provide training and small grants to help farmers transition. These measures can increase yields in the long term while protecting the land from erosion. However, challenges remain: initial costs, limited access to modern equipment, and the need for ongoing education are common barriers. Experts emphasize collaboration between governments, researchers and farming communities to scale up sustainable agriculture successfully.`;
+
+const readingData = [
+  { q:"What farming practice is mentioned as reducing soil erosion?", a:["Crop rotation","Reduced tillage","Use of fertilizers","Monoculture"], correct:1, explain:"Passage names reduced tillage protecting the land from erosion." },
+  { q:"Who helps farmers with training and small grants?", a:["Private corporations","Local cooperatives","Individual consumers","Banks"], correct:1, explain:"Local cooperatives are mentioned." },
+  { q:"Which is listed as a barrier to adoption?", a:["Higher yields immediately","Lower greenhouse gases","Initial costs","Government grants"], correct:2, explain:"Initial costs are noted as a challenge." },
+  { q:"What is a long-term benefit of the practices?", a:["Immediate profit","Increase in yields","Less cooperation","Increased tillage"], correct:1, explain:"Measures can increase yields in the long term." },
+  { q:"Who should collaborate to scale up sustainable agriculture?", a:["Governments, researchers and farming communities","Only governments","Only researchers","Only farmers"], correct:0, explain:"Experts emphasize collaboration between governments, researchers and farming communities." }
+];
+
+const youtubeQueries = [
+  'IELTS Liz writing task 2','IELTS full lessons','IELTS Advantage writing','Magoosh IELTS tips'
+];
+
+let userListening = JSON.parse(localStorage.getItem('ielts_userListening') || 'null');
+let userReading = JSON.parse(localStorage.getItem('ielts_userReading') || 'null');
+let writingText = JSON.parse(localStorage.getItem('ielts_writing') || 'null');
+let speakingText = JSON.parse(localStorage.getItem('ielts_speaking') || 'null');
+if(!Array.isArray(userListening)) userListening = Array(listeningData.length).fill(null);
+if(!Array.isArray(userReading)) userReading = Array(readingData.length).fill(null);
+if(!writingText) writingText = { w1:'', w2:'' };
+if(!speakingText) speakingText = { s1:'', s2:'', s3:'' };
+
+let listeningScore=null, readingScore=null, writingScore=null, speakingScore=null;
+
+/* recording state */
+const wrt = { mode:{1:'audio',2:'audio'}, rec:{}, chunks:{1:[],2:[]}, blob:{1:null,2:null}, url:{1:null,2:null}, durSec:{1:0,2:0} };
+const spk = { mode:{1:'audio',2:'audio',3:'audio'}, rec:{}, chunks:{1:[],2:[],3:[]}, blob:{1:null,2:null,3:null}, url:{1:null,2:null,3:null}, durSec:{1:0,2:0,3:0} };
+let sharedStream = null;
+
+/* ---------- Profile helpers ---------- */
+function loadProfile(){
+  const p = JSON.parse(localStorage.getItem('ielts_profile') || 'null');
+  if(p && (p.first || p.last || p.avatar || p.candId)){
+    const name = [p.first||'', p.last||''].filter(Boolean).join(' ');
+    document.getElementById('finalName').innerText = name || '—';
+    document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+    if(p.avatar){
+      const ha = document.getElementById('headerAvatar'); ha.style.display='inline-block'; ha.querySelector('img').src = p.avatar;
+      const fa = document.getElementById('trf_photo'); fa.src = p.avatar;
+    }
+    // fill TRF fields
+    if(document.getElementById('trf_family')) document.getElementById('trf_family').innerText = p.last || '—';
+    if(document.getElementById('trf_first')) document.getElementById('trf_first').innerText = p.first || '—';
+    if(document.getElementById('trf_id')) document.getElementById('trf_id').innerText = p.candId || '—';
+    return true;
+  }
+  return false;
+}
+function showProfileModal(){ document.getElementById('profileModal').style.display='flex'; }
+function hideProfileModal(){ document.getElementById('profileModal').style.display='none'; }
+
+function saveProfileFromInputs(){
+  const first = document.getElementById('firstName').value.trim();
+  const last = document.getElementById('lastName').value.trim();
+  const candId = document.getElementById('candidateId').value.trim();
+  const file = document.getElementById('avatarFile').files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const avatarData = e.target.result;
+      const profile = { first, last, avatar: avatarData, candId };
+      localStorage.setItem('ielts_profile', JSON.stringify(profile));
+      hideProfileModal(); loadProfile();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    const existing = JSON.parse(localStorage.getItem('ielts_profile')||'null') || {};
+    const avatar = existing.avatar || null;
+    const profile = { first, last, avatar, candId };
+    localStorage.setItem('ielts_profile', JSON.stringify(profile));
+    hideProfileModal(); loadProfile();
+  }
+}
+
+function setupProfileModal(){
+  const fileEl = document.getElementById('avatarFile');
+  const prev = document.getElementById('avatarPreview');
+  fileEl.addEventListener('change', ()=>{
+    const f = fileEl.files[0];
+    if(!f) { prev.innerHTML = '<span class="mini">No image</span>'; return; }
+    const r = new FileReader(); r.onload = e=>{ prev.innerHTML = `<img src="${e.target.result}" alt="avatar" style="width:96px;height:96px;object-fit:cover"/>`; };
+    r.readAsDataURL(f);
+  });
+  document.getElementById('saveProfile').addEventListener('click', ()=> saveProfileFromInputs());
+  document.getElementById('skipProfile').addEventListener('click', ()=>{ hideProfileModal(); });
+  document.getElementById('editProfile').addEventListener('click', ()=>{
+    const p = JSON.parse(localStorage.getItem('ielts_profile')||'null') || {};
+    document.getElementById('firstName').value = p.first || '';
+    document.getElementById('lastName').value = p.last || '';
+    document.getElementById('candidateId').value = p.candId || '';
+    document.getElementById('avatarPreview').innerHTML = p.avatar ? `<img src="${p.avatar}" alt="avatar" style="width:96px;height:96px;object-fit:cover"/>` : '<span class="mini">No image</span>';
+    document.getElementById('avatarFile').value = ''; // clear
+    showProfileModal();
+  });
+}
+
+/* ---------- Utilities ---------- */
+function mkUtterance(text, opts={lang:'en-US', rate:1.0, pitch:1.0, volume:1.0}){
+  if(!('speechSynthesis' in window)) return null;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = opts.lang; u.rate = opts.rate; u.pitch = opts.pitch; u.volume = opts.volume;
+  return u;
+}
+function roundToHalf(n){ return Math.round(n*2)/2; }
+function percentToBand(percent){ const raw = percent * 9 / 100; return roundToHalf(raw); }
+async function ensureMic(){
+  if(sharedStream) return sharedStream;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Mikrofon qoʻllab-quvvatlanmaydi');
+  const s = await navigator.mediaDevices.getUserMedia({ audio:true });
+  sharedStream = s;
+  return s;
+}
+
+/* ---------- Rendering ---------- */
+function renderListening(){
+  const cont = document.getElementById('listeningQuestions'); cont.innerHTML = '';
+  listeningData.forEach((it,i)=>{
+    const wrapper = document.createElement('div'); wrapper.className='question';
+    const optsHtml = it.a.map((opt,j)=>`<label class="option" data-idx="${i}" data-opt="${j}"><input type="radio" name="L_${i}" value="${j}" ${userListening[i]===j?'checked':''}/> <div><strong>${String.fromCharCode(65+j)}.</strong> ${opt}</div></label>`).join('');
+    wrapper.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><strong>Q${i+1}.</strong> ${it.q}</div>
+        <div class="muted">Selected: <strong id="li_sel_${i}">${userListening[i]===null?'—':String.fromCharCode(65+userListening[i])}</strong></div>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="small-ghost" data-play="${i}">🔊 Play text</button>
+      </div>
+      <div class="options" style="margin-top:10px">${optsHtml}</div>
+      <div style="margin-top:8px">Correct: <strong id="li_correct_${i}">—</strong></div>
+    `;
+    cont.appendChild(wrapper);
+
+    wrapper.querySelectorAll('input[type="radio"]').forEach(r=>{
+      r.addEventListener('change', e=>{
+        userListening[i] = parseInt(e.target.value);
+        document.getElementById(`li_sel_${i}`).innerText = String.fromCharCode(65+userListening[i]);
+        savePartial();
+      });
+    });
+
+    wrapper.querySelector('[data-play]').addEventListener('click', ()=>{
+      const ut = mkUtterance(it.audioText || it.q);
+      if(!ut) return alert('Speech synthesis not supported in this browser.');
+      window.speechSynthesis.speak(ut);
+    });
+  });
+}
+
+function renderReading(){
+  document.getElementById('passageText').innerText = passage;
+  const cont = document.getElementById('readingQuestions'); cont.innerHTML = '';
+  readingData.forEach((it,i)=>{
+    const wrapper = document.createElement('div'); wrapper.className='question';
+    const optsHtml = it.a.map((opt,j)=>`<label class="option"><input type="radio" name="R_${i}" value="${j}" ${userReading[i]===j?'checked':''}/> <div><strong>${String.fromCharCode(65+j)}.</strong> ${opt}</div></label>`).join('');
+    wrapper.innerHTML = `<div><strong>Q${i+1}.</strong> ${it.q}</div><div class="options" style="margin-top:8px">${optsHtml}</div><div style="margin-top:8px">Correct: <strong id="rd_correct_${i}">—</strong></div>`;
+    cont.appendChild(wrapper);
+    wrapper.querySelectorAll('input[type="radio"]').forEach(r=>{
+      r.addEventListener('change', e=>{
+        userReading[i] = parseInt(e.target.value);
+        savePartial();
+      });
+    });
+  });
+}
+
+function renderYT(){
+  const grid = document.getElementById('resourcesGrid'); grid.innerHTML = '';
+  youtubeQueries.forEach(q=>{
+    const card = document.createElement('div'); card.className='video-card';
+    card.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/d-fvgkbTED0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><div class="video-title">${q}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* restore textareas */
+document.getElementById('w1').value = writingText.w1 || '';
+document.getElementById('w2').value = writingText.w2 || '';
+document.getElementById('s1').value = speakingText.s1 || '';
+document.getElementById('s2').value = speakingText.s2 || '';
+document.getElementById('s3').value = speakingText.s3 || '';
+
+renderListening();
+renderReading();
+renderYT();
+
+/* ---------- Handlers & Scoring ---------- */
+/* Listening submit */
+document.getElementById('submitListening').addEventListener('click', ()=>{
+  let correct=0, total=listeningData.length, explain=[];
+  for(let i=0;i<total;i++){
+    const u=userListening[i], it=listeningData[i], ok=(u!==null && u===it.correct);
+    if(ok) correct++;
+    explain.push(`Q${i+1}: ${ok?'<strong style="color:green">Correct</strong>':'<strong style="color:red">Wrong</strong>'} — ${it.explain}`);
+    document.getElementById(`li_correct_${i}`).innerText = ok ? '✓' : '✗';
+  }
+  const percent = Math.round(correct/total*100);
+  listeningScore = percentToBand(percent);
+  document.getElementById('listeningScore').innerText = `Ball: ${listeningScore} (${correct}/${total})`;
+  document.getElementById('listeningPercent').innerText = `${percent}%`;
+  document.getElementById('listeningExplanation').innerHTML = explain.join('<br>');
+  savePartial();
+  updateFinals();
+});
+
+/* Reading submit */
+document.getElementById('submitReading').addEventListener('click', ()=>{
+  let correct=0, total=readingData.length, explain=[];
+  for(let i=0;i<total;i++){
+    const u=userReading[i], it=readingData[i], ok=(u!==null && u===it.correct);
+    if(ok) correct++;
+    explain.push(`Q${i+1}: ${ok?'<strong style="color:green">Correct</strong>':'<strong style="color:red">Wrong</strong>'} — ${it.explain}`);
+    document.getElementById(`rd_correct_${i}`).innerText = ok ? '✓' : '✗';
+  }
+  const percent = Math.round(correct/total*100);
+  readingScore = percentToBand(percent);
+  document.getElementById('readingScore').innerText = `Ball: ${readingScore} (${correct}/${total})`;
+  document.getElementById('readingPercent').innerText = `${percent}%`;
+  document.getElementById('readingExplanation').innerHTML = explain.join('<br>');
+  savePartial();
+  updateFinals();
+});
+
+/* Writing & Recording helpers */
+(function initWritingModeFromSaved(){
+  const t1 = (writingText && writingText.w1 || '').trim();
+  const t2 = (writingText && writingText.w2 || '').trim();
+  if(t1) wrt.mode[1] = 'text';
+  if(t2) wrt.mode[2] = 'text';
+  applyWritingMode(1);
+  applyWritingMode(2);
+})();
+
+function wSetMicIndicator(id, live){
+  const dot = document.getElementById('wmic'+id);
+  if(dot) dot.classList.toggle('live', !!live);
+}
+function wPlayPrompt(id){
+  const text = document.getElementById('w'+id+'_prompt') ? document.getElementById('w'+id+'_prompt').innerText : '';
+  const ut = mkUtterance(text);
+  if(!ut) return alert('Speech synthesis not supported');
+  window.speechSynthesis.speak(ut);
+}
+async function wToggleRec(id){
+  const recBtn  = document.querySelector(`[data-wrk-rec="${id}"]`);
+  const playBtn = document.querySelector(`[data-wrk-playrec="${id}"]`);
+  const audioEl = document.getElementById('waudio'+id);
+
+  if(wrt.rec[id] && wrt.rec[id].state === 'recording'){
+    wrt.rec[id].stop();
+    recBtn.textContent = '🎙️ Start rec';
+    wSetMicIndicator(id,false);
+    return;
+  }
+
+  try{
+    const stream = await ensureMic();
+    wrt.chunks[id] = [];
+    const rec = new MediaRecorder(stream);
+    wrt.rec[id] = rec;
+    const t0 = Date.now();
+    rec.ondataavailable = e=> { if(e.data && e.data.size>0) wrt.chunks[id].push(e.data); };
+    rec.onstop = ()=>{
+      const blob = new Blob(wrt.chunks[id], { type: 'audio/webm' });
+      wrt.blob[id] = blob;
+      if(wrt.url[id]) URL.revokeObjectURL(wrt.url[id]);
+      wrt.url[id] = URL.createObjectURL(blob);
+      audioEl.src = wrt.url[id];
+      audioEl.style.display = 'block';
+      playBtn.disabled = false;
+      wrt.durSec[id] = Math.max(1, Math.round((Date.now()-t0)/1000));
+    };
+    rec.start();
+    recBtn.textContent = '⏹ Stop recording';
+    wSetMicIndicator(id,true);
+  }catch(err){
+    alert('Mikrofon ruxsati yoki qoʻllab-quvvatlanmaslik: ' + err);
+  }
+}
+function wPlayMyAnswer(id){
+  const audioEl = document.getElementById('waudio'+id);
+  if(audioEl && audioEl.src) audioEl.play();
+}
+function applyWritingMode(id){
+  const isAudio = wrt.mode[id] === 'audio';
+  const ta = document.getElementById('w'+id);
+  const audioEl = document.getElementById('waudio'+id);
+  const recBtn  = document.querySelector(`[data-wrk-rec="${id}"]`);
+  const playBtn = document.querySelector(`[data-wrk-playrec="${id}"]`);
+  const toggle  = document.querySelector(`[data-wrk-toggle="${id}"]`);
+  if(isAudio){
+    ta.style.display = 'none';
+    recBtn.style.display = 'inline-block';
+    playBtn.style.display = 'inline-block';
+    audioEl.style.display = wrt.url[id] ? 'block' : 'none';
+    toggle.textContent = '📴 Toggle';
+  } else {
+    ta.style.display = 'block';
+    recBtn.style.display = 'none';
+    playBtn.style.display = 'none';
+    audioEl.style.display = 'none';
+    wSetMicIndicator(id,false);
+    toggle.textContent = '🔊 Toggle';
+  }
+}
+document.querySelectorAll('[data-wrk-play]').forEach(b=> b.addEventListener('click', ()=> {
+  const id = parseInt(b.dataset.wrkPlay);
+  wPlayPrompt(id);
+}));
+document.querySelectorAll('[data-wrk-rec]').forEach(b=> b.addEventListener('click', ()=> wToggleRec(parseInt(b.dataset.wrkRec))));
+document.querySelectorAll('[data-wrk-playrec]').forEach(b=> b.addEventListener('click', ()=> wPlayMyAnswer(parseInt(b.dataset.wrkPlayrec))));
+document.querySelectorAll('[data-wrk-toggle]').forEach(b=> b.addEventListener('click', ()=> {
+  const id = parseInt(b.dataset.wrkToggle);
+  wrt.mode[id] = (wrt.mode[id] === 'audio' ? 'text' : 'audio');
+  applyWritingMode(id);
+  writingText = { w1: document.getElementById('w1').value, w2: document.getElementById('w2').value };
+  localStorage.setItem('ielts_writing', JSON.stringify(writingText));
+  document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+}));
+['w1','w2'].forEach(id=>{
+  const el = document.getElementById(id);
+  el.addEventListener('input', ()=>{
+    writingText = { w1: document.getElementById('w1').value, w2: document.getElementById('w2').value };
+    localStorage.setItem('ielts_writing', JSON.stringify(writingText));
+    document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+  });
+});
+
+/* Writing submit (estimation) */
+document.getElementById('submitWriting').addEventListener('click', ()=>{
+  const scoreFromLength = (text,target)=>{ if(!text) return 0; const words=text.split(/\s+/).filter(Boolean).length; return Math.min(words/target,1)*9; };
+  const lexical = (text)=>{ if(!text) return 0; const words=text.toLowerCase().match(/\b[a-zA-Z']+\b/g)||[]; if(words.length===0) return 0; const uniq=new Set(words); return Math.min(uniq.size/Math.max(6,Math.min(100,words.length)),1)*9; };
+  const cohesion=(text)=>{ if(!text) return 0; const connectors=['however','moreover','therefore','besides','furthermore','in addition','on the other hand','as a result','because','since','although']; const t=text.toLowerCase(); let c=0; connectors.forEach(k=>{ if(t.includes(k)) c++; }); return Math.min(c,4)/4*9; };
+  const textScore = (t,target)=>{ if(!t) return 0; const s_len=scoreFromLength(t,target), s_lex=lexical(t), s_coh=cohesion(t); return (s_len*0.45 + s_lex*0.35 + s_coh*0.2); };
+
+  const audioScore = (sec,targetLow,targetHigh)=>{
+    if(!sec || sec<=0) return 0;
+    let ratio;
+    if(sec < targetLow) ratio = sec/targetLow;
+    else if(sec > targetHigh) ratio = Math.max(0.6, targetHigh/sec);
+    else ratio = 1.0;
+    return Math.min(9, Math.max(0, ratio*9));
+  };
+  let s1;
+  if(wrt.mode[1]==='audio' && wrt.blob[1]) s1 = audioScore(wrt.durSec[1], 40, 90);
+  else s1 = textScore(document.getElementById('w1').value || '', 150);
+  let s2;
+  if(wrt.mode[2]==='audio' && wrt.blob[2]) s2 = audioScore(wrt.durSec[2], 60, 150);
+  else s2 = textScore(document.getElementById('w2').value || '', 250);
+
+  s1 = Math.round(s1*2)/2; s2 = Math.round(s2*2)/2;
+  writingScore = Math.round(((s1 + s2)/2)*2)/2;
+  // show percent (approx)
+  const percent = Math.round(writingScore/9*100);
+  document.getElementById('writingScore').innerText = `Ball: ${writingScore} (T1 ${s1.toFixed(1)}, T2 ${s2.toFixed(1)})`;
+  document.getElementById('writingPercent').innerText = `${percent}%`;
+  const stat1 = wrt.blob[1] ? `Audio ~${wrt.durSec[1]}s` : `Text ${ (document.getElementById('w1').value||'').split(/\s+/).filter(Boolean).length } words`;
+  const stat2 = wrt.blob[2] ? `Audio ~${wrt.durSec[2]}s` : `Text ${ (document.getElementById('w2').value||'').split(/\s+/).filter(Boolean).length } words`;
+  document.getElementById('writingFeedback').innerHTML = `Task1 → ${stat1}<br>Task2 → ${stat2}<br><em>Eslatma: avtomatik va taxminiy baho.</em>`;
+  writingText = { w1: document.getElementById('w1').value, w2: document.getElementById('w2').value };
+  localStorage.setItem('ielts_writing', JSON.stringify(writingText));
+  document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+
+  updateFinals();
+});
+
+/* Speaking */
+(function initSpeakingFromSaved(){
+  if((speakingText.s1||'').trim()) spk.mode[1]='text';
+  if((speakingText.s2||'').trim()) spk.mode[2]='text';
+  if((speakingText.s3||'').trim()) spk.mode[3]='text';
+  applySpeakingMode(1); applySpeakingMode(2); applySpeakingMode(3);
+})();
+
+function sSetMicIndicator(id, live){
+  const dot = document.getElementById('smic'+id);
+  if(dot) dot.classList.toggle('live', !!live);
+}
+async function sToggleRec(id){
+  const recBtn  = document.querySelector(`[data-spk-rec="${id}"]`);
+  const playBtn = document.querySelector(`[data-spk-playrec="${id}"]`);
+  const audioEl = document.getElementById('saudio'+id);
+
+  if(spk.rec[id] && spk.rec[id].state === 'recording'){
+    spk.rec[id].stop();
+    recBtn.textContent = '🎙️ Start rec';
+    sSetMicIndicator(id,false);
+    return;
+  }
+  try{
+    const stream = await ensureMic();
+    spk.chunks[id] = [];
+    const rec = new MediaRecorder(stream);
+    spk.rec[id] = rec;
+    const t0 = Date.now();
+    rec.ondataavailable = e=>{ if(e.data && e.data.size>0) spk.chunks[id].push(e.data); };
+    rec.onstop = ()=>{
+      const blob = new Blob(spk.chunks[id], { type:'audio/webm' });
+      spk.blob[id] = blob;
+      if(spk.url[id]) URL.revokeObjectURL(spk.url[id]);
+      spk.url[id] = URL.createObjectURL(blob);
+      audioEl.src = spk.url[id];
+      audioEl.style.display = 'block';
+      playBtn.disabled = false;
+      spk.durSec[id] = Math.max(1, Math.round((Date.now()-t0)/1000));
+    };
+    rec.start();
+    recBtn.textContent = '⏹ Stop recording';
+    sSetMicIndicator(id,true);
+  }catch(err){
+    alert('Mikrofon ruxsati yoki qoʻllab-quvvatlanmaslik: ' + err);
+  }
+}
+
+function sPlayMyAnswer(id){
+  const audioEl = document.getElementById('saudio'+id);
+  if(audioEl && audioEl.src) audioEl.play();
+}
+function applySpeakingMode(id){
+  const isAudio = spk.mode[id] === 'audio';
+  const ta = document.getElementById('s'+id);
+  const audioEl = document.getElementById('saudio'+id);
+  const recBtn  = document.querySelector(`[data-spk-rec="${id}"]`);
+  const playBtn = document.querySelector(`[data-spk-playrec="${id}"]`);
+  const toggle  = document.querySelector(`[data-spk-toggle="${id}"]`);
+  if(isAudio){
+    ta.style.display = 'none';
+    recBtn.style.display = 'inline-block';
+    playBtn.style.display = 'inline-block';
+    audioEl.style.display = spk.url[id] ? 'block' : 'none';
+    toggle.textContent = '📴 Toggle';
+  } else {
+    ta.style.display = 'block';
+    recBtn.style.display = 'none';
+    playBtn.style.display = 'none';
+    audioEl.style.display = 'none';
+    sSetMicIndicator(id,false);
+    toggle.textContent = '🔊 Toggle';
+  }
+}
+document.querySelectorAll('[data-spk-play]').forEach(b=> b.addEventListener('click', ()=>{
+  const id = parseInt(b.dataset.spkPlay);
+  const prompts = {
+    1: 'Introduce yourself and mention a hobby.',
+    2: 'Describe a memorable experience and why it was memorable.',
+    3: 'Discuss how technology affects society and your opinion.'
+  };
+  const ut = mkUtterance(prompts[id]);
+  if(!ut) return alert('Speech synthesis not supported.');
+  window.speechSynthesis.speak(ut);
+}));
+document.querySelectorAll('[data-spk-rec]').forEach(b=> b.addEventListener('click', ()=> sToggleRec(parseInt(b.dataset.spkRec))));
+document.querySelectorAll('[data-spk-playrec]').forEach(b=> b.addEventListener('click', ()=> sPlayMyAnswer(parseInt(b.dataset.spkPlayrec))));
+document.querySelectorAll('[data-spk-toggle]').forEach(b=> b.addEventListener('click', ()=>{
+  const id = parseInt(b.dataset.spkToggle);
+  spk.mode[id] = (spk.mode[id] === 'audio' ? 'text' : 'audio');
+  applySpeakingMode(id);
+  speakingText = { s1: document.getElementById('s1').value, s2: document.getElementById('s2').value, s3: document.getElementById('s3').value };
+  localStorage.setItem('ielts_speaking', JSON.stringify(speakingText));
+  document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+}));
+['s1','s2','s3'].forEach(id=>{
+  const el = document.getElementById(id);
+  el.addEventListener('input', ()=>{
+    speakingText = { s1: document.getElementById('s1').value, s2: document.getElementById('s2').value, s3: document.getElementById('s3').value };
+    localStorage.setItem('ielts_speaking', JSON.stringify(speakingText));
+    document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+  });
+});
+
+/* Speaking submit */
+document.getElementById('submitSpeaking').addEventListener('click', ()=>{
+  const fluency = (t)=> { if(!t) return 0; const words=t.split(/\s+/).filter(Boolean).length; return Math.min(words/60,1)*9; };
+  const vocabulary = (t)=> { if(!t) return 0; const words=t.toLowerCase().match(/\b[a-zA-Z']+\b/g)||[]; if(words.length===0) return 0; const uniq=new Set(words); return Math.min(uniq.size/Math.max(6,Math.min(100,words.length)),1)*9; };
+  const pron = (t)=> { if(!t) return 0; const words=t.split(/\s+/).filter(Boolean).length; return Math.min(words/40,1)*9; };
+
+  const scFromAudio = (sec)=> { if(!sec) return 0; if(sec<20) return Math.min(6, sec/20*6); if(sec>90) return Math.max(4, 9*(90/sec)); return 7 + Math.min(2, (sec-20)/70*2); };
+
+  const parts = [1,2,3].map(id=>{
+    if(spk.mode[id]==='audio' && spk.blob[id]){
+      return roundToHalf(scFromAudio(spk.durSec[id]));
+    } else {
+      const t = document.getElementById('s'+id).value || '';
+      const sc = (fluency(t)+vocabulary(t)+pron(t))/3;
+      return roundToHalf(sc);
+    }
+  });
+  speakingScore = roundToHalf((parts[0]+parts[1]+parts[2])/3);
+  const percent = Math.round(speakingScore/9*100);
+  document.getElementById('speakingScore').innerText = `Ball: ${speakingScore} (Parts: ${parts.map(x=>x.toFixed(1)).join(', ')})`;
+  document.getElementById('speakingPercent').innerText = `${percent}%`;
+  document.getElementById('speakingFeedback').innerText = 'Maslahat: bog‘langan gaplar, misollar va lug‘atni kengaytirish foydali.';
+  speakingText = { s1: document.getElementById('s1').value, s2: document.getElementById('s2').value, s3: document.getElementById('s3').value };
+  localStorage.setItem('ielts_speaking', JSON.stringify(speakingText));
+  document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+  updateFinals();
+});
+
+/* Reset buttons */
+document.getElementById('resetListening').addEventListener('click', ()=> {
+  userListening = Array(listeningData.length).fill(null); renderListening(); savePartial();
+  document.getElementById('listeningScore').innerText = 'Ball: —'; document.getElementById('listeningExplanation').innerHTML = ''; document.getElementById('listeningPercent').innerText='—';
+});
+document.getElementById('resetReading').addEventListener('click', ()=> {
+  userReading = Array(readingData.length).fill(null); renderReading(); savePartial();
+  document.getElementById('readingScore').innerText = 'Ball: —'; document.getElementById('readingExplanation').innerHTML = ''; document.getElementById('readingPercent').innerText='—';
+});
+document.getElementById('resetWriting').addEventListener('click', ()=>{
+  document.getElementById('w1').value=''; document.getElementById('w2').value='';
+  wrt.blob[1]=wrt.blob[2]=null; if(wrt.url[1]) URL.revokeObjectURL(wrt.url[1]); if(wrt.url[2]) URL.revokeObjectURL(wrt.url[2]);
+  wrt.url[1]=wrt.url[2]=null; document.getElementById('waudio1').style.display='none'; document.getElementById('waudio2').style.display='none';
+  writingText = { w1:'', w2:'' }; localStorage.setItem('ielts_writing', JSON.stringify(writingText));
+  document.getElementById('writingScore').innerText = 'Ball: —'; document.getElementById('writingFeedback').innerText=''; document.getElementById('writingPercent').innerText='—';
+  applyWritingMode(1); applyWritingMode(2); updateFinals();
+});
+document.getElementById('resetSpeaking').addEventListener('click', ()=>{
+  document.getElementById('s1').value=''; document.getElementById('s2').value=''; document.getElementById('s3').value='';
+  spk.blob[1]=spk.blob[2]=spk.blob[3]=null; if(spk.url[1]) URL.revokeObjectURL(spk.url[1]); if(spk.url[2]) URL.revokeObjectURL(spk.url[2]); if(spk.url[3]) URL.revokeObjectURL(spk.url[3]);
+  spk.url[1]=spk.url[2]=spk.url[3]=null;
+  document.getElementById('saudio1').style.display='none'; document.getElementById('saudio2').style.display='none'; document.getElementById('saudio3').style.display='none';
+  speakingText = { s1:'', s2:'', s3:'' }; localStorage.setItem('ielts_speaking', JSON.stringify(speakingText));
+  document.getElementById('speakingScore').innerText = 'Ball: —'; document.getElementById('speakingFeedback').innerText=''; document.getElementById('speakingPercent').innerText='—';
+  applySpeakingMode(1); applySpeakingMode(2); applySpeakingMode(3); updateFinals();
+});
+
+/* Save / Load / Clear */
+function savePartial(){
+  localStorage.setItem('ielts_userListening', JSON.stringify(userListening));
+  localStorage.setItem('ielts_userReading', JSON.stringify(userReading));
+  document.getElementById('savedIndicator').innerText = 'Saved';
+  document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+}
+document.getElementById('saveBtn').addEventListener('click', ()=> {
+  writingText = { w1: document.getElementById('w1').value, w2: document.getElementById('w2').value };
+  speakingText = { s1: document.getElementById('s1').value, s2: document.getElementById('s2').value, s3: document.getElementById('s3').value };
+  localStorage.setItem('ielts_userListening', JSON.stringify(userListening));
+  localStorage.setItem('ielts_userReading', JSON.stringify(userReading));
+  localStorage.setItem('ielts_writing', JSON.stringify(writingText));
+  localStorage.setItem('ielts_speaking', JSON.stringify(speakingText));
+  document.getElementById('savedIndicator').innerText = 'Saved';
+  document.getElementById('lastSaved').innerText = `Saved: ${new Date().toLocaleTimeString()}`;
+});
+document.getElementById('loadBtn').addEventListener('click', ()=> {
+  userListening = JSON.parse(localStorage.getItem('ielts_userListening') || '[]') || userListening;
+  userReading = JSON.parse(localStorage.getItem('ielts_userReading') || '[]') || userReading;
+  const w = JSON.parse(localStorage.getItem('ielts_writing') || '{}') || writingText;
+  const s = JSON.parse(localStorage.getItem('ielts_speaking') || '{}') || speakingText;
+  document.getElementById('w1').value = w.w1 || ''; document.getElementById('w2').value = w.w2 || '';
+  document.getElementById('s1').value = s.s1 || ''; document.getElementById('s2').value = s.s2 || ''; document.getElementById('s3').value = s.s3 || '';
+  renderListening(); renderReading();
+  document.getElementById('savedIndicator').innerText = 'Loaded';
+});
+document.getElementById('clearBtn').addEventListener('click', ()=> {
+  if(!confirm('Hamma saqlangan maʼlumotni oʻchirib tashlamoqchimisiz?')) return;
+  localStorage.removeItem('ielts_userListening'); localStorage.removeItem('ielts_userReading');
+  localStorage.removeItem('ielts_writing'); localStorage.removeItem('ielts_speaking');
+  userListening = Array(listeningData.length).fill(null); userReading = Array(readingData.length).fill(null);
+  document.getElementById('w1').value=''; document.getElementById('w2').value=''; document.getElementById('s1').value=''; document.getElementById('s2').value=''; document.getElementById('s3').value='';
+  renderListening(); renderReading();
+  alert('Saqlangan maʼlumot o‘chirildi.');
+});
+
+/* Tabs & navigation */
+document.getElementById('tabs').addEventListener('click', (e)=> {
+  const t = e.target.closest('.tab'); if(!t) return;
+  const name = t.dataset.tab;
+  document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
+  document.querySelectorAll('main section').forEach(s=> s.style.display = (s.id===name ? 'block' : 'none'));
+  if(name==='resources') renderYT();
+  if(name==='final') {
+    fillTRFFields();
+  }
+});
+document.addEventListener('keydown', (e)=> {
+  if((e.key==='Enter' || e.key===' ') && document.activeElement.classList.contains('tab')) document.activeElement.click();
+});
+document.getElementById('goListening').addEventListener('click', ()=> document.querySelector('.tab[data-tab="listening"]').click());
+document.getElementById('goReading').addEventListener('click', ()=> document.querySelector('.tab[data-tab="reading"]').click());
+document.getElementById('goFinal').addEventListener('click', ()=> document.querySelector('.tab[data-tab="final"]').click());
+
+/* When clicking IT logo go to home (listening) */
+document.getElementById('homeLink').addEventListener('click', ()=>{
+  document.querySelector('.tab[data-tab="listening"]').click();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* export print -> show TRF only */
+document.getElementById('exportPdf').addEventListener('click', ()=>{
+  fillTRFFields();
+  window.print();
+});
+
+/* Confetti simplified (keeps visual effect) */
+function runConfetti(){
+  const canvas = document.getElementById('cnf'); if(!canvas) return;
+  const ctx = canvas.getContext('2d'); const w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
+  const colors = ['#FFB88C','#FF7A00','#FFD9B6','#FFE6CC','#FF9500'];
+  const particles = [];
+  for(let i=0;i<80;i++){
+    particles.push({ x: Math.random()*w, y: -10 - Math.random()*h*0.1, vx:(Math.random()-0.5)*6, vy:Math.random()*4+1, size:Math.random()*8+4, color:colors[Math.floor(Math.random()*colors.length)], rot:Math.random()*360, vr:(Math.random()-0.5)*6 });
+  }
+  let t0 = performance.now();
+  function draw(t){
+    const dt = (t - t0) / 16; t0 = t;
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p=>{
+      p.x += p.vx*dt*0.6; p.y += p.vy*dt*0.6; p.vy += 0.03*dt*0.02; p.rot += p.vr*dt*0.2;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6); ctx.restore();
+    });
+    for(let i=particles.length-1;i>=0;i--) if(particles[i].y > h+50) particles.splice(i,1);
+    if(particles.length>0) requestAnimationFrame(draw); else ctx.clearRect(0,0,w,h);
+  }
+  requestAnimationFrame(draw);
+}
+
+/* ---------- TRF filling & final updates ---------- */
+function getCEFR(score){
+  if(score>=8) return "C2";
+  if(score>=7) return "C1";
+  if(score>=5.5) return "B2";
+  if(score>=4) return "B1";
+  return "A2";
+}
+
+function fillTRFFields(){
+  // set per-section displays and percent
+  const setSection = (band, elBand, elPct) => {
+    if(band===null){ document.getElementById(elBand).innerText = '—'; document.getElementById(elPct).innerText = '—'; return; }
+    const pct = Math.round(band/9*100);
+    document.getElementById(elBand).innerText = band;
+    document.getElementById(elPct).innerText = `${pct}%`;
+  };
+  setSection(listeningScore, 'trf_listening','trf_listening_pct');
+  setSection(readingScore, 'trf_reading','trf_reading_pct');
+  setSection(writingScore, 'trf_writing','trf_writing_pct');
+  setSection(speakingScore, 'trf_speaking','trf_speaking_pct');
+
+  if([listeningScore,readingScore,writingScore,speakingScore].every(x=>x!==null)){
+    const overall = roundToHalf((listeningScore+readingScore+writingScore+speakingScore)/4);
+    const overallPct = Math.round(overall/9*100);
+    document.getElementById('trf_overall').innerText = overall;
+    document.getElementById('trf_overall_pct').innerText = `${overallPct}%`;
+    document.getElementById('trf_cefr').innerText = getCEFR(overall);
+    document.getElementById('trf_date').innerText = new Date().toLocaleDateString();
+  } else {
+    document.getElementById('trf_overall').innerText = '—';
+    document.getElementById('trf_overall_pct').innerText = '—';
+    document.getElementById('trf_cefr').innerText = '—';
+    document.getElementById('trf_date').innerText = new Date().toLocaleDateString();
+  }
+
+  // profile fields
+  const p = JSON.parse(localStorage.getItem('ielts_profile') || 'null') || {};
+  if(p){
+    document.getElementById('trf_family').innerText = p.last || '—';
+    document.getElementById('trf_first').innerText = p.first || '—';
+    document.getElementById('trf_id').innerText = p.candId || '—';
+    if(p.avatar) document.getElementById('trf_photo').src = p.avatar;
+  }
+}
+
+function updateFinals(){
+  document.getElementById('f_listening').innerText = listeningScore !== null ? listeningScore : '—';
+  document.getElementById('f_reading').innerText = readingScore !== null ? readingScore : '—';
+  document.getElementById('f_writing').innerText = writingScore !== null ? writingScore : '—';
+  document.getElementById('f_speaking').innerText = speakingScore !== null ? speakingScore : '—';
+
+  const setPct = (score, id) => { document.getElementById(id).innerText = score!==null ? `${Math.round(score/9*100)}%` : '—'; };
+  setPct(listeningScore, 'f_listening_pct');
+  setPct(readingScore, 'f_reading_pct');
+  setPct(writingScore, 'f_writing_pct');
+  setPct(speakingScore, 'f_speaking_pct');
+
+  const parts = [listeningScore, readingScore, writingScore, speakingScore];
+  if(parts.every(x=>x!==null)){
+    const overall = roundToHalf( (listeningScore+readingScore+writingScore+speakingScore)/4 );
+    document.getElementById('f_overall').innerText = overall;
+    const percent = Math.round(overall/9*100);
+    document.getElementById('f_overall_pct').innerText = `${percent}%`;
+    document.getElementById('overallProgress').style.width = percent + '%';
+    document.getElementById('sideProgress').style.width = percent + '%';
+    document.getElementById('sideOverall').innerText = overall;
+    if(overall>=7) { runConfetti(); document.getElementById('finalTips').innerText = 'Ajoyib! IELTS 7+ — yaxshi tayyorgarlik.'; }
+    else if(overall>=6) document.getElementById('finalTips').innerText = 'Yaxshi — baʼzi kamchiliklarni tuzatish lozim.';
+    else document.getElementById('finalTips').innerText = 'Mashq ko‘proq kerak — listening va writing ustida mashq qiling.';
+  } else {
+    document.getElementById('f_overall').innerText = '—';
+    document.getElementById('f_overall_pct').innerText = '—';
+  }
+
+  // ensure profile name shows in final (if saved)
+  const p = JSON.parse(localStorage.getItem('ielts_profile') || 'null');
+  if(p){
+    const name = [p.first||'', p.last||''].filter(Boolean).join(' ');
+    document.getElementById('finalName').innerText = name || '—';
+    if(p.avatar){ document.getElementById('headerAvatar').style.display='inline-block'; document.getElementById('headerAvatar').querySelector('img').src = p.avatar; }
+  }
+
+  fillTRFFields();
+}
+
+/* ---------- Init ---------- */
+(function init(){
+  setupProfileModal();
+  loadProfile();
+  // if no profile prompt
+  const pExists = JSON.parse(localStorage.getItem('ielts_profile')||'null');
+  if(!pExists) showProfileModal();
+})();
+</script>
+</body>
+</html>
+ 
