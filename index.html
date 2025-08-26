@@ -1,1523 +1,720 @@
 <!doctype html>
 <html lang="uz">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>IELTS Trainer — White / Blue / Green Design (with background animation)</title>
-<meta name="description" content="Randomized IELTS trainer — Listening (gated parts), Reading (sections), Writing, Speaking. White/Blue/Green theme, background IELTS animated text." />
-<style>
-:root{
-  --bg:#ffffff;
-  --muted:#6b7280;
-  --primary:#1e90ff;    /* blue */
-  --accent:#2ecc71;     /* green */
-  --card:#ffffff;
-  --radius:12px;
-  --shadow:0 12px 30px rgba(16,24,40,0.06);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,#f8fbff,#ffffff);font-family:var(--font);color:#111;overflow-y:auto}
-body {position:relative;}
-
-/* BACKGROUND ANIMATED TEXT */
-.bg-words {
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:48px;
-  pointer-events:none;
-  z-index:0;
-  opacity:0.06;
-  filter: blur(0.6px);
-  transform: translateZ(0);
-}
-.bg-words .word {
-  font-weight:900;
-  font-family: "Georgia", "Times New Roman", serif;
-  font-size:220px;
-  line-height:0.8;
-  white-space:nowrap;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
-  mix-blend-mode: screen;
-  display:inline-block;
-  transform-origin:center;
-  will-change: transform, opacity;
-  animation: floatMove 14s linear infinite;
-  opacity:0.95;
-}
-/* color variants (blue / green / subtle) */
-.bg-words .w1{ background: linear-gradient(90deg, rgba(30,144,255,0.95), rgba(78,168,255,0.95)); animation-delay:0s; }
-.bg-words .w2{ background: linear-gradient(90deg, rgba(46,204,113,0.95), rgba(116,220,150,0.95)); animation-delay:3.4s; font-size:200px; opacity:0.9; }
-.bg-words .w3{ background: linear-gradient(90deg, rgba(60,140,230,0.92), rgba(46,204,113,0.88)); animation-delay:6.8s; font-size:240px; opacity:0.85; }
-
-/* subtle different timings for each copy */
-@keyframes floatMove {
-  0% { transform: translate3d(-8vw, -4vh) rotate(-6deg) scale(1); opacity:0.85; }
-  25% { transform: translate3d(6vw, -8vh) rotate(3deg) scale(1.02); opacity:0.9; }
-  50% { transform: translate3d(10vw, 6vh) rotate(6deg) scale(1.04); opacity:0.95; }
-  75% { transform: translate3d(-6vw, 8vh) rotate(-3deg) scale(1.01); opacity:0.9; }
-  100% { transform: translate3d(-8vw, -4vh) rotate(-6deg) scale(1); opacity:0.85; }
-}
-
-/* Page content sits above background */
-.container{max-width:1200px;margin:24px auto;padding:16px;display:grid;grid-template-columns:1fr 360px;gap:18px;position:relative;z-index:1}
-@media(max-width:1000px){.container{grid-template-columns:1fr;padding:12px}}
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
-.brand{display:flex;align-items:center;gap:12px;cursor:pointer}
-.logo{width:46px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:900;transform:translateY(0);transition:transform .18s}
-.brand:hover .logo{transform:translateY(-3px)}
-.title{font-size:18px;margin:0}
-.subtitle{font-size:13px;color:var(--muted)}
-.card{background:var(--card);border-radius:12px;padding:14px;border:1px solid rgba(16,24,40,0.04);box-shadow:var(--shadow)}
-.tabs{display:flex;gap:8px;flex-wrap:wrap}
-.tab{padding:8px 12px;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;border:1px solid transparent;font-weight:700;transition:all .18s}
-.tab:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(30,144,255,0.05)}
-.tab.active{background:linear-gradient(90deg,var(--primary),#4aa6ff);color:#fff;box-shadow:0 12px 30px rgba(30,144,255,0.08)}
-.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.muted{color:var(--muted);font-size:13px}
-.question{margin-top:12px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#ffffff,#f6fffb);border:1px solid rgba(16,24,40,0.03);transition:transform .12s}
-.question:hover{transform:translateY(-4px)}
-.options{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-label.option{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;background:transparent;cursor:pointer;border:1px solid rgba(16,24,40,0.04);transition:all 160ms}
-label.option:hover{background:linear-gradient(90deg,#ffffff,#f0f8ff);transform:translateY(-2px)}
-label.option.selected{border-color:rgba(46,204,113,0.22);box-shadow:0 10px 30px rgba(46,204,113,0.06);background:linear-gradient(90deg,#f8fff6,#ffffff)}
-.controls{display:flex;gap:8px;align-items:center;margin-top:12px}
-.btn{background:linear-gradient(90deg,var(--primary),#4aa6ff);color:white;border:0;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:800;transition:transform .12s}
-.btn:hover{transform:translateY(-3px)}
-.btn.ghost{background:transparent;border:1px solid rgba(16,24,40,0.06);color:var(--muted);font-weight:700}
-.small{padding:6px 8px;border-radius:8px}
-.mini{font-size:13px;color:var(--muted)}
-.avatar{width:72px;height:72px;border-radius:10px;overflow:hidden;border:1px solid rgba(16,24,40,0.04);display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#fff,#f6fffb)}
-.header-avatar{width:32px;height:32px;border-radius:8px;overflow:hidden;display:none}
-.header-avatar img{width:100%;height:100%;object-fit:cover}
-.trf{font-family:"Times New Roman",Georgia,serif;border:1px solid rgba(16,24,40,0.04);padding:12px;border-radius:10px;background:#fff}
-.loader{display:inline-block;width:16px;height:16px;border-radius:50%;border:3px solid rgba(30,144,255,0.08);border-top-color:var(--primary);animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-textarea{width:100%;min-height:100px;padding:8px;border-radius:10px;border:1px solid rgba(16,24,40,0.06);resize:vertical}
-.video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:8px}
-.video-tile{padding:8px;border-radius:10px;border:1px solid rgba(16,24,40,0.04);cursor:pointer;display:flex;gap:10px;align-items:center;background:#fff;transition:transform .12s}
-.video-tile:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(30,144,255,0.04)}
-.hint{font-size:12px;color:#64748b;margin-left:6px}
-.locked{opacity:0.5;pointer-events:none}
-.status{font-size:13px;color:var(--muted)}
-.next-btn{margin-left:8px;background:linear-gradient(90deg,var(--accent),#2bcb7a);color:white;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:800;transition:transform .12s}
-.next-btn:hover{transform:translateY(-3px)}
-.next-btn.hidden{display:none}
-.hidden{display:none!important}
-
-/* Reading split layout */
-.reading-split{display:flex;gap:12px}
-.reading-left{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(16,24,40,0.04);background:#fff}
-.reading-right{width:420px;max-width:44%;padding:12px;border-radius:10px;border:1px solid rgba(16,24,40,0.04);background:#fff;overflow:auto}
-@media(max-width:1000px){ .reading-split{flex-direction:column} .reading-right{width:100%;max-width:100%} }
-
-/* small animation for play button */
-.play-anim { transition:transform .12s, background .12s; }
-.play-anim.playing { transform:scale(0.98); background:linear-gradient(90deg,var(--primary),#57a9ff); color:#fff; }
-
-/* Sidebar top row for Save/Load/Clear + icon */
-.sidebar-controls {
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.pay-link {
-  display:inline-flex;
-  height:50px;
-  width:auto;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  text-decoration:none;
-  border-radius:8px;
-  overflow:hidden;
-  border:1px solid rgba(16,24,40,0.04);
-  background:linear-gradient(90deg,var(--primary),#4aa6ff);
-  padding:6px 10px;
-}
-.pay-link svg { display:block; height:100%; width:auto; }
-.pay-link:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(30,144,255,0.06); }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IELTS Speaking — Auto-score (with PNG export)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#0b1020; --bg2:#111736; --panel:#0e1531; --text:#f1f5ff; --muted:#a9b2d3; --brand:#7c9cff; --mint:#5eead4; --stroke:rgba(124,156,255,.25); --chip:#0c1230; --ring:#203060;}
+    [data-theme="light"]{ --bg:#f4f6ff; --bg2:#ffffff; --panel:#f6f8ff; --text:#0b1020; --muted:#505a7a; --stroke:rgba(30,50,150,.18); --chip:#eef2ff; --ring:#dfe6ff;}
+    *{box-sizing:border-box} html,body{height:100%} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);
+      background: radial-gradient(1000px 600px at 120% -10%, #18224a22 0%, transparent 55%),
+                  radial-gradient(800px 500px at -20% 20%, #15204a22 0%, transparent 55%),
+                  linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%);}
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    header{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(11,16,32,.9),rgba(11,16,32,.6));backdrop-filter:saturate(115%) blur(8px);border-bottom:1px solid var(--stroke)}
+    .head{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;gap:12px;align-items:center} .logo{display:flex;gap:10px;align-items:center} .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--mint));box-shadow:0 0 0 5px rgba(124,156,255,.15)} h1{font-size:clamp(18px,3vw,28px);margin:0} .sub{font-size:12px;color:var(--muted)} .spacer{flex:1}
+    .btn{background:linear-gradient(180deg,#1a2250,#151c3f);color:var(--text);border:1px solid var(--stroke);padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer}
+    .btn.ghost{background:var(--chip)} .btn.danger{background:linear-gradient(180deg,#3a1420,#2a0e18)} .btn.ok{background:linear-gradient(180deg,#123922,#0d2d1a)}
+    .grid{display:grid;gap:16px;margin-top:18px;grid-template-columns:1fr} @media(min-width:1050px){.grid{grid-template-columns:1.15fr .85fr}}
+    .card{background:linear-gradient(180deg,var(--bg2),var(--panel));border:1px solid var(--stroke);border-radius:16px;padding:16px} .muted{color:var(--muted);font-size:13px;margin:0}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center} .label{font-size:12px;color:var(--muted)}
+    .meter{height:10px;background:#0b1232;border:1px solid var(--stroke);border-radius:999px;overflow:hidden}
+    .timer{font-variant-numeric:tabular-nums;font-size:28px;font-weight:800} .pill{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip)}
+    .section{border:1px solid var(--stroke);background:var(--panel);border-radius:14px;margin-top:10px}
+    .section .head{padding:12px 14px} .section .body{padding:12px 14px;border-top:1px solid var(--stroke)}
+    .qa{display:grid;gap:10px} .question{padding:10px 12px;border:1px solid var(--stroke);background:var(--chip);border-radius:12px;position:relative}
+    textarea{width:100%;min-height:90px;border-radius:12px;border:1px solid var(--stroke);background:var(--chip);color:var(--text);padding:10px}
+    .audio-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap} audio{width:100%}
+    canvas{width:100%;height:46px;background:var(--chip);border:1px solid var(--stroke);border-radius:10px}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px} @media(max-width:640px){.cols{grid-template-columns:1fr}}
+    .range{display:flex;align-items:center;gap:8px} input[type="range"]{width:160px}
+    .score-pill{font-weight:800;padding:6px 10px;border-radius:10px;background:linear-gradient(90deg,#10172a,#1b2546);border:1px solid var(--stroke);display:inline-block}
+    .crit{font-size:12px;color:var(--muted);display:block;margin-top:6px}
+    .small{font-size:12px;color:var(--muted)}
+  </style>
 </head>
 <body>
-  <!-- BACKGROUND "IELTS" ANIMATION LAYER -->
-  <div class="bg-words" aria-hidden="true">
-    <span class="word w1">IELTS</span>
-    <span class="word w2">IELTS</span>
-    <span class="word w3">IELTS</span>
-  </div>
-
-<div class="container">
-  <div>
-    <div class="header">
-      <div class="brand" id="homeBtn" title="Click to go home">
-        <div class="logo">IT</div>
+  <header>
+    <div class="head">
+      <div class="logo" aria-label="Logo">
+        <span class="dot"></span>
         <div>
-          <div class="title">IELTS Trainer — White/Blue/Green</div>
-          <div class="subtitle">Distinct options • Smooth UI • Avatar → TRF</div>
+          <h1>IELTS Speaking — Pro Test</h1>
+          <div class="sub">Avto-baholash: Fluency / Lexical / Grammar / Pronunciation + PNG eksport</div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="mini" id="lastSaved">Saved: —</div>
-        <div class="header-avatar" id="headerAvatar"><img src="#" alt="avatar" id="headerAvatarImg"></div>
-      </div>
+      <div class="spacer"></div>
+      <button id="btnTheme" class="btn ghost" title="Light/Dark">🌓 Tema</button>
+      <button id="btnPrint" class="btn ghost">🖨️ Chop etish</button>
     </div>
+  </header>
 
-    <div class="card">
-      <div class="tabs" id="tabs">
-        <div class="tab active" data-tab="listening">Listening</div>
-        <div class="tab" data-tab="reading">Reading</div>
-        <div class="tab" data-tab="writing">Writing</div>
-        <div class="tab" data-tab="speaking">Speaking</div>
-        <div class="tab" data-tab="final">TRF</div>
-        <div class="tab" data-tab="resources">Resources</div>
-      </div>
-    </div>
+  <main class="wrap">
+    <div class="grid">
+      <section class="card" id="test">
+        <h2>Test paneli</h2>
+        <p class="muted">Mikrofonga ruxsat bering, keyin <b>Start</b> yoki har bir part uchun ⏺️ tugmasini bosing. Hotkeys: Space — toggle record.</p>
 
-    <!-- Listening -->
-    <section class="card" id="listening" role="region">
-      <div class="section-title">
-        <h2>Listening — 40 questions (4 parts, gated)</h2>
-        <div class="muted" id="listeningNote">Part 1 ochildi — faqat joriy part ko'rsatiladi</div>
-      </div>
-
-      <div style="margin-top:10px">
-        <label class="mini">Remote listening JSON (optional):</label>
-        <input id="listeningUrl" placeholder="Remote URL (optional)" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(16,24,40,0.04)"/>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button id="loadListeningRemote" class="small btn.ghost">Load remote</button>
-          <div class="hint">If empty, generator creates fresh distinct questions each visit.</div>
-        </div>
-      </div>
-
-      <!-- Dialog controls -->
-      <div id="listeningDialogControls" style="margin-top:12px"></div>
-
-      <div id="listeningParts" style="margin-top:12px"></div>
-
-      <div class="controls">
-        <button id="submitListening" class="btn">Baholash (joriy part)</button>
-        <button id="backListeningBtn" class="btn ghost hidden">← Oldingi partga qaytish</button>
-        <button id="nextListeningBtn" class="next-btn hidden">Partga oʻtish →</button>
-        <div style="margin-left:auto" class="mini" id="listeningScore">Ball: —</div>
-      </div>
-    </section>
-
-    <!-- Reading -->
-    <section class="card" id="reading" role="region" style="display:none">
-      <div class="section-title">
-        <h2>Reading — 3 sections, 40 questions</h2>
-        <div class="muted" id="readingNote">Section 1 ochildi — faqat joriy section ko'rsatiladi</div>
-      </div>
-
-      <div style="margin-top:8px" id="readingParts"></div>
-
-      <div class="controls">
-        <button id="submitReading" class="btn">Baholash (joriy section)</button>
-        <button id="backReadingBtn" class="btn ghost hidden">← Oldingi sectionga qaytish</button>
-        <button id="nextReadingBtn" class="next-btn hidden">Keyingi sectionga oʻtish →</button>
-        <div style="margin-left:auto" class="mini" id="readingScore">Ball: —</div>
-      </div>
-    </section>
-
-    <!-- Writing -->
-    <section class="card" id="writing" role="region" style="display:none">
-      <div class="section-title">
-        <h2>Writing — 2 tasks</h2>
-        <div class="muted" id="writingNote">Task 1 ochildi — faqat joriy task ko'rsatiladi</div>
-      </div>
-
-      <div id="writingTasks"></div>
-
-      <div class="controls">
-        <button id="analyzeWriting" class="btn">Analyze (joriy task)</button>
-        <button id="backWritingBtn" class="btn ghost hidden">← Oldingi taskga qaytish</button>
-        <button id="nextWritingBtn" class="next-btn hidden">Keyingi taskga oʻtish →</button>
-        <div style="margin-left:auto" class="mini" id="writingScore">Ball: —</div>
-      </div>
-      <div id="writingFeedback" class="status" style="margin-top:8px"></div>
-    </section>
-
-    <!-- Speaking -->
-    <section class="card" id="speaking" role="region" style="display:none">
-      <div class="section-title">
-        <h2>Speaking — Part 1,2,3</h2>
-        <div class="muted" id="speakingNote">Part 1 ochildi — faqat joriy part ko'rsatiladi</div>
-      </div>
-
-      <div id="speakingTasks"></div>
-
-      <div class="controls">
-        <button id="analyzeSpeaking" class="btn">Analyze (joriy part)</button>
-        <button id="backSpeakingBtn" class="btn ghost hidden">← Oldingi partga qaytish</button>
-        <button id="nextSpeakingBtn" class="next-btn hidden">Keyingi partga oʻtish →</button>
-        <div style="margin-left:auto" class="mini" id="speakingScore">Ball: —</div>
-      </div>
-      <div id="speakingFeedback" class="status" style="margin-top:8px"></div>
-    </section>
-
-    <!-- Final TRF -->
-    <section class="card" id="final" role="region" style="display:none">
-      <div class="section-title">
-        <h2>IELTS Test Report Form (TRF-like)</h2>
-        <div class="muted">Export CSV/PNG. TRF preview with signature placeholder.</div>
-      </div>
-
-      <div class="trf" id="trfCard">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <h3 style="margin:0">IELTS Test Report Form</h3>
-            <div class="muted">Automated preview</div>
+        <div class="section">
+          <div class="head row">
+            <div class="timer" id="globalTimer">00:00</div>
+            <span class="pill" id="phasePill">Standby</span>
+            <div class="spacer"></div>
+            <button id="btnSetup" class="btn">🎙️ Mic test</button>
+            <button id="btnStart" class="btn ok">▶️ Start</button>
+            <button id="btnStop" class="btn danger" disabled>⏹️ Stop</button>
+            <button id="btnReset" class="btn ghost">↺ Reset</button>
           </div>
-          <div>
-            <button id="exportCsv" class="small btn.ghost">Export CSV</button>
-            <button id="exportPng" class="small btn.ghost">Export PNG</button>
+          <div class="body">
+            <div class="row" style="align-items:flex-start">
+              <div style="flex:1;min-width:260px">
+                <div class="label">Ovoz darajasi</div>
+                <div class="meter"><div class="bar" id="levelBar"></div></div>
+                <canvas id="liveWave" height="46"></canvas>
+              </div>
+              <div style="min-width:260px">
+                <div class="label">Rejim</div>
+                <div class="list">
+                  <span class="pill" id="micStatus">Mic: unknown</span>
+                  <span class="pill" id="recStatus">Rec: idle</span>
+                </div>
+                <div class="small" style="margin-top:8px">SpeechRecognition: <span id="srStatus">unsupported</span></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
-          <div class="avatar"><img id="finalAvatar" src="" alt="avatar" style="width:100%;height:100%;object-fit:cover;display:none"/></div>
-          <div>
-            <div><strong>Ism Familiya:</strong> <span id="finalName">—</span></div>
-            <div class="muted" id="finalMeta">Candidate no: — | Test date: —</div>
+        <!-- Part 1 -->
+        <div class="section" id="p1">
+          <div class="head row">
+            <strong>Part 1 — Introduction</strong>
+            <span class="pill" id="p1Score">—</span>
+            <div class="spacer"></div>
+            <button class="btn" data-rec="p1">⏺️ P1 Start/Stop</button>
+          </div>
+          <div class="body">
+            <div class="qa" id="p1Qs">Savollar...</div>
+            <div class="audio-row">
+              <audio id="p1Audio" controls></audio>
+              <a id="p1Dl" class="btn ghost" download>⬇️ Yuklab olish</a>
+              <canvas id="p1Wave" height="46"></canvas>
+            </div>
+            <div class="crit" id="p1Crit"></div>
           </div>
         </div>
 
-        <div style="margin-top:12px">
-          <div><strong>Listening:</strong> <span id="f_listening">—</span></div>
-          <div><strong>Reading:</strong> <span id="f_reading">—</span></div>
-          <div><strong>Writing:</strong> <span id="f_writing">—</span></div>
-          <div><strong>Speaking:</strong> <span id="f_speaking">—</span></div>
-        </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
-          <div><div class="mini">Overall</div><div style="font-size:22px;font-weight:900" id="f_overall">—</div></div>
-          <div id="finalTips" class="muted">—</div>
-          <div style="text-align:center"><div class="mini">Examiner signature</div><div style="width:140px;height:40px;border:1px dashed #ddd;margin-top:8px"></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Resources -->
-    <section class="card" id="resources" role="region" style="display:none">
-      <h3>Official & Video Resources</h3>
-      <div class="video-grid" id="videoGrid"></div>
-      <div style="margin-top:8px"><small class="muted">20 curated IELTS videos included for practice.</small></div>
-    </section>
-  </div>
-
-  <!-- Sidebar -->
-  <aside>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center"><strong>Profile & Controls</strong><div class="mini" id="savedIndicator">Saved: No</div></div>
-      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-        <div class="avatar" id="sidebarAvatar"><img src="#" id="sidebarAvatarImg" style="width:100%;height:100%;object-fit:cover;display:none"/></div>
-        <div style="flex:1">
-          <div style="display:flex;gap:6px"><input id="firstName" placeholder="Ism" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(16,24,40,0.04)"/><input id="lastName" placeholder="Familiya" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(16,24,40,0.04)"/></div>
-          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
-              <input id="avatarFile" type="file" accept="image/*" style="display:none"/>
-              <span class="small btn.ghost">📁 Vibor fayl</span>
-            </label>
-            <button id="saveProfile" class="small btn.ghost">Save</button>
+        <!-- Part 2 -->
+        <div class="section" id="p2">
+          <div class="head row">
+            <strong>Part 2 — Long Turn</strong>
+            <span class="pill" id="p2Score">—</span>
+            <div class="spacer"></div>
+            <button class="btn" data-rec="p2">⏺️ P2 Start/Stop</button>
+          </div>
+          <div class="body">
+            <div class="question big prep" id="p2Card">Cue Card…</div>
+            <textarea id="p2Notes" placeholder="Eslatmalar"></textarea>
+            <div class="audio-row"><audio id="p2Audio" controls></audio><a id="p2Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p2Wave" height="46"></canvas></div>
+            <div class="crit" id="p2Crit"></div>
           </div>
         </div>
-      </div>
 
-      <!-- Save / Load / Clear row with added clickable image (50px height) -->
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between">
-        <div class="sidebar-controls" style="flex:1">
-          <button id="saveBtn" class="small btn.ghost">💾 Save</button>
-          <button id="loadBtn" class="small btn.ghost">📂 Load</button>
-          <button id="clearBtn" class="small btn.ghost">🗑 Clear</button>
+        <!-- Part 3 -->
+        <div class="section" id="p3">
+          <div class="head row">
+            <strong>Part 3 — Discussion</strong>
+            <span class="pill" id="p3Score">—</span>
+            <div class="spacer"></div>
+            <button class="btn" data-rec="p3">⏺️ P3 Start/Stop</button>
+          </div>
+          <div class="body">
+            <div class="qa" id="p3Qs">Savollar...</div>
+            <div class="audio-row"><audio id="p3Audio" controls></audio><a id="p3Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p3Wave" height="46"></canvas></div>
+            <div class="crit" id="p3Crit"></div>
+          </div>
         </div>
+      </section>
 
-        <!-- Clickable image (SVG) — opens paycom checkout in new tab -->
-        <a id="payLink" class="pay-link" href="https://checkout.paycom.uz" target="_blank" rel="noopener noreferrer" title="Go to Checkout — paycom.uz">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 50" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-            <defs>
-              <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#0ea5ff"/><stop offset="1" stop-color="#34d399"/></linearGradient>
-            </defs>
-            <rect rx="8" width="220" height="50" fill="url(#g1)"/>
-            <g transform="translate(12,8)">
-              <rect x="0" y="0" width="34" height="34" rx="6" fill="rgba(255,255,255,0.14)"/>
-              <path d="M6 12h20v2H6zM6 18h20v2H6z" fill="#fff" opacity="0.95"/>
-            </g>
-            <text x="64" y="33" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#fff">To'lov / Checkout</text>
-          </svg>
-        </a>
-      </div>
+      <aside class="card" id="resultsPanel">
+        <h2>Natijalar & Eksport</h2>
+        <p class="muted">Avtomatik baholash — faqat amaliy qo‘llanma sifatida qarang.</p>
 
-      <div style="margin-top:12px">
-        <div><strong>Quick links</strong></div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-          <button id="goListening" class="small btn.ghost">⏱ Listening</button>
-          <button id="goReading" class="small btn.ghost">📖 Reading</button>
-          <button id="goFinal" class="small btn.ghost">🏁 Final</button>
+        <div class="section">
+          <div class="head"><strong>Baholar</strong></div>
+          <div class="body">
+            <div class="row"><div>Part 1:</div><div class="pill" id="r_p1">—</div></div>
+            <div class="row"><div>Part 2:</div><div class="pill" id="r_p2">—</div></div>
+            <div class="row"><div>Part 3:</div><div class="pill" id="r_p3">—</div></div>
+            <div style="margin-top:10px" class="row"><div>Overall Speaking Avg:</div><div class="score-pill" id="avgOverall">—</div></div>
+            <div class="small" style="margin-top:8px">Mezonlar: Fluency / Lexical / Grammar / Pronunciation</div>
+
+            <div style="margin-top:12px" class="row">
+              <button id="btnExportSession" class="btn">🧾 Seans JSON</button>
+              <button id="btnExportAll" class="btn">📦 Hammasini ZIP</button>
+              <button id="btnExportPNG" class="btn ghost">🖼️ Export Result PNG</button>
+            </div>
+          </div>
         </div>
-      </div>
+      </aside>
     </div>
-
-    <div class="card" style="margin-top:12px">
-      <div><strong>Progress</strong></div>
-      <div style="margin-top:8px"><div class="mini">Overall</div><div style="height:10px;background:#eee;border-radius:6px;margin-top:6px;overflow:hidden"><div id="sideProgress" style="height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--accent))"></div></div><div style="margin-top:6px"><strong id="sideOverall">—</strong></div></div>
-    </div>
-  </aside>
-</div>
-
-<!-- hidden canvas for PNG export -->
-<canvas id="trfCanvas" width="1000" height="1400" style="display:none"></canvas>
-
-<script>
-/* ==========================
-  RNG / Utility
-  ========================== */
-function rngSeed() {
-  const now = Date.now();
-  const arr = new Uint32Array(2);
-  if(window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(arr);
-  return (arr[0] ^ now) >>> 0;
-}
-let SEED = rngSeed();
-function rand() { SEED ^= SEED << 13; SEED ^= SEED >>> 17; SEED ^= SEED << 5; SEED = SEED >>> 0; return SEED / 0xFFFFFFFF; }
-function rndInt(min,max){ return Math.floor(rand()*(max-min+1))+min; }
-function sample(arr){ return arr[Math.floor(rand()*arr.length)]; }
-
-/* ==========================
-  Content pools — made more diverse and larger
-  ========================== */
-const detailPool = [
-  'will commence operations in late 2025 after preliminary safety audits',
-  'was retrofitted with noise-dampening panels earlier this year',
-  'requires a special permit before the installation can proceed',
-  'is expected to halve maintenance costs over the next decade',
-  'relies on volunteer staffing during its trial period',
-  'has been deprioritised pending further stakeholder consultation',
-  'is subsidised partially by a municipal grant scheme',
-  'is being considered as a pilot for seasonal deployment',
-  'was found to exceed initial efficiency predictions in trials',
-  'is available free of charge for the first three months',
-  'needs an updated regulatory compliance certificate',
-  'will only operate during daytime hours to reduce disturbance',
-  'faces supply-chain delays for key components',
-  'requires additional safety testing before rollout',
-  'has attracted external private investment for expansion',
-  'is limited to residents within the borough on launch',
-  'is part of a broader sustainability initiative',
-  'has an opt-in scheme for low-income households',
-  'will be re-evaluated after a six-month trial',
-  'is operating with temporary staff during the pilot'
-];
-
-const distractors = [
-  'was introduced recently as an aesthetic update',
-  'follows established operational standards used elsewhere',
-  'may require additional funding at the implementation stage',
-  'was cited as reducing travel time but increasing cost',
-  'is primarily aesthetic and not functionally critical',
-  'depends on third-party suppliers for core components',
-  'is likely to be postponed until regulatory review completes',
-  'introduces incremental rather than transformative change',
-  'is only an experimental concept with no firm timeline',
-  'has low uptake in initial surveys despite promotion',
-  'could be replaced by an alternative technology',
-  'is intended as a temporary measure during summer months'
-];
-
-const templateDistractors = [
-  'The passage suggests a financial benefit primarily.',
-  'The text emphasises environmental concerns above others.',
-  'It argues that user experience is the central issue.',
-  'The authors recommend immediate policy change.',
-  'The report highlights methodological uncertainty.',
-  'The report mainly documents historical anecdote.',
-  'It focuses on technical specifications rather than users.',
-  'The piece frames the issue as purely theoretical.'
-];
-
-/* ==========================
-  Generator: Listening parts — ensure unique and diverse options
-  ========================== */
-function generateListeningParts(){
-  const parts = [];
-  const bigDetail = detailPool.slice();
-  for(let p=1;p<=4;p++){
-    const items = [];
-    for(let i=1;i<=10;i++){
-      if(bigDetail.length===0) bigDetail.push(...detailPool);
-      const idx = Math.floor(rand()*bigDetail.length);
-      const detail = bigDetail.splice(idx,1)[0];
-      items.push({ item:i, detail });
-    }
-
-    const turns = [];
-    for(let i=0;i<items.length;i++){
-      const it = items[i];
-      const speaker = (i%2===0) ? 'Lecturer' : 'Listener';
-      const phrase = (i%2===0)
-        ? `Regarding item ${it.item}, the panel concluded that it ${it.detail}.`
-        : `About item ${it.item}, someone observed that it ${it.detail}, which may affect delivery.`;
-      turns.push(`${speaker}: ${phrase}`);
-      if(i%2===0) turns.push(`Listener: I see, that clarifies it.`); else turns.push(`Lecturer: We'll take note and update the schedule.`);
-    }
-    const dialogFull = turns.join(' ');
-
-    const qs = [];
-    for(let i=0;i<items.length;i++){
-      const correctText = items[i].detail;
-      const questionText = `According to the listening, which statement best describes the status or requirement for item ${i+1}?`;
-
-      const pool = new Set();
-      for(let k=0;k<6;k++){
-        if(Math.random() < 0.5) pool.add(sample(distractors));
-        else {
-          const otherCandidate = sample(detailPool);
-          if(otherCandidate !== correctText) pool.add(otherCandidate);
-        }
-      }
-      const poolArr = Array.from(pool).filter(x=>x && x!==correctText);
-      const opts = [];
-      const correctIndex = rndInt(0,3);
-      for(let oi=0; oi<4; oi++){
-        if(oi===correctIndex){ opts.push(correctText); }
-        else {
-          let candidate = null;
-          let attempts = 0;
-          while(attempts < 80){
-            attempts++;
-            if(Math.random() < 0.4) candidate = sample(distractors);
-            else if(Math.random() < 0.75) candidate = sample(templateDistractors);
-            else candidate = sample(detailPool);
-            if(candidate !== correctText && !opts.includes(candidate)) break;
-          }
-          if(!candidate) candidate = 'No evidence given in the audio.';
-          opts.push(candidate);
-        }
-      }
-      qs.push({ id:`L${p}-${i+1}`, part:p, q:questionText, a:opts, correct:correctIndex, audioText: dialogFull, dialogDetail: correctText });
-    }
-
-    parts.push({ part:p, questions:qs, dialog: dialogFull });
-  }
-  return parts;
-}
-
-/* ==========================
-  Generator: Reading parts — ensure each question has distinctly different options
-  ========================== */
-function generateReadingParts(){
-  const counts = [13,13,14];
-  const themes = [
-    "The rise of urban rooftop farming and its challenges.",
-    "Advances in battery chemistry and supply chain issues.",
-    "Historical trade routes and merchant guild influence."
-  ];
-  const parts = [];
-  for(let s=0;s<3;s++){
-    const passage = `${themes[s]} This passage explores multiple perspectives and cites recent case studies and research findings; it emphasises methodological limitations and policy implications, making readers evaluate the evidence critically.`;
-    const qs = [];
-    for(let i=1;i<=counts[s];i++){
-      const q = `Passage ${s+1} — Q${i}: Which statement is most strongly supported by the passage?`;
-      const categories = [
-        `The main benefit described is economic for local communities.`,
-        `A barrier is explicitly the initial costs and financing.`,
-        `The passage focuses on entertainment aspects and tourism.`,
-        `It proposes immediate mass-market adoption without pilots.`,
-        `The passage highlights environmental concerns and sustainability.`,
-        `It emphasises methodological limitations of current studies.`,
-        `Historical context is used to illustrate long-term trends.`,
-        `Policy recommendations are made for phased implementation.`
-      ];
-      const pool = categories.slice();
-      for(let k=pool.length-1;k>0;k--){ const j = Math.floor(rand()*(k+1)); [pool[k],pool[j]]=[pool[j],pool[k]]; }
-      const opts = pool.slice(0,4);
-      const correct = (i % 4);
-      qs.push({ id:`R${s+1}-${i}`, section:s+1, q, a:opts, correct });
-    }
-    parts.push({ section: s+1, passage, questions:qs });
-  }
-  return parts;
-}
-
-/* Writing & Speaking simple generation */
-function generateWritingTasks(){
-  const topics = [
-    { type:'task1', promptBase:'The chart shows greenhouse gas emissions by sector in 2010 and 2020.' },
-    { type:'task2', promptBase:'Some argue that governments should prioritise public transport over road construction.' },
-    { type:'task1', promptBase:'A table compares urban water usage across regions in 2015 and 2020.' },
-    { type:'task2', promptBase:'Technology has improved quality of life but increased inequality.' }
-  ];
-  const t1 = sample(topics.filter(t=>t.type==='task1'));
-  const t2 = sample(topics.filter(t=>t.type==='task2'));
-  return [
-    { id:'W1', prompt:`Task 1: ${t1.promptBase} Summarise the key features and make comparisons where relevant. (150 words)`, type:'task1' },
-    { id:'W2', prompt:`Task 2: ${t2.promptBase} Discuss both views and give your opinion. (250 words)`, type:'task2' }
-  ];
-}
-
-function generateSpeakingTasks(){
-  const p1 = sample(['Introduce yourself and talk about a hobby that helps you relax.', 'Introduce yourself and describe your daily routine.']);
-  const p2 = sample(['Describe a memorable journey and why it mattered to you.', 'Describe an event where you had to make a difficult decision.']);
-  const p3 = sample(['Discuss how technology affects workplaces and future trends.', 'Discuss the challenges of urbanisation and possible solutions.']);
-  return [
-    { id:'S1', part:1, prompt:`Part 1: ${p1}` },
-    { id:'S2', part:2, prompt:`Part 2: ${p2}` },
-    { id:'S3', part:3, prompt:`Part 3: ${p3}` }
-  ];
-}
-
-/* ==========================
-  Application state + init
-  ========================== */
-let listeningParts = generateListeningParts();
-let readingParts = generateReadingParts();
-let writingTasks = generateWritingTasks();
-let speakingTasks = generateSpeakingTasks();
-
-let userListening = listeningParts.map(p => Array(p.questions.length).fill(null));
-let userReading = readingParts.map(p => Array(p.questions.length).fill(null));
-let writingText = {}; writingTasks.forEach(t=> writingText[t.id] = { mode:'text', text:'', blob:null, transcript:'', autoScore:null });
-let speakingData = {}; speakingTasks.forEach(s=> speakingData[s.id] = { mode:'audio', text:'', blob:null, transcript:'', autoScore:null });
-
-let scores = { listening:null, reading:null, writing:null, speaking:null };
-
-/* CURRENT INDEX (show only this part) */
-let currentListeningIndex = 0; // 0..3
-let currentReadingIndex = 0; // 0..2
-let currentWritingIndex = 0; // 0..1
-let currentSpeakingIndex = 0; // 0..2
-
-/* flags: whether joriy part was scored/analyzed (required to show Next) */
-let listeningScored = Array(listeningParts.length).fill(false);
-let readingScored = Array(readingParts.length).fill(false);
-let writingAnalyzed = writingTasks.map(t=> false);
-let speakingAnalyzed = speakingTasks.map(s=> false);
-
-/* Persistence keys */
-const PROFILE_KEY = 'ielts_profile_v3';
-
-/* load profile */
-let profile = JSON.parse(localStorage.getItem(PROFILE_KEY)||'null') || { first:'', last:'', avatar:null };
-function loadSavedProfile(){
-  try{
-    const p = JSON.parse(localStorage.getItem(PROFILE_KEY)||'null');
-    if(p){ profile = p;
-      if(p.avatar){
-        document.querySelector('#sidebarAvatarImg').src = p.avatar;
-        document.querySelector('#sidebarAvatarImg').style.display = 'block';
-        document.querySelector('#headerAvatarImg').src = p.avatar;
-        document.getElementById('headerAvatar').style.display = 'inline-block';
-      }
-      document.getElementById('firstName').value = p.first||'';
-      document.getElementById('lastName').value = p.last||'';
-    }
-  }catch(e){}
-}
-
-/* ==========================
-  TTS playback logic (robust chunking)
-  ========================== */
-let playbackState = { queue: [], index: 0, playing: false, currentUtterance: null, onFinished: null };
-
-function splitIntoChunks(text, maxChars = 180){
-  const sentences = text.replace(/\s+/g,' ').split(/(?<=[.?!])\s+/).map(s=>s.trim()).filter(Boolean);
-  const chunks = [];
-  let cur = '';
-  for(const s of sentences){
-    if((cur + ' ' + s).trim().length <= maxChars || !cur) cur = (cur + ' ' + s).trim();
-    else { chunks.push(cur); cur = s; }
-  }
-  if(cur) chunks.push(cur);
-  return chunks;
-}
-
-function startPlaybackForText(text, rate = 1.0, onDone = ()=>{}){
-  if(!('speechSynthesis' in window)){
-    alert('This browser does not support speechSynthesis (TTS). Playback not available.');
-    onDone();
-    return;
-  }
-  stopPlayback();
-  const chunks = splitIntoChunks(text, 160);
-  playbackState.queue = chunks;
-  playbackState.index = 0;
-  playbackState.playing = true;
-  playbackState.onFinished = onDone;
-  speakNextInQueue(rate);
-}
-
-function speakNextInQueue(rate){
-  if(!playbackState.playing) return;
-  if(playbackState.index >= playbackState.queue.length){
-    playbackState.playing = false;
-    playbackState.currentUtterance = null;
-    if(typeof playbackState.onFinished === 'function') playbackState.onFinished();
-    return;
-  }
-  const txt = playbackState.queue[playbackState.index];
-  const u = new SpeechSynthesisUtterance(txt);
-  u.lang = 'en-US';
-  u.rate = rate;
-  u.onstart = () => { playbackState.currentUtterance = u; };
-  u.onend = () => { playbackState.index++; playbackState.currentUtterance = null; setTimeout(()=>speakNextInQueue(rate), 80); };
-  u.onerror = () => { playbackState.playing = false; playbackState.currentUtterance = null; if(typeof playbackState.onFinished === 'function') playbackState.onFinished(); };
-  speechSynthesis.speak(u);
-}
-
-function stopPlayback(){
-  try{
-    playbackState.playing = false;
-    playbackState.queue = [];
-    playbackState.index = 0;
-    if('speechSynthesis' in window) speechSynthesis.cancel();
-    playbackState.currentUtterance = null;
-    if(typeof playbackState.onFinished === 'function') { playbackState.onFinished(); playbackState.onFinished = null; }
-  }catch(e){ console.warn('stopPlayback error', e); }
-}
-
-/* ==========================
-  Rendering functions
-  ========================== */
-function renderAll(){ renderListening(); renderReading(); renderWriting(); renderSpeaking(); updateFinals(); renderVideos(); updateAllNextBackVisibility(); }
-
-function renderListening(){
-  const cont = document.getElementById('listeningParts'); cont.innerHTML = '';
-  const ctrl = document.getElementById('listeningDialogControls'); ctrl.innerHTML = '';
-  const idx = currentListeningIndex;
-  const part = listeningParts[idx];
-  document.getElementById('listeningNote').innerText = `Part ${part.part} ko'rsatilmoqda (faqat shu part)`;
-
-  // Controls with Play/Stop
-  const controlBlock = document.createElement('div'); controlBlock.className='question';
-  controlBlock.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
-    <div><strong>Audio dialog — Part ${part.part}</strong></div>
-    <div style="display:flex;gap:8px">
-      <button class="small btn.ghost play-anim" id="playPartDialog" aria-pressed="false">▶ Play</button>
-    </div>
-  </div>
-  <div class="muted" style="margin-top:8px">Dialog matni yashirin — audio-ni eshiting va savollarga javob bering.</div>`;
-  ctrl.appendChild(controlBlock);
-
-  const cleaned = (part.dialog || '').replace(/\b(Lecturer|Listener):\s*/gi,'').replace(/\s{2,}/g,' ').trim();
-  const btn = controlBlock.querySelector('#playPartDialog');
-
-  function setToPlay(){ btn.innerText = '▶ Play'; btn.classList.remove('playing'); btn.setAttribute('data-playing','false'); btn.setAttribute('aria-pressed','false'); }
-  function setToStop(){ btn.innerText = '■ Stop'; btn.classList.add('playing'); btn.setAttribute('data-playing','true'); btn.setAttribute('aria-pressed','true'); }
-
-  if(!('speechSynthesis' in window)){ btn.disabled = true; btn.title = 'TTS not supported'; controlBlock.querySelector('.muted').innerText = 'TTS qoʻllab-quvvatlanmaydi.'; }
-  else {
-    btn.disabled = false; setToPlay();
-    btn.addEventListener('click', function onPlayClick(e){
-      const playing = btn.getAttribute('data-playing') === 'true';
-      if(playing){ stopPlayback(); setToPlay(); } else { setToStop(); startPlaybackForText(cleaned, 1.02, ()=>{ setToPlay(); }); }
-    });
-  }
-
-  // Questions
-  const section = document.createElement('div'); section.className='question';
-  section.innerHTML = `<strong>Part ${part.part}</strong> — ${part.questions.length} questions`;
-  part.questions.forEach((q,qidx)=>{
-    const qwrap = document.createElement('div'); qwrap.style.marginTop='8px';
-    const sel = userListening[idx][qidx];
-    const optsHtml = q.a.map((opt,oi)=>`<label class="option ${sel===oi?'selected':''}" data-idx="${idx}" data-q="${qidx}" data-oi="${oi}"><input type="radio" name="L_${idx}_${qidx}" value="${oi}" ${sel===oi?'checked':''}/> <div><strong>${String.fromCharCode(65+oi)}.</strong> ${opt}</div></label>`).join('');
-    qwrap.innerHTML = `<div><strong>${part.part}.${qidx+1}</strong> ${q.q}</div>
-      <div class="options">${optsHtml}</div>
-      <div style="margin-top:6px">Correct: <strong id="li_correct_${idx}_${qidx}">—</strong></div>`;
-    section.appendChild(qwrap);
-
-    qwrap.querySelectorAll('label.option').forEach(lbl=>{
-      lbl.addEventListener('click', ()=>{
-        const pp = parseInt(lbl.dataset.idx), qq = parseInt(lbl.dataset.q), oi = parseInt(lbl.dataset.oi);
-        userListening[pp][qq] = oi;
-        qwrap.querySelectorAll('label.option').forEach(l=>l.classList.remove('selected'));
-        lbl.classList.add('selected'); lbl.querySelector('input[type="radio"]').checked = true;
-        savePartialState(); updateAllNextBackVisibility();
-      });
-    });
-  });
-  cont.appendChild(section);
-}
-
-function renderReading(){
-  const container = document.getElementById('readingParts'); container.innerHTML = '';
-  const sidx = currentReadingIndex;
-  const sec = readingParts[sidx];
-  document.getElementById('readingNote').innerText = `Section ${sec.section} ko'rsatilmoqda (faqat shu section)`;
-
-  const split = document.createElement('div'); split.className='reading-split';
-  const left = document.createElement('div'); left.className='reading-left';
-  left.innerHTML = `<div style="font-weight:700;margin-bottom:8px">Passage — Section ${sec.section}</div><div style="line-height:1.5;color:#222">${sec.passage}</div>`;
-
-  const right = document.createElement('div'); right.className='reading-right'; right.innerHTML = `<div style="font-weight:700;margin-bottom:8px">Questions</div>`;
-
-  sec.questions.forEach((q,qidx)=>{
-    const qwrap = document.createElement('div'); qwrap.style.marginTop='10px';
-    const sel = userReading[sidx][qidx];
-    const optsHtml = q.a.map((opt,oi)=>`<label class="option ${sel===oi?'selected':''}" data-s="${sidx}" data-q="${qidx}" data-oi="${oi}"><input type="radio" name="R_${sidx}_${qidx}" value="${oi}" ${sel===oi?'checked':''}/> <div><strong>${String.fromCharCode(65+oi)}.</strong> ${opt}</div></label>`).join('');
-    qwrap.innerHTML = `<div style="font-weight:600">${sec.section}.${qidx+1} — ${q.q}</div><div class="options" style="margin-top:6px">${optsHtml}</div><div style="margin-top:6px">Correct: <strong id="rd_correct_${sidx}_${qidx}">—</strong></div>`;
-    right.appendChild(qwrap);
-
-    qwrap.querySelectorAll('label.option').forEach(lbl=>{
-      lbl.addEventListener('click', ()=>{
-        const ss = parseInt(lbl.dataset.s), qq = parseInt(lbl.dataset.q), oi = parseInt(lbl.dataset.oi);
-        userReading[ss][qq] = oi;
-        qwrap.querySelectorAll('label.option').forEach(l=>l.classList.remove('selected')); lbl.classList.add('selected'); lbl.querySelector('input[type="radio"]').checked = true;
-        savePartialState(); updateAllNextBackVisibility();
-      });
-    });
-  });
-
-  split.appendChild(left); split.appendChild(right); container.appendChild(split);
-}
-
-function renderWriting(){
-  const cont = document.getElementById('writingTasks'); cont.innerHTML = '';
-  writingTasks.forEach((task, idx)=>{
-    const visible = (idx === currentWritingIndex);
-    const st = writingText[task.id];
-    const el = document.createElement('div'); el.className='question' + (visible ? '' : ' locked');
-    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>${task.id}</strong><div class="muted">${task.prompt}</div></div>
-      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-        <button class="small btn.ghost" data-wrec="${task.id}" ${!visible?'disabled':''}>🎙️ Record</button>
-        <button class="small btn.ghost" data-wstop="${task.id}" disabled>⏹ Stop</button>
-        <button class="small btn.ghost" data-wsave="${task.id}" ${!visible?'disabled':''}>💾 Save transcript</button>
-        <button class="small btn.ghost" data-wtoggle="${task.id}" ${!visible?'disabled':''}>📴 Toggle mode</button>
-        <span id="w_status_${task.id}" class="mini" style="margin-left:8px"></span>
-      </div>
-      <audio id="waudio_${task.id}" controls style="display:none;margin-top:8px"></audio>
-      <textarea id="w_text_${task.id}" style="margin-top:8px">${st.text||st.transcript||''}</textarea>
-      <div class="muted" style="margin-top:6px">Mode: ${st.mode} • Words: ${(st.transcript||st.text||'').split(/\s+/).filter(Boolean).length}</div>`;
-    cont.appendChild(el);
-
-    if(visible){
-      el.querySelector('[data-wrec]').addEventListener('click', ()=> startRecord(task.id,'writing'));
-      el.querySelector('[data-wstop]').addEventListener('click', ()=> stopRecord(task.id,'writing'));
-      el.querySelector('[data-wsave]').addEventListener('click', ()=> { writingText[task.id].text = document.getElementById('w_text_'+task.id).value.trim(); savePartialState(); alert('Saved'); });
-      el.querySelector('[data-wtoggle]').addEventListener('click', ()=> { writingText[task.id].mode = writingText[task.id].mode==='text'?'audio':'text'; savePartialState(); renderWriting(); });
-      const ta = document.getElementById('w_text_'+task.id);
-      ta.addEventListener('input', ()=> { writingText[task.id].text = ta.value; savePartialState(); updateAllNextBackVisibility(); });
-      const audioEl = document.getElementById('waudio_'+task.id);
-      if(st.mode==='audio'){ ta.style.display='none'; if(st.blob){ audioEl.style.display='block'; audioEl.src = URL.createObjectURL(st.blob);} else audioEl.style.display='none'; }
-      else { ta.style.display='block'; audioEl.style.display='none'; }
-    }
-  });
-}
-
-function renderSpeaking(){
-  const cont = document.getElementById('speakingTasks'); cont.innerHTML = '';
-  speakingTasks.forEach((task, idx)=>{
-    const visible = (idx === currentSpeakingIndex);
-    const d = speakingData[task.id];
-    const el = document.createElement('div'); el.className='question' + (visible ? '' : ' locked');
-    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>${task.id}</strong><div class="muted">${task.prompt}</div></div>
-      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-        <button class="small btn.ghost" data-srec="${task.id}" ${!visible?'disabled':''}>🎙️ Record</button>
-        <button class="small btn.ghost" data-sstop="${task.id}" disabled>⏹ Stop</button>
-        <button class="small btn.ghost" data-ssave="${task.id}" ${!visible?'disabled':''}>💾 Save transcript</button>
-        <button class="small btn.ghost" data-stoggle="${task.id}" ${!visible?'disabled':''}>📴 Toggle</button>
-        <span id="s_status_${task.id}" class="mini" style="margin-left:8px"></span>
-      </div>
-      <audio id="saudio_${task.id}" controls style="display:none;margin-top:8px"></audio>
-      <textarea id="s_text_${task.id}" style="margin-top:8px;display:none">${d.text||d.transcript||''}</textarea>
-      <div class="muted" style="margin-top:6px">Mode: ${d.mode} • Words: ${(d.transcript||d.text||'').split(/\s+/).filter(Boolean).length}</div>`;
-    cont.appendChild(el);
-
-    if(visible){
-      el.querySelector('[data-srec]').addEventListener('click', ()=> startRecord(task.id,'speaking'));
-      el.querySelector('[data-sstop]').addEventListener('click', ()=> stopRecord(task.id,'speaking'));
-      el.querySelector('[data-ssave]').addEventListener('click', ()=> { speakingData[task.id].text = document.getElementById('s_text_'+task.id).value.trim(); savePartialState(); alert('Saved'); });
-      el.querySelector('[data-stoggle]').addEventListener('click', ()=> { speakingData[task.id].mode = speakingData[task.id].mode==='audio'?'text':'audio'; savePartialState(); renderSpeaking(); });
-      const audioEl = document.getElementById('saudio_'+task.id);
-      const ta = document.getElementById('s_text_'+task.id);
-      if(d.mode==='audio'){ ta.style.display='none'; if(d.blob){ audioEl.style.display='block'; audioEl.src = URL.createObjectURL(d.blob);} else audioEl.style.display='none'; }
-      else { ta.style.display='block'; audioEl.style.display='none'; ta.addEventListener('input', ()=> { speakingData[task.id].text = ta.value; savePartialState(); updateAllNextBackVisibility(); }); }
-    }
-  });
-}
-
-/* ==========================
-  Recording & SpeechRecognition
-  ========================== */
-let mediaStream = null;
-let recorder = null;
-let chunks = [];
-let recognition = null;
-
-async function ensureMic(){
-  if(mediaStream) return mediaStream;
-  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Mikrofon qoʻllab-quvvatlanmaydi (getUserMedia not available).');
-  mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  return mediaStream;
-}
-
-function getSupportedMimeType(){
-  const candidates = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4','audio/mpeg'];
-  for(const m of candidates){ try{ if(MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) return m; } catch(e){} }
-  return '';
-}
-
-async function startRecord(id, kind){
-  try{
-    const stream = await ensureMic();
-    const liveAudio = document.getElementById((kind==='writing'?'waudio_':'saudio_')+id);
-    if(liveAudio){
-      try{ liveAudio.srcObject = stream; liveAudio.muted = true; liveAudio.play().catch(()=>{}); liveAudio.style.display = 'block'; }catch(e){}
-    }
-    chunks = [];
-    const mimeType = getSupportedMimeType();
-    const opts = mimeType ? { mimeType } : undefined;
-    try{ recorder = new MediaRecorder(stream, opts); } catch(e){ try{ recorder = new MediaRecorder(stream); } catch(err){ throw new Error('MediaRecorder yaratilmadi: ' + err.message); } }
-    recorder.ondataavailable = (ev) => { if(ev.data && ev.data.size>0) chunks.push(ev.data); };
-    recorder.onerror = (ev) => { console.error('MediaRecorder error', ev); alert('Recorder xatosi: '+ (ev.error && ev.error.message ? ev.error.message : ev)); };
-    recorder.onstart = () => {
-      const statusEl = document.getElementById((kind==='writing'?'w_status_':'s_status_')+id);
-      if(statusEl) statusEl.innerText = 'Recording...';
-      document.getElementById('lastSaved').innerText = 'Recording...';
-      const stopBtn = document.querySelector(`[data-wstop="${id}"], [data-sstop="${id}"]`);
-      if(stopBtn) stopBtn.disabled = false;
-    };
-    recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
-      if(kind === 'writing'){
-        writingText[id].blob = blob;
-        writingText[id].transcript = writingText[id].transcript || '';
-        const audioEl = document.getElementById('waudio_'+id);
-        if(audioEl){ audioEl.srcObject = null; audioEl.src = URL.createObjectURL(blob); audioEl.muted = false; audioEl.style.display = 'block'; }
-      } else {
-        speakingData[id].blob = blob;
-        speakingData[id].transcript = speakingData[id].transcript || '';
-        const audioEl = document.getElementById('saudio_'+id);
-        if(audioEl){ audioEl.srcObject = null; audioEl.src = URL.createObjectURL(blob); audioEl.muted = false; audioEl.style.display = 'block'; }
-      }
-      analyzeSegment(kind, id);
-      savePartialState();
-      const statusEl = document.getElementById((kind==='writing'?'w_status_':'s_status_')+id);
-      if(statusEl) statusEl.innerText = 'Saved (processing)';
-      document.getElementById('lastSaved').innerText = 'Saved: ' + new Date().toLocaleString();
-    };
-    recorder.start(250);
-    startRecognition(id, kind);
-  }catch(err){ console.error('startRecord failed:', err); alert('Yozish boshlanmadi: ' + (err.message || err)); }
-}
-
-function stopRecord(id, kind){
-  try{
-    if(recorder && recorder.state === 'recording'){ recorder.stop(); }
-    stopRecognition();
-    const statusEl = document.getElementById((kind==='writing'?'w_status_':'s_status_')+id);
-    if(statusEl) statusEl.innerText = 'Finalizing...';
-    document.getElementById('lastSaved').innerText = 'Processing...';
-  }catch(err){ console.warn('stopRecord error', err); }
-}
-
-function startRecognition(id, kind){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-  if(!SR){ console.warn('SpeechRecognition unsupported'); return; }
-  try{
-    recognition = new SR();
-    recognition.lang = 'en-US';
-    recognition.interimResults = true;
-    recognition.continuous = true;
-    let finalText = '';
-    recognition.onresult = (ev) => {
-      let interim = '';
-      for(let i = ev.resultIndex; i < ev.results.length; i++){
-        const res = ev.results[i];
-        if(res.isFinal) finalText += res[0].transcript + ' ';
-        else interim += res[0].transcript;
-      }
-      const combined = (finalText + interim).trim();
-      if(kind==='writing'){ writingText[id].transcript = combined; const el = document.getElementById('w_text_'+id); if(el) el.value = combined; }
-      else { speakingData[id].transcript = combined; const el = document.getElementById('s_text_'+id); if(el) el.value = combined; }
-      const statusEl = document.getElementById((kind==='writing'?'w_status_':'s_status_')+id);
-      if(statusEl) statusEl.innerText = 'Transcribing...';
-    };
-    recognition.onerror = e => { console.warn('Recognition error', e); };
-    recognition.onend = () => {
-      if(recorder && recorder.state === 'recording'){
-        try{ recognition.start(); }catch(e){ console.warn('recognition restart failed', e); }
-      } else {
-        recognition = null;
-        const statusEl = document.getElementById((kind==='writing'?'w_status_':'s_status_')+id);
-        if(statusEl) statusEl.innerText = 'Transcription finished';
-        document.getElementById('lastSaved').innerText = 'Saved: ' + new Date().toLocaleString();
-      }
-    };
-    recognition.start();
-  }catch(err){ console.warn('startRecognition failed:', err); }
-}
-
-function stopRecognition(){
-  try{ if(recognition){ recognition.onend = null; recognition.stop(); recognition = null; } }catch(e){ console.warn('stopRecognition error', e); }
-}
-
-/* ==========================
-  Analysis heuristics
-  ========================== */
-function analyzeText(text, target){
-  if(!text || !text.trim()) return { score:0, words:0, lex:0, cohesion:0 };
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  const wc = words.length;
-  const lenScore = Math.min(wc/target,1)*9;
-  const alpha = words.map(w=>w.toLowerCase().replace(/[^a-z']/g,'')).filter(Boolean);
-  const uniq = new Set(alpha);
-  const lex = Math.min(uniq.size / Math.max(6, Math.min(120, alpha.length)),1)*9;
-  const connectors = ['however','moreover','therefore','besides','furthermore','in addition','on the other hand','as a result','because','since','although','but','and','so'];
-  let c=0; const tl = text.toLowerCase();
-  connectors.forEach(k=>{ if(tl.includes(k)) c++; });
-  const coh = Math.min(c,5)/5*9;
-  const total = 0.45*lenScore + 0.35*lex + 0.2*coh;
-  return { score: Math.round(total*2)/2, words:wc, lex: Math.round(lex*10)/10, cohesion: Math.round(coh*10)/10 };
-}
-
-function analyzeSegment(kind, id){
-  const obj = kind==='writing' ? writingText[id] : speakingData[id];
-  const text = (obj.mode==='audio' && obj.transcript) ? obj.transcript : (obj.text||'');
-  const target = kind==='writing' ? (id==='W1'?150:250) : 60;
-  const res = analyzeText(text, target);
-  obj.autoScore = res.score;
-  if(kind==='writing'){
-    document.getElementById('writingFeedback').innerHTML = `${id} — Words: ${res.words}, Heuristic score: ${res.score} • LexVar: ${res.lex}, Cohesion: ${res.cohesion}`;
-    writingAnalyzed[ (writingTasks.findIndex(t=>t.id===id)) ] = true;
-    const vals = writingTasks.map(t => writingText[t.id].autoScore || 0);
-    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
-    scores.writing = Math.round(avg*2)/2;
-    document.getElementById('writingScore').innerText = `Ball: ${scores.writing}`;
-  } else {
-    document.getElementById('speakingFeedback').innerHTML = `${id} — Words: ${res.words}, Heuristic score: ${res.score} • LexVar: ${res.lex}, Cohesion: ${res.cohesion}`;
-    speakingAnalyzed[ (speakingTasks.findIndex(t=>t.id===id)) ] = true;
-    const vals = speakingTasks.map(t => speakingData[t.id].autoScore || 0);
-    const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
-    scores.speaking = Math.round(avg*2)/2;
-    document.getElementById('speakingScore').innerText = `Ball: ${scores.speaking}`;
-  }
-  savePartialState(); updateFinals(); updateAllNextBackVisibility();
-}
-
-/* ==========================
-  Scoring Listening/Reading
-  ========================== */
-function percentToBand(percent){ return Math.round((percent*9/100)*2)/2; }
-
-function scoreListeningCurrent(){
-  const idx = currentListeningIndex;
-  const part = listeningParts[idx];
-  let total=0, correct=0;
-  part.questions.forEach((q,qidx)=>{ total++; const sel = userListening[idx][qidx]; if(sel!==null && sel===q.correct) correct++; });
-  const pct = total?Math.round(correct/total*100):0; const band = percentToBand(pct);
-  listeningScored[idx] = true;
-  document.getElementById('listeningScore').innerText = `Part ${part.part}: ${band} (${correct}/${total})`;
-
-  part.questions.forEach((q,qidx)=>{ const el = document.getElementById('li_correct_'+idx+'_'+qidx); if(el){ const ok = userListening[idx][qidx]!==null && userListening[idx][qidx]===q.correct; el.innerText = ok?'✓':'✗'; } });
-
-  try{
-    if(listeningScored.every(Boolean)){
-      let totalAll = 0, correctAll = 0;
-      listeningParts.forEach((partObj,pidx)=>{
-        partObj.questions.forEach((q,qidx)=>{
-          totalAll++;
-          const sel = userListening[pidx][qidx];
-          if(sel!==null && sel===q.correct) correctAll++;
-        });
-      });
-      const pctAll = totalAll ? Math.round(correctAll/totalAll*100) : 0;
-      const bandAll = percentToBand(pctAll);
-      scores.listening = bandAll;
-      if(document.getElementById('f_listening')) document.getElementById('f_listening').innerText = scores.listening;
-    }
-  }catch(e){ console.warn('compute overall listening failed', e); }
-
-  savePartialState(); updateFinals(); updateAllNextBackVisibility();
-}
-
-function scoreReadingCurrent(){
-  const idx = currentReadingIndex;
-  const sec = readingParts[idx];
-  let total=0, correct=0;
-  sec.questions.forEach((q,qidx)=>{ total++; const sel = userReading[idx][qidx]; if(sel!==null && sel===q.correct) correct++; });
-  const pct = total?Math.round(correct/total*100):0; const band = percentToBand(pct);
-  readingScored[idx] = true;
-  document.getElementById('readingScore').innerText = `Section ${sec.section}: ${band} (${correct}/${total})`;
-  sec.questions.forEach((q,qidx)=>{ const el = document.getElementById('rd_correct_'+idx+'_'+qidx); if(el){ const ok = userReading[idx][qidx]!==null && userReading[idx][qidx]===q.correct; el.innerText = ok?'✓':'✗'; } });
-
-  try{
-    if(readingScored.every(Boolean)){
-      let totalAll = 0, correctAll = 0;
-      readingParts.forEach((secObj,sidx)=>{
-        secObj.questions.forEach((q,qidx)=>{
-          totalAll++;
-          const sel = userReading[sidx][qidx];
-          if(sel!==null && sel===q.correct) correctAll++;
-        });
-      });
-      const pctAll = totalAll ? Math.round(correctAll/totalAll*100) : 0;
-      const bandAll = percentToBand(pctAll);
-      scores.reading = bandAll;
-      if(document.getElementById('f_reading')) document.getElementById('f_reading').innerText = scores.reading;
-    }
-  }catch(e){ console.warn('compute overall reading failed', e); }
-
-  savePartialState(); updateFinals(); updateAllNextBackVisibility();
-}
-
-/* ==========================
-  Update finals
-  ========================== */
-function updateFinals(){
-  document.getElementById('f_listening').innerText = scores.listening!==null ? scores.listening : '—';
-  document.getElementById('f_reading').innerText = scores.reading!==null ? scores.reading : '—';
-  document.getElementById('f_writing').innerText = scores.writing!==null ? scores.writing : '—';
-  document.getElementById('f_speaking').innerText = scores.speaking!==null ? scores.speaking : '—';
-  const arr = [scores.listening, scores.reading, scores.writing, scores.speaking];
-  if(arr.every(x=> x!==null)){
-    const overall = Math.round((arr.reduce((a,b)=>a+b,0)/4)*2)/2;
-    document.getElementById('f_overall').innerText = overall;
-    document.getElementById('sideProgress').style.width = Math.round(overall/9*100) + '%';
-    document.getElementById('sideOverall').innerText = overall;
-    document.getElementById('finalTips').innerText = overall>=7 ? 'Ajoyib! 7+' : (overall>=6 ? 'Yaxshi' : 'Ko‘proq mashq kerak');
-  } else document.getElementById('f_overall').innerText = '—';
-  const name = [profile.first||'', profile.last||''].filter(Boolean).join(' ');
-  document.getElementById('finalName').innerText = name || '—';
-  if(profile.avatar){ document.getElementById('finalAvatar').src = profile.avatar; document.getElementById('finalAvatar').style.display='block'; document.querySelector('.header-avatar').style.display='inline-block'; document.querySelector('#headerAvatarImg').src = profile.avatar; document.querySelector('#sidebarAvatarImg').src = profile.avatar; document.querySelector('#sidebarAvatarImg').style.display='block'; }
-}
-
-/* ==========================
-  Next/back visibility & handlers
-  ========================== */
-function isCurrentListeningComplete(){
-  const idx = currentListeningIndex;
-  return userListening[idx] && userListening[idx].every(v=> v!==null && v!==undefined);
-}
-function isCurrentReadingComplete(){
-  const idx = currentReadingIndex;
-  return userReading[idx] && userReading[idx].every(v=> v!==null && v!==undefined);
-}
-function isCurrentWritingComplete(){
-  const idx = currentWritingIndex;
-  const id = writingTasks[idx].id; const obj = writingText[id];
-  const text = (obj.mode==='audio' && obj.transcript) ? obj.transcript : (obj.text||'');
-  return text && text.trim().length>0;
-}
-function isCurrentSpeakingComplete(){
-  const idx = currentSpeakingIndex;
-  const id = speakingTasks[idx].id; const obj = speakingData[id];
-  const text = (obj.mode==='audio' && obj.transcript) ? obj.transcript : (obj.text||'');
-  return text && text.trim().length>0;
-}
-
-function updateAllNextBackVisibility(){
-  // Listening
-  const backL = document.getElementById('backListeningBtn');
-  backL.classList.toggle('hidden', currentListeningIndex <= 0);
-  const nextL = document.getElementById('nextListeningBtn');
-  if(isCurrentListeningComplete() && listeningScored[currentListeningIndex] && currentListeningIndex < listeningParts.length-1){
-    nextL.classList.remove('hidden');
-    nextL.innerText = `Part ${currentListeningIndex+1} baholandi — Part ${currentListeningIndex+2} ga oʻtish →`;
-  } else nextL.classList.add('hidden');
-
-  // Reading
-  const backR = document.getElementById('backReadingBtn');
-  backR.classList.toggle('hidden', currentReadingIndex <= 0);
-  const nextR = document.getElementById('nextReadingBtn');
-  if(isCurrentReadingComplete() && readingScored[currentReadingIndex] && currentReadingIndex < readingParts.length-1){
-    nextR.classList.remove('hidden');
-    nextR.innerText = `Section ${currentReadingIndex+1} baholandi — Section ${currentReadingIndex+2} ga oʻtish →`;
-  } else nextR.classList.add('hidden');
-
-  // Writing
-  const backW = document.getElementById('backWritingBtn');
-  backW.classList.toggle('hidden', currentWritingIndex <= 0);
-  const nextW = document.getElementById('nextWritingBtn');
-  if(isCurrentWritingComplete() && writingAnalyzed[currentWritingIndex] && currentWritingIndex < writingTasks.length-1){
-    nextW.classList.remove('hidden');
-    nextW.innerText = `Task ${currentWritingIndex+1} tayyor — Task ${currentWritingIndex+2} ga oʻtish →`;
-  } else nextW.classList.add('hidden');
-
-  // Speaking
-  const backS = document.getElementById('backSpeakingBtn');
-  backS.classList.toggle('hidden', currentSpeakingIndex <= 0);
-  const nextS = document.getElementById('nextSpeakingBtn');
-  if(isCurrentSpeakingComplete() && speakingAnalyzed[currentSpeakingIndex] && currentSpeakingIndex < speakingTasks.length-1){
-    nextS.classList.remove('hidden');
-    nextS.innerText = `Part ${currentSpeakingIndex+1} tayyor — Part ${currentSpeakingIndex+2} ga oʻtish →`;
-  } else nextS.classList.add('hidden');
-}
-
-/* Next/back click handlers */
-document.getElementById('nextListeningBtn').addEventListener('click', ()=>{ if(currentListeningIndex < listeningParts.length - 1){ currentListeningIndex++; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-document.getElementById('backListeningBtn').addEventListener('click', ()=>{ if(currentListeningIndex > 0){ currentListeningIndex--; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-
-document.getElementById('nextReadingBtn').addEventListener('click', ()=>{ if(currentReadingIndex < readingParts.length - 1){ currentReadingIndex++; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-document.getElementById('backReadingBtn').addEventListener('click', ()=>{ if(currentReadingIndex > 0){ currentReadingIndex--; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-
-document.getElementById('nextWritingBtn').addEventListener('click', ()=>{ if(currentWritingIndex < writingTasks.length - 1){ currentWritingIndex++; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-document.getElementById('backWritingBtn').addEventListener('click', ()=>{ if(currentWritingIndex > 0){ currentWritingIndex--; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-
-document.getElementById('nextSpeakingBtn').addEventListener('click', ()=>{ if(currentSpeakingIndex < speakingTasks.length - 1){ currentSpeakingIndex++; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-document.getElementById('backSpeakingBtn').addEventListener('click', ()=>{ if(currentSpeakingIndex > 0){ currentSpeakingIndex--; savePartialState(); renderAll(); window.scrollTo({top:0,behavior:'smooth'}); } });
-
-/* ==========================
-  Submit / Analyze button wiring
-  ========================== */
-document.getElementById('submitListening').addEventListener('click', ()=> { scoreListeningCurrent(); updateAllNextBackVisibility(); });
-document.getElementById('submitReading').addEventListener('click', ()=> { scoreReadingCurrent(); updateAllNextBackVisibility(); });
-document.getElementById('analyzeWriting').addEventListener('click', ()=> { const t = writingTasks[currentWritingIndex]; analyzeSegment('writing', t.id); updateAllNextBackVisibility(); });
-document.getElementById('analyzeSpeaking').addEventListener('click', ()=> { const t = speakingTasks[currentSpeakingIndex]; analyzeSegment('speaking', t.id); updateAllNextBackVisibility(); });
-
-/* ==========================
-  Persistence: save/load/clear
-  ========================== */
-function savePartialState(){
-  try{
-    const safeWriting = {};
-    for(const k in writingText){
-      try{ safeWriting[k] = Object.assign({}, writingText[k]); if(safeWriting[k] && safeWriting[k].blob) safeWriting[k].blob = null; }catch(e){ safeWriting[k] = { mode: writingText[k].mode || 'text', text: writingText[k].text || '', blob: null, transcript: writingText[k].transcript || '', autoScore: writingText[k].autoScore || null }; }
-    }
-    const safeSpeaking = {};
-    for(const k in speakingData){
-      try{ safeSpeaking[k] = Object.assign({}, speakingData[k]); if(safeSpeaking[k] && safeSpeaking[k].blob) safeSpeaking[k].blob = null; }catch(e){ safeSpeaking[k] = { mode: speakingData[k].mode || 'audio', text: speakingData[k].text || '', blob: null, transcript: speakingData[k].transcript || '', autoScore: speakingData[k].autoScore || null }; }
-    }
-
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    // ----------------- Utilities & State -----------------
+    const el = id => document.getElementById(id);
+    const parts = ['p1','p2','p3'];
     const state = {
-      userListening, userReading, writingText: safeWriting, speakingData: safeSpeaking,
-      currentListeningIndex, currentReadingIndex, currentWritingIndex, currentSpeakingIndex,
-      listeningScored, readingScored, writingAnalyzed, speakingAnalyzed
+      stream: null,
+      recorder: null,
+      chunks: [],
+      files: {p1:null,p2:null,p3:null},
+      currentPart: 'p1',
+      audioCtx: null,
+      analyser: null,
+      dataArray: null,
+      recognition: null,
+      transcripts: {p1:'', p2:'', p3:''},
+      scores: {p1:null,p2:null,p3:null},
+      session: {}
     };
-    localStorage.setItem('ielts_full_state_v4', JSON.stringify(state));
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    document.getElementById('savedIndicator').innerText = 'Saved';
-    document.getElementById('lastSaved').innerText = 'Saved: ' + new Date().toLocaleString();
-  }catch(e){ console.warn('save fail', e); }
-}
 
-function loadPartialState(){
-  try{
-    const raw = localStorage.getItem('ielts_full_state_v4');
-    if(!raw) return;
-    const st = JSON.parse(raw);
-    if(st.userListening) userListening = st.userListening;
-    if(st.userReading) userReading = st.userReading;
-    if(st.writingText) writingText = st.writingText;
-    if(st.speakingData) speakingData = st.speakingData;
-    currentListeningIndex = st.currentListeningIndex || 0;
-    currentReadingIndex = st.currentReadingIndex || 0;
-    currentWritingIndex = st.currentWritingIndex || 0;
-    currentSpeakingIndex = st.currentSpeakingIndex || 0;
-    listeningScored = st.listeningScored || listeningScored;
-    readingScored = st.readingScored || readingScored;
-    writingAnalyzed = st.writingAnalyzed || writingAnalyzed;
-    speakingAnalyzed = st.speakingAnalyzed || speakingAnalyzed;
-    renderAll();
-    document.getElementById('savedIndicator').innerText = 'Loaded';
-  }catch(e){ alert('Load failed: '+e); }
-}
+    const pad = n => String(n).padStart(2,'0');
+    const fmt = s => `${pad(Math.floor(s/60))}:${pad(Math.floor(s%60))}`;
 
-function clearAll(){
-  if(!confirm('Hamma saqlangan maʼlumotni oʻchirib tashlamoqchimisiz?')) return;
-  localStorage.removeItem('ielts_full_state_v4');
-  localStorage.removeItem(PROFILE_KEY);
-  SEED = rngSeed();
-  listeningParts = generateListeningParts();
-  readingParts = generateReadingParts();
-  writingTasks = generateWritingTasks();
-  speakingTasks = generateSpeakingTasks();
-  userListening = listeningParts.map(p => Array(p.questions.length).fill(null));
-  userReading = readingParts.map(p => Array(p.questions.length).fill(null));
-  writingText = {}; writingTasks.forEach(t=> writingText[t.id] = { mode:'text', text:'', blob:null, transcript:'', autoScore:null });
-  speakingData = {}; speakingTasks.forEach(s=> speakingData[s.id] = { mode:'audio', text:'', blob:null, transcript:'', autoScore:null });
-  currentListeningIndex = 0; currentReadingIndex = 0; currentWritingIndex = 0; currentSpeakingIndex = 0;
-  listeningScored = Array(listeningParts.length).fill(false);
-  readingScored = Array(readingParts.length).fill(false);
-  writingAnalyzed = writingTasks.map(t=> false);
-  speakingAnalyzed = speakingTasks.map(s=> false);
-  renderAll();
-  alert('Cleared & regenerated fresh questions.');
-}
+    // ----------------- Mic & Visualiser -----------------
+    async function setupMic(){
+      try{
+        const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+        state.stream = stream;
+        el('micStatus').textContent = 'Mic: OK';
+        state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const src = state.audioCtx.createMediaStreamSource(stream);
+        state.analyser = state.audioCtx.createAnalyser();
+        state.analyser.fftSize = 512;
+        src.connect(state.analyser);
+        state.dataArray = new Uint8Array(state.analyser.frequencyBinCount);
+        drawLive();
+        initSpeechRecognition(); // try to init SpeechRecognition
+      }catch(e){
+        console.error(e);
+        alert('Mikrofon ruxsat etilmadi. Brauzer sozlamalarini tekshiring.');
+        el('micStatus').textContent = 'Mic: blocked';
+      }
+    }
 
-/* ==========================
-  Export CSV/PNG and video grid
-  ========================== */
-function exportCsv(){
-  const name = [profile.first||'',profile.last||''].filter(Boolean).join(' ');
-  const rows = [['Name', name], ['Date', new Date().toLocaleString()], ['Listening', scores.listening||''], ['Reading', scores.reading||''], ['Writing', scores.writing||''], ['Speaking', scores.speaking||''], ['Overall', document.getElementById('f_overall').innerText||'']];
-  rows.push([]); rows.push(['Listening details']);
-  listeningParts.forEach((part,pidx)=> part.questions.forEach((q,qidx)=> { const sel = (userListening[pidx]||[])[qidx]; rows.push([`L${pidx+1}.${qidx+1}`, q.q, q.a[sel]||'', `Correct: ${q.a[q.correct]}`]); }));
-  rows.push([]); rows.push(['Reading details']);
-  readingParts.forEach((sec,sidx)=> sec.questions.forEach((q,qidx)=> { const sel = (userReading[sidx]||[])[qidx]; rows.push([`R${sidx+1}.${qidx+1}`, q.q, q.a[sel]||'', `Correct: ${q.a[q.correct]}`]); }));
-  rows.push([]); rows.push(['Writing transcripts']);
-  writingTasks.forEach(t=> rows.push([t.id, writingText[t.id].transcript || writingText[t.id].text || '']));
-  rows.push([]); rows.push(['Speaking transcripts']);
-  speakingTasks.forEach(s=> rows.push([s.id, speakingData[s.id].transcript || speakingData[s.id].text || '']));
-  const csv = rows.map(r=> r.map(c=> `"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href = url; a.download = `ielts_result_${(profile.first||'candidate')}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-}
-
-/* TRF PNG simplified export (keeps avatar if present) */
-function roundRect(ctx, x, y, w, h, r) {
-  if (w < 2 * r) r = w / 2;
-  if (h < 2 * r) r = h / 2;
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-function exportPng(){
-  const canvas = document.getElementById('trfCanvas');
-  canvas.width = 1000; canvas.height = 1400;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = '#000'; ctx.font = '700 42px "Times New Roman", Georgia, serif'; ctx.fillText('IELTS', 36, 80);
-  ctx.font = '800 18px "Arial", sans-serif'; ctx.fillText('Test Report Form', 36, 110);
-
-  // photo area top-right
-  const photoX = canvas.width - 210;
-  const photoY = 36;
-  const photoW = 170;
-  const photoH = 220;
-  ctx.strokeStyle = '#d6d6d6';
-  ctx.lineWidth = 2;
-  roundRect(ctx, photoX, photoY, photoW, photoH, 8);
-  ctx.stroke();
-
-  // Candidate details
-  ctx.font = '700 16px "Arial"';
-  ctx.fillStyle = '#000';
-  ctx.fillText('Candidate Details', 36, 160);
-
-  ctx.font = '14px "Arial"';
-  const name = (profile && (profile.first || profile.last)) ? `${profile.first||''} ${profile.last||''}`.trim() : '—';
-  ctx.fillText('Name: ' + name, 36, 190);
-  ctx.fillText('Candidate no: —', 36, 215);
-  ctx.fillText('Test date: ' + (new Date()).toLocaleDateString(), 36, 240);
-
-  // scores box
-  const boxX = 36;
-  let boxY = 280;
-  const boxW = canvas.width - 72;
-  const boxH = 480;
-  roundRect(ctx, boxX, boxY, boxW, boxH, 10);
-  ctx.strokeStyle = '#e0e0e0';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  ctx.font = '700 18px "Arial"';
-  ctx.fillStyle = '#111';
-  ctx.fillText('Test Components', boxX + 18, boxY + 36);
-
-  // component rows
-  const leftColX = boxX + 18;
-  let rowY = boxY + 66;
-  const labelW = 260;
-  const scoreW = 120;
-  const rowH = 68;
-  const gap = 16;
-
-  const components = [
-    { label:'Listening', id:'f_listening' },
-    { label:'Reading', id:'f_reading' },
-    { label:'Writing', id:'f_writing' },
-    { label:'Speaking', id:'f_speaking' }
-  ];
-
-  ctx.font = '600 16px "Arial"';
-  components.forEach((c, i) => {
-    roundRect(ctx, leftColX, rowY, labelW, rowH-6, 8);
-    ctx.fillStyle = '#fafafa';
-    ctx.fill();
-    ctx.strokeStyle = '#eee';
-    ctx.stroke();
-
-    ctx.fillStyle = '#222';
-    ctx.font = '600 16px "Arial"';
-    ctx.fillText(c.label, leftColX + 14, rowY + 36);
-
-    const scoreX = leftColX + labelW + 18;
-    roundRect(ctx, scoreX, rowY, scoreW, rowH-6, 8);
-    ctx.fillStyle = '#fff';
-    ctx.fill();
-    ctx.strokeStyle = '#ddd';
-    ctx.stroke();
-
-    const val = document.getElementById(c.id) ? document.getElementById(c.id).innerText : '—';
-    ctx.fillStyle = '#000';
-    ctx.font = '800 28px "Georgia", serif';
-    ctx.fillText(val, scoreX + 18, rowY + 42);
-
-    rowY += rowH + gap;
-  });
-
-  // Overall box
-  const overallX = leftColX;
-  const overallY = rowY + 6;
-  const overallW = 420;
-  const overallH = 120;
-  roundRect(ctx, overallX, overallY, overallW, overallH, 12);
-  ctx.fillStyle = '#fff';
-  ctx.fill();
-  ctx.strokeStyle = '#e6e6e6';
-  ctx.stroke();
-
-  ctx.font = '600 14px "Arial"';
-  ctx.fillStyle = '#666';
-  ctx.fillText('Overall Band Score', overallX + 18, overallY + 32);
-
-  const overallVal = document.getElementById('f_overall') ? document.getElementById('f_overall').innerText : '—';
-  ctx.font = '900 64px "Georgia", serif';
-  ctx.fillStyle = '#111';
-  ctx.fillText(overallVal, overallX + 18, overallY + 88);
-
-  // signature area
-  const sigW = 300, sigH = 80;
-  const sigX = canvas.width - sigW - 40;
-  const sigY = canvas.height - sigH - 70;
-  ctx.font = '14px "Arial"';
-  ctx.fillStyle = '#666';
-  ctx.fillText('Examiner signature', sigX, sigY - 8);
-  ctx.strokeStyle = '#ddd';
-  roundRect(ctx, sigX, sigY, sigW, sigH, 8);
-  ctx.stroke();
-
-  const drawFinalize = () => {
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    const safeName = (profile && (profile.first||profile.last)) ? (profile.first||'') + '_' + (profile.last||'') : 'candidate';
-    a.download = `TRF_${safeName.replace(/\s+/g,'_')}.png`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
-
-  if(profile && profile.avatar){
-    const img = new Image();
-    img.onload = function(){
-      const sw = img.width, sh = img.height;
-      const scale = Math.max(photoW / sw, photoH / sh);
-      const dw = sw * scale, dh = sh * scale;
-      const dx = photoX + (photoW - dw) / 2;
-      const dy = photoY + (photoH - dh) / 2;
-      ctx.save(); roundRect(ctx, photoX, photoY, photoW, photoH, 8); ctx.clip();
-      ctx.drawImage(img, 0, 0, sw, sh, dx, dy, dw, dh);
-      ctx.restore();
-      ctx.strokeStyle = '#ddd';
+    let liveAnim = null;
+    function drawLive(){
+      const c = el('liveWave');
+      const ctx = c.getContext('2d');
+      const w = c.width = c.clientWidth;
+      const h = c.height = c.clientHeight;
+      if(!state.analyser){ ctx.clearRect(0,0,w,h); return; }
+      state.analyser.getByteTimeDomainData(state.dataArray);
+      ctx.clearRect(0,0,w,h);
       ctx.lineWidth = 2;
-      roundRect(ctx, photoX, photoY, photoW, photoH, 8);
+      ctx.strokeStyle = getComputedStyle(document.body).color;
+      ctx.beginPath();
+      const slice = w / state.dataArray.length;
+      for(let i=0;i<state.dataArray.length;i++){
+        const x = i*slice;
+        const v = (state.dataArray[i]-128)/128;
+        const y = h/2 + v*(h/2.2);
+        i===0? ctx.moveTo(x,y): ctx.lineTo(x,y);
+      }
       ctx.stroke();
-      drawFinalize();
-    };
-    img.onerror = function(){ drawFinalize(); };
-    img.src = profile.avatar;
-  } else { drawFinalize(); }
-}
+      liveAnim = requestAnimationFrame(drawLive);
+    }
 
-/* Video grid */
-const VIDEO_IDS = ["2F3kG3tY9L0","v2w29j0Kq6Q","o1R2x2b0T40","uJ8QWdf2w6s","z4H2eYd5mN0","gYkW4fM0J8c","hQ2k7uP5R0s","nQ4H3tC9a1A","pQ7vWz2Kp6M","r2T1mN9b8Z0","s7Q3uD2k1F0","t1W4vX9q5Y0","m3N7vZ2p6L1","q8R2wC0n5B2","k5V7sX3l9O1","a1B2c3D4e5F","b2C3d4E5f6G","c3D4e5F6g7H","d4E5f6G7h8I","e5F6g7H8i9J"];
-function renderVideos(){ const grid = document.getElementById('videoGrid'); if(!grid) return; grid.innerHTML=''; VIDEO_IDS.forEach(id=>{ const tile=document.createElement('div'); tile.className='video-tile'; tile.innerHTML=`<img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" style="width:120px;height:68px;object-fit:cover;border-radius:6px"/> <div style="flex:1"><div style="font-weight:700">IELTS video ${id}</div><div class="muted">Click to open</div></div>`; tile.addEventListener('click', ()=> window.open(`https://www.youtube.com/watch?v=${id}`,'_blank')); grid.appendChild(tile); }); }
+    // ----------------- Recorder & SpeechRecognition -----------------
+    function createRecorder(){
+      if(!state.stream) throw new Error('No stream');
+      const opts = { mimeType: 'audio/webm' };
+      const rec = new MediaRecorder(state.stream, MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? {mimeType:'audio/webm;codecs=opus'} : opts);
+      rec.ondataavailable = e => { if(e.data && e.data.size>0) state.chunks.push(e.data); };
+      return rec;
+    }
 
-/* ==========================
-  UI wiring (tabs, profile, remote load, export, reset)
-  ========================== */
-document.getElementById('tabs').addEventListener('click', e=> {
-  const t = e.target.closest('.tab'); if(!t) return;
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
-  const name = t.dataset.tab;
-  document.querySelectorAll('section.card').forEach(s=> s.style.display = (s.id===name ? 'block' : 'none'));
-  renderAll();
-});
-document.getElementById('goListening').addEventListener('click', ()=> document.querySelector('.tab[data-tab="listening"]').click());
-document.getElementById('goReading').addEventListener('click', ()=> document.querySelector('.tab[data-tab="reading"]').click());
-document.getElementById('goFinal').addEventListener('click', ()=> document.querySelector('.tab[data-tab="final"]').click());
+    function startRecording(part){
+      if(!state.stream){ alert('Avval Mic test bosing'); return false; }
+      if(state.recorder && state.recorder.state === 'recording'){ console.warn('Already recording'); return false; }
+      state.chunks = [];
+      state.recorder = createRecorder();
+      state.recorder.start();
+      el('recStatus').textContent = 'Rec: recording';
+      el(part + 'Status')?.remove?.(); // ignore if not present
+      // start SpeechRecognition if available
+      if(state.recognition){ state.recognition.lang = 'en-US'; try{ state.recognition.start(); }catch(e){} }
+      return true;
+    }
 
-document.getElementById('saveBtn').addEventListener('click', savePartialState);
-document.getElementById('loadBtn').addEventListener('click', loadPartialState);
-document.getElementById('clearBtn').addEventListener('click', clearAll);
-
-/* Save profile button */
-document.getElementById('saveProfile').addEventListener('click', ()=> {
-  const f = document.getElementById('firstName').value.trim(); const l = document.getElementById('lastName').value.trim();
-  const file = document.getElementById('avatarFile').files[0];
-  if(file){
-    const r = new FileReader(); r.onload = e => { profile = { first:f, last:l, avatar: e.target.result }; localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); updateFinals(); alert('Profile saved'); }; r.readAsDataURL(file);
-  } else { profile = { first:f, last:l, avatar: profile.avatar||null }; localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); updateFinals(); alert('Profile saved'); }
-});
-
-/* Remote load listening */
-document.getElementById('loadListeningRemote').addEventListener('click', async ()=>{
-  const url = document.getElementById('listeningUrl').value.trim();
-  if(!url){ alert('URL kiriting'); return; }
-  try{
-    const res = await fetch(url); if(!res.ok) throw new Error('Fetch failed: '+res.status);
-    const json = await res.json();
-    if(Array.isArray(json) && json.length>0){
-      listeningParts = json.map((p, idx) => {
-        if(p && p.dialog && Array.isArray(p.questions) && p.questions.length>0) return p;
-        return generateListeningParts()[idx] || generateListeningParts()[0];
+    function stopRecording(part){
+      return new Promise(resolve=>{
+        if(!state.recorder) return resolve(null);
+        const rec = state.recorder;
+        if(rec.state !== 'recording') return resolve(null);
+        rec.onstop = async () => {
+          el('recStatus').textContent = 'Rec: saved';
+          const blob = new Blob(state.chunks, { type: 'audio/webm' });
+          state.files[part] = blob;
+          const url = URL.createObjectURL(blob);
+          const audioEl = el(part + 'Audio'); if(audioEl){ audioEl.src = url; audioEl.load(); }
+          const dl = el(part + 'Dl'); if(dl){ dl.href = url; dl.download = `${new Date().toISOString().slice(0,19).replace(/[:T]/g,'_')}_${part}.webm`; }
+          // stop speech recognition
+          if(state.recognition){ try{ state.recognition.stop(); }catch(e){} }
+          // analyze audio now
+          try{ await analyzeBlobAndScore(blob, part); }catch(e){ console.error('Analyze error', e); }
+          state.recorder = null;
+          resolve(blob);
+        };
+        try{ rec.stop(); }catch(e){ console.error(e); resolve(null); }
       });
-      userListening = listeningParts.map(p => Array(p.questions.length).fill(null)); currentListeningIndex = 0; listeningScored = Array(listeningParts.length).fill(false); renderListening(); alert('Remote listening questions loaded');
     }
-    else alert('Invalid JSON structure (expected array of parts)');
-  }catch(e){ alert('Remote load failed: '+e); }
-});
 
-/* Export & Reset buttons */
-document.getElementById('exportCsv').addEventListener('click', exportCsv);
-document.getElementById('exportPng').addEventListener('click', exportPng);
-
-/* avatar immediate preview on file select and Vibор fayl button */
-document.getElementById('avatarFile').addEventListener('change', function(){
-  const f = this.files && this.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const data = e.target.result;
-    profile.avatar = data;
-    document.getElementById('sidebarAvatarImg').src = data; document.getElementById('sidebarAvatarImg').style.display = 'block';
-    document.getElementById('headerAvatarImg').src = data; document.getElementById('headerAvatar').style.display = 'inline-block';
-    savePartialState();
-    updateFinals();
-  };
-  reader.readAsDataURL(f);
-});
-
-/* initial load + render */
-loadSavedProfile();
-(function loadStateIfExists(){
-  try{
-    const raw = localStorage.getItem('ielts_full_state_v4');
-    if(raw){
-      const st = JSON.parse(raw);
-      if(st.userListening) userListening = st.userListening;
-      if(st.userReading) userReading = st.userReading;
-      if(st.writingText) writingText = st.writingText;
-      if(st.speakingData) speakingData = st.speakingData;
-      currentListeningIndex = st.currentListeningIndex || 0;
-      currentReadingIndex = st.currentReadingIndex || 0;
-      currentWritingIndex = st.currentWritingIndex || 0;
-      currentSpeakingIndex = st.currentSpeakingIndex || 0;
-      listeningScored = st.listeningScored || listeningScored;
-      readingScored = st.readingScored || readingScored;
-      writingAnalyzed = st.writingAnalyzed || writingAnalyzed;
-      speakingAnalyzed = st.speakingAnalyzed || speakingAnalyzed;
+    // ----------------- SpeechRecognition (optional) -----------------
+    function initSpeechRecognition(){
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SpeechRecognition){ el('srStatus').textContent = 'unsupported'; return; }
+      el('srStatus').textContent = 'available';
+      const recog = new SpeechRecognition();
+      recog.interimResults = true;
+      recog.continuous = true;
+      recog.lang = 'en-US';
+      recog.onresult = (ev) => {
+        let interim = '';
+        let final = '';
+        for(let i=0;i<ev.results.length;i++){
+          const res = ev.results[i];
+          if(res.isFinal) final += res[0].transcript + ' ';
+          else interim += res[0].transcript + ' ';
+        }
+        // put interim in current part transcript (append)
+        const p = state.currentPart || 'p1';
+        // accumulate only finals to avoid duplication
+        if(final.trim()) state.transcripts[p] = (state.transcripts[p] + ' ' + final).trim();
+        // we won't store interim persistently
+      };
+      recog.onerror = (e)=>{ console.warn('SR error', e); };
+      state.recognition = recog;
     }
-  }catch(e){}
-})();
-renderAll();
 
-/* Ensure pay link also works if JS click wanted (not required because it's an anchor) */
-document.getElementById('payLink').addEventListener('click', function(e){
-  // Default anchor will open target=_blank; nothing else needed.
-  // This handler is here so that if future logic required, we can intercept.
-});
+    // ----------------- Audio analysis helpers -----------------
+    async function decodeAudio(blob){
+      const arrayBuf = await blob.arrayBuffer();
+      const aCtx = state.audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      return await aCtx.decodeAudioData(arrayBuf);
+    }
 
-console.info('Background IELTS animated text added; design updated (white / blue / green), options diversified, animations added. Pay image next to Save/Load/Clear opens https://checkout.paycom.uz');
-</script>
+    function rms(buf){
+      let sum=0; for(let i=0;i<buf.length;i++){ const v=buf[i]; sum += v*v; } return Math.sqrt(sum / buf.length);
+    }
+
+    function detectSilences(samples, sr, thresh = 0.02, minSilenceLen = 0.5){
+      // returns totalSilenceSec and number of long pauses
+      const windowMs = 50;
+      const winSize = Math.floor(sr * windowMs/1000);
+      let totalSilence = 0;
+      let longPauses = 0;
+      let curSil = 0;
+      for(let i=0;i<samples.length;i+=winSize){
+        let max = 0;
+        for(let j=i;j<Math.min(i+winSize, samples.length); j++){ max = Math.max(max, Math.abs(samples[j])); }
+        if(max < thresh){ curSil += winSize/sr; } else { if(curSil >= minSilenceLen) longPauses++; totalSilence += curSil; curSil = 0; }
+      }
+      if(curSil > 0){ if(curSil >= minSilenceLen) longPauses++; totalSilence += curSil; }
+      return { totalSilence, longPauses };
+    }
+
+    // simple voicedness: autocorrelation on frames -> fraction of voiced frames
+    function voicednessRatio(samples, sr){
+      const frameSize = 2048;
+      const hop = 1024;
+      let voicedFrames = 0, total = 0;
+      for(let i=0;i+frameSize < samples.length;i+=hop){
+        total++;
+        const frame = samples.subarray(i, i+frameSize);
+        // remove DC
+        let m=0; for(let k=0;k<frame.length;k++) m+=frame[k]; m/=frame.length;
+        for(let k=0;k<frame.length;k++) frame[k]-=m;
+        // autocorrelation
+        let maxCorr = 0;
+        const minF = 60, maxF = 400;
+        const minLag = Math.floor(sr / maxF);
+        const maxLag = Math.floor(sr / minF);
+        let norm = 0;
+        for(let lag=minLag; lag<=maxLag; lag++){
+          let s=0;
+          for(let j=0;j<frame.length-lag;j++) s += frame[j]*frame[j+lag];
+          if(s > maxCorr) maxCorr = s;
+        }
+        // energy
+        for(let j=0;j<frame.length;j++) norm += frame[j]*frame[j];
+        const ratio = norm > 0 ? maxCorr / norm : 0;
+        if(ratio > 0.25) voicedFrames++;
+      }
+      return total ? (voicedFrames / total) : 0;
+    }
+
+    // tokenize transcript
+    function tokenize(text){
+      if(!text) return [];
+      return text.toLowerCase().replace(/[^\w'\s]/g,' ').split(/\s+/).filter(Boolean);
+    }
+
+    // compute lexical diversity (TTR)
+    function lexicalMetrics(words){
+      if(words.length===0) return {TTR:0, vocab:0};
+      const set = new Set(words);
+      return { TTR: set.size / words.length, vocab: set.size };
+    }
+
+    // grammar proxy: count filler words
+    const fillerList = ['um','uh','like','you know','i mean','so','actually','basically','right','well'];
+    function countFillers(words){
+      let cnt=0;
+      for(let i=0;i<words.length;i++){
+        if(fillerList.includes(words[i])) cnt++;
+      }
+      return cnt;
+    }
+
+    // ----------------- Scoring model -----------------
+    // maps 0..1 to 0..9
+    const to9 = v => Math.max(0, Math.min(9, +(v*9).toFixed(1)));
+
+    async function analyzeBlobAndScore(blob, part){
+      const audioBuf = await decodeAudio(blob);
+      const data = audioBuf.getChannelData(0);
+      const sr = audioBuf.sampleRate;
+      const duration = audioBuf.duration;
+      // RMS
+      const energy = rms(data);
+      // silence metrics
+      const sil = detectSilences(data, sr, 0.02, 0.6);
+      const silenceRatio = duration > 0 ? sil.totalSilence / duration : 0;
+      // voicedness
+      let voicedRatio = 0;
+      try{ voicedRatio = voicednessRatio(data, sr); }catch(e){ console.warn('voicedness failed', e); }
+      // transcript metrics (if available)
+      const transcript = (state.transcripts[part] || '').trim();
+      const words = tokenize(transcript);
+      const wordCount = words.length;
+      const speechRate = duration>0 ? (wordCount / duration) : 0; // words/sec
+      const lex = lexicalMetrics(words);
+      const fillerCount = countFillers(words);
+      const sentenceCount = Math.max(1, (transcript.match(/[.!?]/g)||[]).length || 1);
+      const avgWordsPerSentence = wordCount / sentenceCount;
+
+      // --- Fluency score (proxy)
+      // prefer: low silenceRatio, fewer long pauses, reasonable speechRate (~2.5-4.5 w/s)
+      const silenceFactor = Math.max(0, 1 - silenceRatio*1.6); // reduce heavily for silence
+      const pausePenalty = Math.max(0, 1 - Math.min(5, sil.longPauses)/5); // more long pauses -> penalty
+      // normalize speech rate: ideal 2.5..4.5 => map to 0..1
+      const rateNorm = Math.max(0, Math.min(1, (speechRate - 1.5) / 3.0));
+      const fluencyScore = to9( (silenceFactor*0.6 + pausePenalty*0.2 + rateNorm*0.2) );
+
+      // --- Lexical score (proxy)
+      // TTR and vocab size matter
+      const ttr = lex.TTR; // 0..1
+      const vocab = lex.vocab;
+      const vocabNorm = Math.min(1, Math.log10(Math.max(1,vocab)) / 1.6); // log scale
+      const lexicalScore = to9( Math.max(0, Math.min(1, ttr*0.6 + vocabNorm*0.4)) );
+
+      // --- Grammar score (proxy)
+      // use average words per sentence (too short sentences -> lower), and filler penalty
+      const awps = avgWordsPerSentence; // ideal ~8-18
+      const awpsScore = Math.max(0, Math.min(1, (awps/12))); // 12 ideal
+      const fillerPenalty = Math.max(0, 1 - Math.min(wordCount, fillerCount) / Math.max(1, wordCount) * 2);
+      const grammarScore = to9( Math.max(0, awpsScore*0.8 + fillerPenalty*0.2) );
+
+      // --- Pronunciation score (proxy)
+      // voicedRatio and energy stability as proxy
+      const energyNorm = Math.min(1, energy / 0.1); // rough
+      const pronScore = to9( Math.max(0, voicedRatio*0.7 + energyNorm*0.3) );
+
+      // Combine (equal weighting)
+      const final = +(( (fluencyScore + lexicalScore + grammarScore + pronScore) / 4 ).toFixed(1));
+
+      // Save and update UI
+      state.scores[part] = {
+        fluency: fluencyScore,
+        lexical: lexicalScore,
+        grammar: grammarScore,
+        pronunciation: pronScore,
+        final
+      };
+
+      // update small crit text
+      const critEl = el(part + 'Crit');
+      if(critEl){
+        critEl.innerHTML = `
+          <strong>Transcript:</strong> ${transcript ? ('<em>'+transcript+'</em>') : '<em>(no transcript)</em>'}
+          <br>
+          <span class="small">dur: ${duration.toFixed(1)}s · words: ${wordCount} · silence: ${(silenceRatio*100).toFixed(1)}% · long pauses: ${sil.longPauses} · voiced: ${(voicedRatio*100).toFixed(0)}%</span>
+        `;
+      }
+
+      // update part score pill and results panel values
+      el(part + 'Score').textContent = final.toFixed(1);
+      el('r_' + part).textContent = final.toFixed(1);
+      computeOverallAndDisplay();
+    }
+
+    function computeOverallAndDisplay(){
+      const vals = [];
+      ['p1','p2','p3'].forEach(p=>{
+        const s = state.scores[p];
+        if(s && typeof s.final === 'number') vals.push(s.final);
+      });
+      const overall = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : null;
+      el('avgOverall').textContent = overall ? overall.toFixed(1) : '—';
+      if(overall) state.session.overall = overall;
+    }
+
+    // ----------------- Hook buttons & flow -----------------
+    document.getElementById('btnSetup').addEventListener('click', setupMic);
+
+    // Start / Stop global: Start begins recording for currentPart and starts session timer
+    let globalInterval=null, globalStart=0;
+    function startGlobal(){
+      globalStart = Date.now();
+      state.session.startedAt = new Date().toISOString();
+      clearInterval(globalInterval);
+      globalInterval = setInterval(()=> {
+        const s = Math.floor((Date.now() - globalStart)/1000);
+        el('globalTimer').textContent = fmt(s);
+      },1000);
+    }
+    function stopGlobal(){
+      clearInterval(globalInterval);
+      state.session.finishedAt = new Date().toISOString();
+    }
+
+    el('btnStart').addEventListener('click', ()=>{
+      if(!state.stream){
+        if(!confirm('Mikrofon ruxsatisiz davom etilsinmi? (avval Mic test bosing)')) return;
+      }
+      // start session timer and start recording for currentPart
+      startGlobal();
+      el('phasePill').textContent = 'Recording';
+      el('btnStart').disabled = true;
+      el('btnStop').disabled = false;
+      state.currentPart = state.currentPart || 'p1';
+      startRecording(state.currentPart);
+    });
+
+    el('btnStop').addEventListener('click', async ()=>{
+      // stop recording if active
+      if(state.recorder && state.recorder.state === 'recording'){
+        const part = state.currentPart || 'p1';
+        await stopRecording(part);
+      }
+      stopGlobal();
+      el('phasePill').textContent = 'Stopped';
+      el('btnStart').disabled = false;
+      el('btnStop').disabled = true;
+      alert('Yozuv to‘xtatildi va baholash bajarildi (agar audio bo‘lsa).');
+    });
+
+    // per-part toggle
+    document.querySelectorAll('[data-rec]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const part = btn.getAttribute('data-rec');
+        // if recording -> stop and analyze
+        if(state.recorder && state.recorder.state === 'recording'){
+          if(state.currentPart === part){
+            await stopRecording(part);
+            return;
+          } else {
+            // stop previous, then start new
+            await stopRecording(state.currentPart);
+            state.currentPart = part;
+            startRecording(part);
+            return;
+          }
+        } else {
+          // not recording -> start for this part
+          state.currentPart = part;
+          startRecording(part);
+          // ensure global timer running if not
+          if(!globalInterval){ startGlobal(); el('btnStart').disabled = true; el('btnStop').disabled = false; }
+        }
+      });
+    });
+
+    el('btnReset').addEventListener('click', ()=>{
+      if(!confirm('Butun sessiyani reset qilinsinmi?')) return;
+      if(state.recorder && state.recorder.state === 'recording'){ try{ state.recorder.stop(); }catch(e){} }
+      stopGlobal();
+      parts.forEach(p=>{
+        state.files[p]=null;
+        state.transcripts[p]='';
+        state.scores[p]=null;
+        const a = el(p+'Audio'); if(a) a.src='';
+        el(p+'Score').textContent = '—';
+        el('r_'+p).textContent = '—';
+        const crit = el(p+'Crit'); if(crit) crit.innerHTML='';
+        const c = el(p+'Wave'); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height);
+      });
+      el('globalTimer').textContent = '00:00';
+      el('phasePill').textContent = 'Standby';
+      el('btnStart').disabled = false;
+      el('btnStop').disabled = true;
+      el('avgOverall').textContent = '—';
+      state.session = {};
+    });
+
+    // ----------------- drawRecordedWave for each part -----------------
+    async function drawRecordedWave(blob, part){
+      try{
+        const ctx = el(part + 'Wave').getContext('2d');
+        const arrayBuf = await blob.arrayBuffer();
+        const aCtx = state.audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuf = await aCtx.decodeAudioData(arrayBuf);
+        const data = audioBuf.getChannelData(0);
+        const len = 800;
+        const step = Math.max(1, Math.floor(data.length / len));
+        const w = ctx.canvas.width = ctx.canvas.clientWidth;
+        const h = ctx.canvas.height = ctx.canvas.clientHeight;
+        const amp = h/2 - 2;
+        ctx.clearRect(0,0,w,h);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = getComputedStyle(document.body).color;
+        ctx.beginPath();
+        for(let i=0;i<len;i++){
+          let min=1,max=-1;
+          for(let j=0;j<step;j++){
+            const idx = i*step + j;
+            if(idx >= data.length) break;
+            const v = data[idx];
+            if(v < min) min = v;
+            if(v > max) max = v;
+          }
+          const x = i * (w/len);
+          ctx.moveTo(x, (1 + min) * amp);
+          ctx.lineTo(x, (1 + max) * amp);
+        }
+        ctx.stroke();
+      }catch(e){ console.warn('drawRecordedWave err', e); }
+    }
+
+    // expose draw wave when saved (wrap around analyze)
+    async function drawWave(blob, part){
+      await drawRecordedWave(blob, part);
+    }
+
+    // update analyzeBlobAndScore to call drawWave
+    async function analyzeBlobAndScore(blob, part){
+      // call earlier analyzer (we already defined but redeclare to ensure drawWave is called)
+      // reuse earlier function body by calling it, but ensure drawWave is called
+      await (async function inner(blob, part){
+        const audioBuf = await decodeAudio(blob);
+        const data = audioBuf.getChannelData(0);
+        const sr = audioBuf.sampleRate;
+        const duration = audioBuf.duration;
+        const energy = rms(data);
+        const sil = detectSilences(data, sr, 0.02, 0.6);
+        const silenceRatio = duration > 0 ? sil.totalSilence / duration : 0;
+        let voicedRatio = 0;
+        try{ voicedRatio = voicednessRatio(data, sr); }catch(e){ console.warn('voicedness failed', e); }
+        const transcript = (state.transcripts[part] || '').trim();
+        const words = tokenize(transcript);
+        const wordCount = words.length;
+        const speechRate = duration>0 ? (wordCount / duration) : 0;
+        const lex = lexicalMetrics(words);
+        const fillerCount = countFillers(words);
+        const sentenceCount = Math.max(1, (transcript.match(/[.!?]/g)||[]).length || 1);
+        const avgWordsPerSentence = wordCount / sentenceCount;
+        const silenceFactor = Math.max(0, 1 - silenceRatio*1.6);
+        const pausePenalty = Math.max(0, 1 - Math.min(5, sil.longPauses)/5);
+        const rateNorm = Math.max(0, Math.min(1, (speechRate - 1.5) / 3.0));
+        const fluencyScore = to9( (silenceFactor*0.6 + pausePenalty*0.2 + rateNorm*0.2) );
+        const ttr = lex.TTR; const vocab = lex.vocab;
+        const vocabNorm = Math.min(1, Math.log10(Math.max(1,vocab)) / 1.6);
+        const lexicalScore = to9( Math.max(0, Math.min(1, ttr*0.6 + vocabNorm*0.4)) );
+        const awps = avgWordsPerSentence; const awpsScore = Math.max(0, Math.min(1, (awps/12)));
+        const fillerPenalty = Math.max(0, 1 - Math.min(wordCount, fillerCount) / Math.max(1, wordCount) * 2);
+        const grammarScore = to9( Math.max(0, awpsScore*0.8 + fillerPenalty*0.2) );
+        const energyNorm = Math.min(1, energy / 0.1);
+        const pronScore = to9( Math.max(0, voicedRatio*0.7 + energyNorm*0.3) );
+        const final = +(( (fluencyScore + lexicalScore + grammarScore + pronScore) / 4 ).toFixed(1));
+        state.scores[part] = { fluency:fluencyScore, lexical:lexicalScore, grammar:grammarScore, pronunciation:pronScore, final };
+        // update UI
+        el(part + 'Score').textContent = final.toFixed(1);
+        el('r_' + part).textContent = final.toFixed(1);
+        const critEl = el(part + 'Crit');
+        if(critEl){
+          critEl.innerHTML = `<strong>Transcript:</strong> ${transcript ? ('<em>'+transcript+'</em>') : '<em>(no transcript)</em>'}
+            <br><span class="small">dur: ${duration.toFixed(1)}s · words: ${wordCount} · silence: ${(silenceRatio*100).toFixed(1)}% · long pauses: ${sil.longPauses} · voiced: ${(voicedRatio*100).toFixed(0)}%</span>`;
+        }
+        // draw waveform
+        await drawWave(blob, part);
+        computeOverallAndDisplay();
+      })(blob, part);
+    }
+
+    // ----------------- Export handlers -----------------
+    el('btnExportSession').addEventListener('click', ()=>{
+      state.session.transcripts = state.transcripts; state.session.scores = state.scores;
+      const blob = new Blob([JSON.stringify(state.session,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `speaking_session_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+    });
+
+    el('btnExportAll').addEventListener('click', async ()=>{
+      const zip = new JSZip();
+      zip.file('session.json', JSON.stringify(state.session,null,2));
+      for(const p of parts){
+        if(state.files[p]) zip.file(`${p}.webm`, state.files[p]);
+      }
+      const blob = await zip.generateAsync({type:'blob'});
+      const url = URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download = `speaking_${new Date().toISOString().slice(0,10)}.zip`; a.click(); URL.revokeObjectURL(url);
+    });
+
+    el('btnExportPNG').addEventListener('click', async ()=>{
+      try{
+        const node = el('resultsPanel');
+        el('btnExportPNG').textContent = '🔄 Generating...';
+        const canvas = await html2canvas(node, {scale:2, useCORS:true, backgroundColor: getComputedStyle(document.body).backgroundColor});
+        canvas.toBlob((blob)=>{
+          const url = URL.createObjectURL(blob);
+          const a=document.createElement('a'); a.href=url; a.download = `speaking_results_${new Date().toISOString().slice(0,10)}.png`; a.click(); URL.revokeObjectURL(url);
+          el('btnExportPNG').textContent = '🖼️ Export Result PNG';
+        }, 'image/png');
+      }catch(e){ alert('PNG yaratishda xato: ' + e); el('btnExportPNG').textContent = '🖼️ Export Result PNG'; }
+    });
+
+    // ----------------- Hotkeys: Space toggles recording for current part -----------------
+    window.addEventListener('keydown', async (e)=>{
+      if(e.code === 'Space' && (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')){
+        e.preventDefault();
+        // toggle
+        if(state.recorder && state.recorder.state === 'recording'){
+          const part = state.currentPart || 'p1';
+          await stopRecording(part);
+        } else {
+          const part = state.currentPart || 'p1';
+          startRecording(part);
+          if(!globalInterval) startGlobal();
+          el('btnStart').disabled = true; el('btnStop').disabled = false;
+        }
+      }
+    });
+
+    // ----------------- Initialize UI -----------------
+    function genQuestions(){
+      el('p1Qs').innerHTML = '<div class="question">What do you do in your free time?</div><div class="question">Do you prefer mornings or evenings?</div>';
+      el('p2Card').textContent = 'Describe a memorable journey you had. You should say: where you went, how you traveled, and explain why it was memorable.';
+      el('p3Qs').innerHTML = '<div class="question">How has technology changed communication?</div><div class="question">What makes a city livable?</div>';
+    }
+    genQuestions();
+    // speech recognition status init
+    el('srStatus').textContent = (window.SpeechRecognition || window.webkitSpeechRecognition) ? 'available' : 'unsupported';
+  </script>
 </body>
 </html>

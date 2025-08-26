@@ -121,3 +121,7 @@
 
 
 
+/* ==========================
+  RNG / Utility
+  ========================== */
+/* app.js - full logic with unique-generation and listening lock */
