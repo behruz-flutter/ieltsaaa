@@ -1,54 +1,393 @@
-<!-- <!doctype html>
+<!doctype html>
 <html lang="uz">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Page 2 - Darsga qatnashish</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kurslar — 8 ta video (ichida ko'rish)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#0f766e;
+      --accent-2:#0ea5a4;
+      font-family: 'Inter', system-ui, Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#0f172a;padding:24px;-webkit-font-smoothing:antialiased}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+    .container{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    @media (max-width:900px){ .container{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:560px){ .container{grid-template-columns:1fr} header{flex-direction:column;align-items:flex-start} }
+    .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(8,15,35,0.06);display:flex;flex-direction:column;gap:10px;min-height:220px}
+    .meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .cat{font-size:12px;color:var(--muted);background:#eef6f6;padding:6px 8px;border-radius:999px;display:inline-block}
+    .title{font-weight:600;font-size:14px}
+    .video-wrap{background:#000;border-radius:8px;overflow:hidden;height:140px;display:flex;align-items:center;justify-content:center}
+    .video-wrap iframe, .video-wrap video, .video-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+    .card-footer{display:flex;gap:8px;justify-content:space-between;align-items:center}
+    .btn{border:0;padding:8px 12px;border-radius:8px;background:var(--accent);color:white;cursor:pointer;font-size:14px}
+    .btn.secondary{background:#e6eef0;color:#064e47}
+    .btn.ghost{background:transparent;color:var(--muted);border:1px solid #e6eef0}
+    .small{font-size:13px;color:var(--muted)}
+    /* Editor modal */
+    .modal-backdrop{position:fixed;inset:0;display:none;background:rgba(2,6,23,0.45);align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal{width:100%;max-width:560px;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.35)}
+    .modal h3{margin:0 0 8px 0}
+    .form-row{display:flex;gap:8px;margin-top:8px}
+    .form-row input[type="text"]{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef0;font-size:14px}
+    .note{font-size:13px;color:var(--muted);margin-top:8px}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* Player modal (bigger) */
+    .player-backdrop{position:fixed;inset:0;display:none;background:rgba(2,6,23,0.75);align-items:center;justify-content:center;padding:16px;z-index:80}
+    .player{
+      width:100%;max-width:1100px;background:transparent;border-radius:12px;overflow:hidden;position:relative;
+    }
+    .player-inner{background:var(--card);border-radius:12px;padding:12px}
+    .player .close{position:absolute;right:12px;top:12px;background:rgba(0,0,0,0.6);color:white;border:0;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .player iframe, .player video{width:100%;height:60vh;display:block;border-radius:8px}
+    @media (max-width:900px){ .player iframe, .player video{height:50vh} }
+    @media (max-width:560px){ .player iframe, .player video{height:40vh} }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header class="site-header">
-      <div class="brand">Birgina Tel</div>
-      <nav>
-        <a href="index.html">Bosh sahifa</a>
-        <a href="page2.html">Page 2</a>
-        <a href="page3.html">Page 3</a>
-      </nav>
-    </header>
+  <header>
+    <div>
+      <h1>Kurslar — 8 ta video</h1>
+      <p class="lead">Beginner (3) · Present Perfect (2) · Present Simple (3). Videolarni sahifa ichida ko'ra olasiz.</p>
+    </div>
+    <div>
+      <button id="clearAll" class="btn secondary">Barchasini tozalash</button>
+    </div>
+  </header>
 
-    <main>
-      <section class="hero" aria-label="Page 2 hero">
-        <div class="left">
-          <h1>OXIRGI QADAM QOLDI!</h1>
-          <p class="muted" style="font-size:18px;margin-top:8px">Jonli efirda qatnashish va sovg'alarni olish uchun telegram kanalga <strong style="color:#ef4444">obuna bo'ling</strong></p>
+  <main>
+    <section class="container" id="grid">
+      <!-- Kartlar JS orqali yaratiladi -->
+    </section>
 
-          <div style="margin-top:26px">
-<a class="big-cta" href="page3.html" role="button" aria-label="Obuna bo'lish">
-  OBUNA BO'LISH
-</a>          </div>
-
-          <div class="note" style="max-width:520px;margin-top:24px">
-            <img src="7ae9e9c7-bf05-45ba-9446-450ac52e9805_removalai_preview.png" alt="Dars" style="width:44px;height:44px;border-radius:8px;object-fit:cover;opacity:0.95">
-            <div>
-              <div style="font-weight:700">“Qanday qilib million prosmotrlik video tayyorlash” darsi</div>
-            </div>
-          </div>
+    <!-- Modal: video URL kiritish uchun -->
+    <div id="modal" class="modal-backdrop" role="dialog" aria-hidden="true">
+      <div class="modal" role="document">
+        <h3 id="modalTitle">Videoni o'zgartirish</h3>
+        <div class="note">YouTube havolasi yoki bevosita .mp4 linkini kiriting.</div>
+        <div class="form-row" style="margin-top:10px">
+          <input id="videoInput" type="text" placeholder="Masalan: https://www.youtube.com/watch?v=dQw4w9WgXcQ yoki https://example.com/video.mp4">
+          <button id="saveBtn" class="btn">Saqlash</button>
         </div>
+        <div class="form-row" style="margin-top:10px; justify-content:flex-end">
+          <button id="resetBtn" class="btn ghost">Tozalash</button>
+          <button id="closeBtn" class="btn secondary">Bekor qilish</button>
+        </div>
+      </div>
+    </div>
 
-        <aside class="image-frame" aria-hidden="true">
-          <img src="79fbbdb0-cc8e-4f11-8946-8559802cd5c3_removalai_preview.png" alt="Instruktor yuzi">
-        </aside>
-      </section>
-    </main>
+    <!-- Player modal: sahifa ichida ko'rish -->
+    <div id="playerModal" class="player-backdrop" role="dialog" aria-hidden="true">
+      <div class="player" id="player">
+        <button class="close" id="playerClose">✕</button>
+        <div class="player-inner" id="playerInner">
+          <!-- iframe yoki video element JS orqali qo'yiladi -->
+        </div>
+      </div>
+    </div>
 
     <footer>
-      &copy; <span id="year2"></span> Birgina Telefon. Barcha huquqlar himoyalangan.
+      <div>Qanday ishlaydi: <span class="small">“O'zgartirish” tugmasi bilan URL kiriting. "Ko'rish" tugmasi video oynasini sahifa ichida ochadi.</span></div>
     </footer>
-  </div>
+  </main>
 
-  <script>document.getElementById('year2').textContent = new Date().getFullYear();</script>
-  <script src="stozzziki.code-workspace"></script>
+  <script>
+    // ======= Konfiguratsiya: 8 ta slot va kategoriyalar =======
+    const slotsConfig = [
+      { id: 'b-1', label: 'Beginner 1', category: 'Beginner' },
+      { id: 'b-2', label: 'Beginner 2', category: 'Beginner' },
+      { id: 'b-3', label: 'Beginner 3', category: 'Beginner' },
+      { id: 'pp-1', label: 'Present Perfect 1', category: 'Present Perfect' },
+      { id: 'pp-2', label: 'Present Perfect 2', category: 'Present Perfect' },
+      { id: 'ps-1', label: 'Present Simple 1', category: 'Present Simple' },
+      { id: 'ps-2', label: 'Present Simple 2', category: 'Present Simple' },
+      { id: 'ps-3', label: 'Present Simple 3', category: 'Present Simple' },
+    ];
+
+    const STORAGE_KEY = 'kurslar_videos_v1';
+
+    // Modal element refs
+    const modal = document.getElementById('modal');
+    const videoInput = document.getElementById('videoInput');
+    const saveBtn = document.getElementById('saveBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const modalTitle = document.getElementById('modalTitle');
+
+    // Player modal refs
+    const playerModal = document.getElementById('playerModal');
+    const playerInner = document.getElementById('playerInner');
+    const playerClose = document.getElementById('playerClose');
+
+    let editingSlot = null;
+
+    // Yordamchi: YouTube ID olish
+    function getYouTubeID(url) {
+      if (!url) return null;
+      const re = /(?:youtube\.com\/(?:watch\?.*v=|embed\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/;
+      const m = url.match(re);
+      return m ? m[1] : null;
+    }
+
+    // Parse video: youtube yoki mp4 yoki boshqa
+    function parseVideo(url) {
+      if (!url) return null;
+      const yt = getYouTubeID(url);
+      if (yt) return { type: 'youtube', id: yt, src: `https://www.youtube.com/embed/${yt}` };
+      try {
+        const u = new URL(url);
+        if (u.pathname.match(/\.(mp4|webm|ogg)$/i)) {
+          return { type: 'video', src: url };
+        } else {
+          // fallback: treat as video src
+          return { type: 'video', src: url };
+        }
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // LocalStorage: yuklash/saqlash
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      try { return JSON.parse(raw) || {}; } catch(e){ return {}; }
+    }
+    function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+    // Grid yaratish va render
+    const grid = document.getElementById('grid');
+
+    function createCard(slot){
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.id = `card-${slot.id}`;
+      el.innerHTML = `
+        <div class="meta">
+          <div>
+            <div class="cat">${slot.category}</div>
+            <div class="title">${slot.label}</div>
+          </div>
+          <div class="small" id="slot-${slot.id}-status">—</div>
+        </div>
+        <div class="video-wrap" id="video-${slot.id}">
+          <!-- video yoki placeholder -->
+        </div>
+        <div class="card-footer">
+          <div class="small">ID: ${slot.id}</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost" data-action="edit" data-slot="${slot.id}">O'zgartirish</button>
+            <button class="btn" data-action="open" data-slot="${slot.id}">Ko'rish</button>
+          </div>
+        </div>
+      `;
+      return el;
+    }
+
+    function renderAll(){
+      grid.innerHTML = '';
+      slotsConfig.forEach(s=>{
+        const card = createCard(s);
+        grid.appendChild(card);
+      });
+      // event listenerlar
+      grid.querySelectorAll('button[data-action="edit"]').forEach(b=>{
+        b.addEventListener('click', (e)=>{
+          const slot = e.currentTarget.dataset.slot;
+          openEditor(slot);
+        });
+      });
+      grid.querySelectorAll('button[data-action="open"]').forEach(b=>{
+        b.addEventListener('click', (e)=>{
+          const slot = e.currentTarget.dataset.slot;
+          openViewer(slot);
+        });
+      });
+      // render kontent
+      slotsConfig.forEach(s=> renderSlot(s.id));
+    }
+
+    // render bittagina slot
+    function renderSlot(slotId){
+      const data = loadData();
+      const info = data[slotId];
+      const wrap = document.getElementById(`video-${slotId}`);
+      const status = document.getElementById(`slot-${slotId}-status`);
+      wrap.innerHTML = '';
+      if (!info || !info.url) {
+        // placeholder
+        wrap.innerHTML = `<img src="data:image/svg+xml;utf8,
+          <svg xmlns='http://www.w3.org/2000/svg' width='640' height='360'>
+            <rect width='100%' height='100%' fill='%23e6eef0'/>
+            <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='22' fill='%238a99a6' font-family='Inter, Arial'>Video yo'q — \"O'zgartirish\" tugmasini bosing</text>
+          </svg>" alt="placeholder">`;
+        status.textContent = 'Boʻsh';
+        return;
+      }
+      const parsed = parseVideo(info.url);
+      if (!parsed) {
+        wrap.innerHTML = `<div style="padding:12px;color:#7b8794">Noto'g'ri URL</div>`;
+        status.textContent = 'Notoʻgʻri URL';
+        return;
+      }
+      if (parsed.type === 'youtube') {
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('src', parsed.src);
+        iframe.setAttribute('frameborder','0');
+        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframe.setAttribute('allowfullscreen','');
+        wrap.appendChild(iframe);
+        status.textContent = 'YouTube';
+      } else {
+        // video tag
+        const video = document.createElement('video');
+        video.setAttribute('controls','');
+        video.setAttribute('playsinline','');
+        video.src = parsed.src;
+        wrap.appendChild(video);
+        status.textContent = 'MP4 / Video';
+      }
+    }
+
+    // Editor modal bilan ishlash
+    function openEditor(slotId){
+      editingSlot = slotId;
+      const data = loadData();
+      const cur = data[slotId] && data[slotId].url ? data[slotId].url : '';
+      videoInput.value = cur;
+      modalTitle.textContent = `Slot: ${slotId} — Video kiritish`;
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+      videoInput.focus();
+    }
+    function closeEditor(){
+      editingSlot = null;
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+      videoInput.value = '';
+    }
+    saveBtn.addEventListener('click', ()=>{
+      if (!editingSlot) return;
+      const url = videoInput.value.trim();
+      if (!url) {
+        if (!confirm('URL bo\'sh — bu slotni tozalaysizmi?')) return;
+        const data = loadData();
+        delete data[editingSlot];
+        saveData(data);
+        renderSlot(editingSlot);
+        closeEditor();
+        return;
+      }
+      const parsed = parseVideo(url);
+      if (!parsed) {
+        alert("Iltimos YouTube havolasi yoki bevosita .mp4 manzilini kiriting.");
+        return;
+      }
+      const data = loadData();
+      data[editingSlot] = { url };
+      saveData(data);
+      renderSlot(editingSlot);
+      closeEditor();
+    });
+    closeBtn.addEventListener('click', closeEditor);
+
+    // Tekshirish/Tozalash tugmasi modal ichida
+    resetBtn.addEventListener('click', ()=>{
+      if (!editingSlot) return;
+      if (!confirm('Slotni tozalamoqchimisiz?')) return;
+      const data = loadData();
+      delete data[editingSlot];
+      saveData(data);
+      renderSlot(editingSlot);
+      videoInput.value = '';
+    });
+
+    // Player: sahifa ichida ko'rish
+    function openViewer(slotId){
+      const data = loadData();
+      const info = data[slotId];
+      if (!info || !info.url) {
+        alert("Slot bo'sh — avval videoni kiriting.");
+        return;
+      }
+      const parsed = parseVideo(info.url);
+      if (!parsed) { alert("Noto'g'ri URL"); return; }
+
+      // Tozalash va yangi element qo'yish
+      playerInner.innerHTML = '';
+      if (parsed.type === 'youtube') {
+        const iframe = document.createElement('iframe');
+        // Play only when user opens the modal; include modest autoplay=0
+        iframe.setAttribute('src', parsed.src + '?rel=0');
+        iframe.setAttribute('frameborder','0');
+        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframe.setAttribute('allowfullscreen','');
+        playerInner.appendChild(iframe);
+      } else {
+        const video = document.createElement('video');
+        video.setAttribute('controls','');
+        video.setAttribute('playsinline','');
+        video.src = parsed.src;
+        video.autoplay = false;
+        playerInner.appendChild(video);
+      }
+
+      // ko'rsat
+      playerModal.style.display = 'flex';
+      playerModal.setAttribute('aria-hidden','false');
+      // focus for accessibility
+      playerClose.focus();
+    }
+
+    function closePlayer(){
+      // stop media
+      const iframe = playerInner.querySelector('iframe');
+      const video = playerInner.querySelector('video');
+      if (iframe) {
+        // iframe src-ni olib tashlash to'xtatadi
+        iframe.src = '';
+      }
+      if (video) {
+        video.pause();
+        video.src = '';
+      }
+      playerInner.innerHTML = '';
+      playerModal.style.display = 'none';
+      playerModal.setAttribute('aria-hidden','true');
+    }
+
+    playerClose.addEventListener('click', closePlayer);
+    playerModal.addEventListener('click', (e)=>{ if (e.target === playerModal) closePlayer(); });
+
+    // "Clear all" tugmasi
+    document.getElementById('clearAll').addEventListener('click', ()=>{
+      if (!confirm('Barcha slotlardagi saqlangan videolar o\'chiriladi. Tasdiqlaysizmi?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      slotsConfig.forEach(s => renderSlot(s.id));
+    });
+
+    // Dastlabki render
+    renderAll();
+
+    // Tastatura: ESC modalni yopinadi
+    window.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape') {
+        if (modal.style.display === 'flex') closeEditor();
+        if (playerModal.style.display === 'flex') closePlayer();
+      }
+    });
+  </script>
 </body>
-</html> -->
+</html>
+
+
