@@ -23,8 +23,23 @@
       --btn-ghost-bg: rgba(255,255,255,0.03);
       --card-radius: 14px;
       --control-pad: 12px;
-      --gutter: 24px;            /* NEW: general spacing between containers */
+      --gutter: 24px;            /* spacing between containers */
       --section-gap: 20px;      /* gap above sections */
+      --suspect-bg: rgba(255,79,79,0.12);
+      --suspect-border: rgba(255,79,79,0.3);
+      --ok-bg: rgba(92, 255, 199, 0.08);
+      --ok-border: rgba(92, 255, 199, 0.18);
+      /* error colors (theme-aware) */
+      --err-bg: rgba(255,79,79,0.12);
+      --err-border: rgba(255,79,79,0.3);
+      --err-text: #ffb4b4;
+      --ok-text: #bfffe6;
+      --misplaced-bg: rgba(255,165,0,0.12);
+      --misplaced-border: rgba(255,140,0,0.18);
+      --misplaced-text: #ffb36b;
+      --extra-bg: rgba(255,200,80,0.12);
+      --extra-border: rgba(220,150,20,0.18);
+      --extra-text: #ffe6b3;
     }
     [data-theme="light"]{
       --bg: #ffffff;
@@ -39,10 +54,20 @@
       --ring: #dfe6ff;
       --btn-bg: linear-gradient(180deg,#f3f6ff,#eef3ff);
       --btn-ghost-bg: rgba(11,16,32,0.03);
-      --card-radius: 14px;
-      --control-pad: 12px;
-      --gutter: 24px;
-      --section-gap: 20px;
+      --suspect-bg: rgba(255,79,79,0.12);
+      --suspect-border: rgba(255,79,79,0.2);
+      --ok-bg: rgba(10,160,120,0.06);
+      --ok-border: rgba(10,160,120,0.16);
+      --err-bg: rgba(255,79,79,0.12);
+      --err-border: rgba(255,79,79,0.22);
+      --err-text: #7a0b0b;
+      --ok-text: #0a6b46;
+      --misplaced-bg: rgba(255,165,0,0.12);
+      --misplaced-border: rgba(255,140,0,0.18);
+      --misplaced-text: #8a4b00;
+      --extra-bg: rgba(255,200,80,0.12);
+      --extra-border: rgba(220,150,20,0.18);
+      --extra-text: #6a4a00;
     }
 
     /* ----------------- Base resets ----------------- */
@@ -62,7 +87,6 @@
       padding-bottom:32px;
     }
 
-    /* main layout padding increased */
     .wrap{max-width:1200px;margin:0 auto;padding:28px}
 
     header{
@@ -131,7 +155,16 @@
     @media(max-width:640px){ .cols{grid-template-columns:1fr} }
 
     .range{display:flex;align-items:center;gap:8px}
-    .score-pill{font-weight:800;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,#0b1222,#1a2546);border:1px solid var(--stroke);display:inline-block}
+    .score-pill{
+      font-weight:800;
+      padding:8px 12px;
+      border-radius:12px;
+      background: linear-gradient(90deg, var(--bg2), var(--panel));
+      border:1px solid var(--stroke);
+      color: var(--text);
+      display:inline-block;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
     .crit{font-size:13px;color:var(--muted);display:block;margin-top:8px}
     .small{font-size:13px;color:var(--muted)}
 
@@ -153,6 +186,34 @@
     aside .pill{padding:6px 10px;font-size:13px}
     .status-muted{ font-size:13px; color:var(--muted) }
 
+    /* Transcript display (added minimal UI but kept layout intact) */
+    .transcript-line{margin-top:10px; padding:10px 12px; background:var(--chip); border-radius:10px; border:1px solid var(--stroke); color:var(--text); line-height:1.6; min-height:56px; white-space:pre-wrap; word-break:break-word}
+    .suspect{background:var(--suspect-bg); border-bottom:2px solid var(--suspect-border); padding:2px 4px; border-radius:4px; font-weight:700; color:var(--text)}
+    .ok{background:var(--ok-bg); border-bottom:2px solid var(--ok-border); padding:2px 4px; border-radius:4px; font-weight:700; color:var(--ok-text)}
+    /* new: explicit error styling for comparison results */
+    .err{ background: var(--err-bg); border-bottom:2px solid var(--err-border); padding:2px 4px; border-radius:4px; font-weight:800; color:var(--err-text) }
+    .misplaced{ background: var(--misplaced-bg); border-bottom:2px solid var(--misplaced-border); padding:2px 4px; border-radius:4px; font-weight:800; color:var(--misplaced-text) }
+    .extra{ background: var(--extra-bg); border-bottom:2px solid var(--extra-border); padding:2px 4px; border-radius:4px; font-weight:800; color:var(--extra-text) }
+
+    /* expected/actual small display */
+    .aligned-expected, .aligned-actual { margin-top:8px; padding:8px; border-radius:8px; background:var(--chip); border:1px solid var(--stroke); white-space:pre-wrap; word-break:break-word; color:var(--text) }
+
+    /* accuracy badge inside transcript */
+    .accuracy-bubble{
+      position:relative;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      float:right;
+      margin: -8px 0 8px 8px;
+      background: linear-gradient(180deg,#ffffff22,#ffffff11);
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      font-weight:800;
+      font-size:13px;
+    }
+
     /* accessibility - focus */
     :focus { outline: 3px solid var(--ring); outline-offset:3px; border-radius:10px; }
 
@@ -162,7 +223,13 @@
       .wrap{padding:18px}
       .card{padding:14px}
       .tabs{gap:10px}
+      .accuracy-bubble{float:none; display:block; margin:8px 0}
     }
+
+    /* small helpers */
+    .ref-row{margin-top:10px; display:flex; gap:8px; align-items:flex-start}
+    .ref-area{min-height:64px; font-size:13px; padding:8px; border-radius:8px}
+    .token { margin-right:6px; display:inline-block; padding:2px 6px; border-radius:6px; font-weight:700 }
   </style>
 </head>
 <body>
@@ -200,6 +267,13 @@
             <div class="timer" id="globalTimer">00:00</div>
             <span class="pill" id="phasePill">Standby</span>
             <div class="spacer"></div>
+            <label class="label" for="langSelect" style="align-self:center;margin-right:8px">SR til:</label>
+            <select id="langSelect" class="pill" style="padding:6px;border-radius:10px;background:transparent;border:1px solid var(--stroke);color:var(--text)">
+              <option value="en-US" selected>English (US)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="uz-UZ">O'zbekcha (agar qo'llab-quvvatlansa)</option>
+              <option value="ru-RU">Русский</option>
+            </select>
             <button id="btnSetup" class="btn">🎙️ Mic test</button>
             <button id="btnStart" class="btn ok">▶️ Start</button>
             <button id="btnStop" class="btn danger" disabled>⏹️ Stop</button>
@@ -217,6 +291,7 @@
                 <div class="list" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
                   <span class="pill" id="micStatus">Mic: unknown</span>
                   <span class="pill" id="recStatus">Rec: idle</span>
+                  <button id="btnExportTxt" class="btn ghost" title="Export transcript" style="padding:6px 8px;font-weight:600">💾 TXT</button>
                 </div>
                 <div class="small" style="margin-top:10px">SpeechRecognition: <span id="srStatus">unsupported</span></div>
               </div>
@@ -234,7 +309,24 @@
           </div>
           <div class="body">
             <div class="qa" id="p1Qs">Savollar...</div>
-            <div class="audio-row">
+
+            <!-- Transcript display added under part body (plain text, not an image) -->
+            <div class="accuracy-bubble" id="p1AccBubble" style="display:none"><span id="p1AccPct">0%</span> Accuracy</div>
+            <div class="transcript-line" id="p1Transcript" aria-live="polite" role="log"></div>
+
+            <!-- Reference area for compare -->
+            <div class="ref-row">
+              <textarea id="p1Ref" class="ref-area" placeholder="Expected text (paste the correct/reference sentence here)"></textarea>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button class="btn" data-compare="p1">🔎 Compare</button>
+                <button class="btn ghost" data-clear="p1">✖ Clear</button>
+              </div>
+            </div>
+
+            <div class="aligned-expected" id="p1Expected" style="display:none"></div>
+            <div class="aligned-actual" id="p1Actual" style="display:none; margin-top:8px"></div>
+
+            <div class="audio-row" style="margin-top:10px">
               <audio id="p1Audio" controls></audio>
               <a id="p1Dl" class="btn ghost" download>⬇️ Yuklab olish</a>
               <canvas id="p1Wave" height="46" aria-hidden="true"></canvas>
@@ -253,8 +345,23 @@
           </div>
           <div class="body">
             <div class="question big prep" id="p2Card">Cue Card…</div>
-            <textarea id="p2Notes" placeholder="Eslatmalar"></textarea>
-            <div class="audio-row"><audio id="p2Audio" controls></audio><a id="p2Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p2Wave" height="46" aria-hidden="true"></canvas></div>
+
+            <div class="accuracy-bubble" id="p2AccBubble" style="display:none"><span id="p2AccPct">0%</span> Accuracy</div>
+            <div class="transcript-line" id="p2Transcript" aria-live="polite" role="log"></div>
+
+            <div class="ref-row">
+              <textarea id="p2Ref" class="ref-area" placeholder="Expected text for Part 2 (short summary)"></textarea>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button class="btn" data-compare="p2">🔎 Compare</button>
+                <button class="btn ghost" data-clear="p2">✖ Clear</button>
+              </div>
+            </div>
+
+            <div class="aligned-expected" id="p2Expected" style="display:none"></div>
+            <div class="aligned-actual" id="p2Actual" style="display:none; margin-top:8px"></div>
+
+            <textarea id="p2Notes" placeholder="Eslatmalar" style="margin-top:10px"></textarea>
+            <div class="audio-row" style="margin-top:10px"><audio id="p2Audio" controls></audio><a id="p2Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p2Wave" height="46" aria-hidden="true"></canvas></div>
             <div class="crit" id="p2Crit"></div>
           </div>
         </div>
@@ -269,7 +376,22 @@
           </div>
           <div class="body">
             <div class="qa" id="p3Qs">Savollar...</div>
-            <div class="audio-row"><audio id="p3Audio" controls></audio><a id="p3Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p3Wave" height="46" aria-hidden="true"></canvas></div>
+
+            <div class="accuracy-bubble" id="p3AccBubble" style="display:none"><span id="p3AccPct">0%</span> Accuracy</div>
+            <div class="transcript-line" id="p3Transcript" aria-live="polite" role="log"></div>
+
+            <div class="ref-row">
+              <textarea id="p3Ref" class="ref-area" placeholder="Expected text for Part 3"></textarea>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button class="btn" data-compare="p3">🔎 Compare</button>
+                <button class="btn ghost" data-clear="p3">✖ Clear</button>
+              </div>
+            </div>
+
+            <div class="aligned-expected" id="p3Expected" style="display:none"></div>
+            <div class="aligned-actual" id="p3Actual" style="display:none; margin-top:8px"></div>
+
+            <div class="audio-row" style="margin-top:10px"><audio id="p3Audio" controls></audio><a id="p3Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p3Wave" height="46" aria-hidden="true"></canvas></div>
             <div class="crit" id="p3Crit"></div>
           </div>
         </div>
@@ -319,7 +441,9 @@
       analyser: null,
       dataArray: null,
       recognition: null,
+      // transcripts now store final accumulated + interim stored separately
       transcripts: {p1:'', p2:'', p3:''},
+      interim: {p1:'', p2:'', p3:''},
       scores: {p1:null,p2:null,p3:null},
       session: {}
     };
@@ -347,7 +471,6 @@
       parts.forEach(p => { if(state.files[p]) drawRecordedWave(state.files[p], p); });
     });
 
-    // print button
     el('btnPrint').addEventListener('click', () => window.print());
 
     /***********************
@@ -373,12 +496,7 @@
       });
       state.currentPart = part;
     }
-    tabButtons.forEach(btn=>{
-      btn.addEventListener('click', ()=> {
-        const tgt = btn.getAttribute('data-target');
-        showPart(tgt);
-      });
-    });
+    tabButtons.forEach(btn=>{ btn.addEventListener('click', ()=> showPart(btn.getAttribute('data-target'))); });
     showPart(state.currentPart || 'p1');
 
     /***********************
@@ -450,7 +568,14 @@
       state.recorder = createRecorder();
       state.recorder.start();
       el('recStatus').textContent = 'Rec: recording';
-      if(state.recognition){ state.recognition.lang = 'en-US'; try{ state.recognition.start(); }catch(e){} }
+      el('recStatus').setAttribute('aria-live','polite');
+      el('recStatus').setAttribute('role','status');
+      // ensure SR language matches selector
+      if(state.recognition){
+        state.recognition.lang = document.getElementById('langSelect').value || 'en-US';
+        try{ state.recognition.start(); }catch(e){ /* ignore start errors */ }
+      }
+      el('recStatus').textContent = 'Rec: recording';
       return true;
     }
 
@@ -467,7 +592,17 @@
           const audioEl = el(part + 'Audio'); if(audioEl){ audioEl.src = url; audioEl.load(); }
           const dl = el(part + 'Dl'); if(dl){ dl.href = url; dl.download = `${new Date().toISOString().slice(0,19).replace(/[:T]/g,'_')}_${part}.webm`; }
           if(state.recognition){ try{ state.recognition.stop(); }catch(e){} }
-          try{ await analyzeBlobAndScore(blob, part); }catch(e){ console.error('Analyze error', e); }
+          // before scoring: take accumulated transcripts[part] and clean it, update UI
+          try{
+            // derive cleaned text (best-effort)
+            const raw = (state.transcripts[part] || '').trim();
+            const cleaned = cleanTranscript(raw || '');
+            // update state.transcripts with cleaned version (so scoring uses cleaned)
+            state.transcripts[part] = cleaned;
+            // show in transcript area (plain text with suspect highlighted)
+            renderTranscriptArea(part, cleaned);
+          }catch(e){ console.warn('cleaning failed', e); }
+          try{ await analyzeBlobAndScore(blob, part, state.transcripts[part]); }catch(e){ console.error('Analyze error', e); }
           try{ await drawRecordedWave(blob, part); }catch(e){ console.warn('draw wave fail', e); }
           state.recorder = null;
           resolve(blob);
@@ -481,24 +616,337 @@
       if(!SpeechRecognition){ el('srStatus').textContent = 'unsupported'; return; }
       el('srStatus').textContent = 'available';
       const recog = new SpeechRecognition();
+      // Improvements: use many alternatives, continuous, interim results
       recog.interimResults = true;
       recog.continuous = true;
-      recog.lang = 'en-US';
+      recog.maxAlternatives = 10;
+      recog.lang = document.getElementById('langSelect') ? document.getElementById('langSelect').value : 'en-US';
+
       recog.onresult = (ev) => {
-        let final = '';
+        // capture both interim and final text; keep per-part context
+        let interimParts = [];
+        let finals = [];
         for(let i=0;i<ev.results.length;i++){
           const res = ev.results[i];
-          if(res.isFinal) final += res[0].transcript + ' ';
+          if(res.isFinal) finals.push(res[0].transcript);
+          else interimParts.push(res[0].transcript);
         }
         const p = state.currentPart || 'p1';
-        if(final.trim()) state.transcripts[p] = (state.transcripts[p] + ' ' + final).trim();
+        if(finals.length){
+          // append finals to accumulated transcript
+          const finalsJoin = finals.join(' ').trim();
+          if(finalsJoin) state.transcripts[p] = (state.transcripts[p] + ' ' + finalsJoin).trim();
+        }
+        // show interim separately (will be combined visually but not stored permanently)
+        state.interim[p] = interimParts.join(' ').trim();
+        // update visible transcript area live (combine final + interim)
+        const combined = ((state.transcripts[p] || '') + ' ' + (state.interim[p] || '')).trim();
+        renderTranscriptArea(p, combined, true);
       };
+
       recog.onerror = (e)=>{ console.warn('SR error', e); };
+      recog.onend = ()=>{
+        // auto-restart SR while recording to improve continuous capture (some browsers stop)
+        try{
+          if(state.recorder && state.recorder.state === 'recording'){
+            // small delay to avoid immediate loop
+            setTimeout(()=>{ try{
+              recog.lang = document.getElementById('langSelect') ? document.getElementById('langSelect').value : recog.lang;
+              recog.start();
+            }catch(e){} }, 250);
+          }
+        }catch(e){ /* ignore */ }
+      };
       state.recognition = recog;
+
+      // If user changes language selection, update live
+      const langSel = document.getElementById('langSelect');
+      if(langSel){
+        langSel.addEventListener('change', ()=> {
+          if(state.recognition){
+            try{ state.recognition.lang = langSel.value; }catch(e){/*ignore*/ }
+          }
+        });
+      }
     }
 
     /***********************
-     * Analysis helpers
+     * Transcript cleaning & rendering + compare
+     ***********************/
+    const fillerList = ['um','uh','hm','hmm','erm','ah','oh','uhm','uhh','ermm','ahh','ohh','mmm','er','like'];
+
+    function normalizeWhitespace(s){ return s.replace(/\s+/g,' ').trim(); }
+    function collapseRepeatedWords(text){ return text.replace(/\b([A-Za-z']+)(\s+\1\b)+/gi, '$1'); }
+    function collapseRepeatedPhrases(text){
+      if(!text) return text;
+      const words = text.split(/\s+/).filter(Boolean);
+      const n = words.length;
+      if(n < 12) return text;
+      let out = words.slice();
+      for(let seqLen = Math.min(60, Math.floor(n/2)); seqLen>=6; seqLen--){
+        let i=0;
+        while(i + seqLen*2 <= out.length){
+          let match = true;
+          for(let k=0;k<seqLen;k++){
+            if(out[i+k].toLowerCase() !== out[i+seqLen+k].toLowerCase()){ match=false; break; }
+          }
+          if(match){ out.splice(i+seqLen, seqLen); } else i++;
+        }
+      }
+      return out.join(' ');
+    }
+    function removeLongNgramRepeats(text){
+      if(!text) return text;
+      const words = text.split(/\s+/).filter(Boolean);
+      const freq = {};
+      for(let n=3;n<=8;n++){
+        for(let i=0;i+n<=words.length;i++){
+          const key = words.slice(i,i+n).join(' ').toLowerCase();
+          freq[key] = (freq[key]||0) + 1;
+        }
+      }
+      const toRemove = new Set();
+      Object.keys(freq).forEach(k=>{ if(freq[k] >= 3 && k.replace(/\s+/g,'').length >= 12) toRemove.add(k); });
+      if(toRemove.size === 0) return text;
+      let outText = text;
+      toRemove.forEach(ng=>{ const re = new RegExp('\\b' + escapeRegExp(ng) + '\\b', 'gi'); let count=0; outText = outText.replace(re, (m)=>{ count++; return count===1 ? m : ''; }); });
+      return normalizeWhitespace(outText);
+    }
+    function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+    function cleanTranscript(raw){
+      if(!raw) return '';
+      let t = raw;
+      t = t.replace(/[\u200B-\u200D\uFEFF]/g,'');
+      t = t.replace(/(https?:\/\/\S+)/gi,'');
+      t = t.replace(/[^ -~\n\r\t]/g,' ');
+      t = normalizeWhitespace(t);
+      t = collapseRepeatedWords(t);
+      t = collapseRepeatedPhrases(t);
+      t = removeLongNgramRepeats(t);
+      t = t.replace(/(.)\1{8,}/g,'');
+      t = t.replace(/\b(in|of|and|the|a|to|for|on|my)\b\s*$/i, '');
+      t = normalizeWhitespace(t);
+      return t;
+    }
+
+    function isSuspectWord(w, freqMap){
+      if(!w) return false;
+      const clean = w.replace(/[^\w'-]/g,'');
+      if(clean.length === 0) return true;
+      if(clean.length > 25) return true;
+      if(/(.)\1{5,}/i.test(clean)) return true;
+      if(fillerList.includes(clean.toLowerCase())) return true;
+      if(freqMap[clean.toLowerCase()] && freqMap[clean.toLowerCase()] > 25) return true;
+      if(/[0-9]/.test(clean) && clean.length < 3) return true;
+      return false;
+    }
+
+    // Levenshtein DP to get edit operations between actual (aTokens) and expected (bTokens)
+    function getEditOps(aTokens, bTokens){
+      const n = aTokens.length, m = bTokens.length;
+      const dp = Array.from({length: n+1}, ()=> new Array(m+1).fill(0));
+      const op = Array.from({length: n+1}, ()=> new Array(m+1).fill(null));
+      for(let i=0;i<=n;i++){ dp[i][0] = i; op[i][0] = 'del'; }
+      for(let j=0;j<=m;j++){ dp[0][j] = j; op[0][j] = 'ins'; }
+      dp[0][0] = 0; op[0][0] = null;
+      for(let i=1;i<=n;i++){
+        for(let j=1;j<=m;j++){
+          const equal = aTokens[i-1].toLowerCase() === bTokens[j-1].toLowerCase();
+          const subCost = dp[i-1][j-1] + (equal ? 0 : 1);
+          const delCost = dp[i-1][j] + 1; // delete a[i-1] (extra)
+          const insCost = dp[i][j-1] + 1; // insert b[j-1] (missing in actual)
+          dp[i][j] = subCost;
+          op[i][j] = equal ? 'match' : 'sub';
+          if(delCost < dp[i][j]){ dp[i][j] = delCost; op[i][j] = 'del'; }
+          if(insCost < dp[i][j]){ dp[i][j] = insCost; op[i][j] = 'ins'; }
+        }
+      }
+      // backtrace
+      let i = n, j = m;
+      const ops = [];
+      while(i>0 || j>0){
+        const c = op[i][j];
+        if(c === 'match' || c === 'sub'){
+          ops.push({op: c === 'match' ? 'match' : 'sub', a: aTokens[i-1], b: bTokens[j-1]});
+          i--; j--;
+        } else if(c === 'del'){
+          ops.push({op: 'extra', a: aTokens[i-1], b: ''});
+          i--;
+        } else if(c === 'ins'){
+          ops.push({op: 'missing', a: '', b: bTokens[j-1]});
+          j--;
+        } else {
+          // fallback
+          if(i>0){ ops.push({op:'extra', a: aTokens[i-1], b: ''}); i--; }
+          else if(j>0){ ops.push({op:'missing', a:'', b: bTokens[j-1]}); j--; }
+        }
+      }
+      ops.reverse();
+      return ops;
+    }
+
+    // Compare & render with misplaced detection
+    function compareAndRender(part, actualText, expectedText){
+      const actualTokens = actualText ? actualText.trim().split(/\s+/).filter(Boolean) : [];
+      const expectedTokens = expectedText ? expectedText.trim().split(/\s+/).filter(Boolean) : [];
+
+      // build raw ops
+      const ops = getEditOps(actualTokens, expectedTokens);
+
+      // counts of unmatched expected and actual (for misplaced detection)
+      const unmatchedExpected = {};
+      const unmatchedActual = {};
+      ops.forEach(e=>{
+        if(e.op !== 'match'){
+          if(e.b) { const k = e.b.toLowerCase(); unmatchedExpected[k] = (unmatchedExpected[k]||0) + 1; }
+          if(e.a) { const k = e.a.toLowerCase(); unmatchedActual[k] = (unmatchedActual[k]||0) + 1; }
+        }
+      });
+
+      // second pass: transform extras/missing into misplaced when token exists in opposite unmatched map
+      const displayExpected = [];
+      const displayActual = [];
+      let matches = 0, subs = 0, extras = 0, miss = 0, misplaced = 0, total = 0;
+      ops.forEach(e=>{
+        total++;
+        const a = e.a || '';
+        const b = e.b || '';
+        const aLow = a.toLowerCase();
+        const bLow = b.toLowerCase();
+        if(e.op === 'match'){
+          displayExpected.push(`<span class="token ok">${escapeHtml(b)}</span>`);
+          displayActual.push(`<span class="token ok">${escapeHtml(a)}</span>`);
+          matches++;
+        } else if(e.op === 'sub'){
+          // substitution: mark both as err
+          displayExpected.push(`<span class="token err">${escapeHtml(b)}</span>`);
+          displayActual.push(`<span class="token err">${escapeHtml(a)}</span>`);
+          subs++;
+        } else if(e.op === 'extra'){
+          // actual has extra token a. If that token appears in unmatchedExpected, treat as misplaced.
+          if(unmatchedExpected[aLow] && unmatchedExpected[aLow] > 0){
+            displayExpected.push(`<span class="token misplaced">${escapeHtml(a)}</span>`);
+            displayActual.push(`<span class="token misplaced">${escapeHtml(a)}</span>`);
+            unmatchedExpected[aLow]--; // consume one
+            misplaced++;
+          } else {
+            displayExpected.push(`<span class="token err">(extra)</span>`);
+            displayActual.push(`<span class="token extra">${escapeHtml(a)}</span>`);
+            extras++;
+          }
+        } else if(e.op === 'missing'){
+          // expected token b is missing in actual. If that token exists in unmatchedActual, mark misplaced
+          if(unmatchedActual[bLow] && unmatchedActual[bLow] > 0){
+            displayExpected.push(`<span class="token misplaced">${escapeHtml(b)}</span>`);
+            displayActual.push(`<span class="token misplaced">${escapeHtml(b)}</span>`);
+            unmatchedActual[bLow]--;
+            misplaced++;
+          } else {
+            displayExpected.push(`<span class="token err">${escapeHtml(b)}</span>`);
+            displayActual.push(`<span class="token err">(missing: ${escapeHtml(b)})</span>`);
+            miss++;
+          }
+        }
+      });
+
+      // Render into UI: show expected and actual aligned views for user
+      const expectedEl = el(part + 'Expected');
+      const actualEl = el(part + 'Actual');
+      if(expectedEl && actualEl){
+        expectedEl.style.display = 'block';
+        actualEl.style.display = 'block';
+        expectedEl.innerHTML = '<strong>Expected:</strong><div style="margin-top:6px">' + displayExpected.join(' ') + '</div>';
+        actualEl.innerHTML = '<strong>Actual:</strong><div style="margin-top:6px">' + displayActual.join(' ') + '</div>';
+      }
+
+      // also mark actual transcript tokens in main transcript area (highlight err/misplaced)
+      // Build an "actual tokens markup" similar to displayActual but without the "(missing: )" placeholders - those are already in actual
+      const mainNode = el(part + 'Transcript');
+      if(mainNode){
+        // Extract tokens from displayActual but strip any "(missing: ...)" since those aren't real actual tokens
+        // We'll show only actualTokens annotated: for ops that used actual token (match, sub, extra, misplaced) show the token with class
+        const frag = document.createDocumentFragment();
+        ops.forEach((e,i)=>{
+          if(e.a){
+            const span = document.createElement('span');
+            let cls = '';
+            if(e.op === 'match') cls = 'ok';
+            else if(e.op === 'sub') cls = 'err';
+            else if(e.op === 'extra'){
+              const aLow = e.a.toLowerCase();
+              // if we earlier classified as misplaced, it appears as .misplaced in displayActual. Detect by comparing displayActual token (contains 'misplaced')
+              // Simpler: recompute: if unmatchedExpected contained e.a originally we consumed it — but we've already decremented. To detect, check if displayActual[i] contains 'misplaced'
+              // Use op detection: we already set misplaced when we consumed unmatchedExpected in the step above; we can detect by checking the generated displayActual markup at same index (but not accessible easily). Instead, compute map: build a set of indices that were labelled misplaced during pass.
+            }
+          }
+        });
+        // Instead of complicated mapping, simpler approach: set mainNode to actualEl content (which already contains tokens annotated)
+        mainNode.innerHTML = actualEl.innerHTML;
+      }
+
+      // update crit area (counts)
+      const crit = el(part + 'Crit');
+      if(crit){
+        crit.innerHTML = `<span class="small">words compared: ${total} · matches: ${matches} · substitutions: ${subs} · misplaced: ${misplaced} · extra: ${extras} · missing: ${miss}</span>`;
+      }
+
+      // update accuracy bubble
+      const accBubble = el(part + 'AccBubble');
+      const accPctNode = el(part + 'AccPct');
+      if(accBubble && accPctNode){
+        const totalWords = actualTokens.length || expectedTokens.length || total;
+        const bad = subs + extras + miss + misplaced;
+        if(totalWords === 0){ accBubble.style.display = 'none'; accPctNode.textContent = '0%'; }
+        else { const pct = Math.round(((totalWords - bad) / Math.max(1, totalWords)) * 100); accBubble.style.display = 'inline-flex'; accPctNode.textContent = pct + '%'; }
+      }
+    }
+
+    // render transcript into the transcript-line element (live/no-ref)
+    function renderTranscriptArea(part, text, live=false){
+      const node = el(part + 'Transcript');
+      if(!node) return;
+      const tokens = (text || '').split(/\s+/).filter(Boolean);
+      const freq = {}; tokens.forEach(t=>{ const k=t.toLowerCase(); freq[k]=(freq[k]||0)+1; });
+
+      const frag = document.createDocumentFragment();
+      let suspectCount = 0;
+      tokens.forEach((w,i)=>{
+        const span = document.createElement('span');
+        if(isSuspectWord(w, freq)){
+          span.className = 'suspect';
+          suspectCount++;
+        } else {
+          span.className = 'ok';
+        }
+        span.textContent = w;
+        frag.appendChild(span);
+        if(i < tokens.length - 1) frag.appendChild(document.createTextNode(' '));
+      });
+
+      if(tokens.length === 0){
+        node.textContent = '(Transcript is empty)';
+      } else {
+        node.innerHTML = '';
+        node.appendChild(frag);
+      }
+
+      const crit = el(part + 'Crit');
+      const wordsCount = tokens.length;
+      if(crit){
+        crit.innerHTML = `<span class="small">words: ${wordsCount}${live ? ' · (live)' : ''} · suspects: ${suspectCount}</span>`;
+      }
+
+      const accBubble = el(part + 'AccBubble');
+      const accPctNode = el(part + 'AccPct');
+      if(accBubble && accPctNode){
+        if(wordsCount === 0){ accBubble.style.display = 'none'; accPctNode.textContent = '0%'; }
+        else { const pct = Math.round(((wordsCount - suspectCount) / wordsCount) * 100); accBubble.style.display = 'inline-flex'; accPctNode.textContent = pct + '%'; }
+      }
+    }
+
+    /***********************
+     * Analysis helpers (unchanged)
      ***********************/
     async function decodeAudio(blob){
       const arrayBuf = await blob.arrayBuffer();
@@ -548,30 +996,15 @@
       return total ? (voicedFrames / total) : 0;
     }
 
-    function tokenize(text){
-      if(!text) return [];
-      return text.toLowerCase().replace(/[^\w'\s]/g,' ').split(/\s+/).filter(Boolean);
-    }
-    function lexicalMetrics(words){
-      if(words.length===0) return {TTR:0, vocab:0};
-      const set = new Set(words);
-      return { TTR: set.size / words.length, vocab: set.size };
-    }
-    const fillerList = ['um','uh','like','you know','i mean','so','actually','basically','right','well'];
-    function countFillers(words){
-      let cnt=0;
-      for(let i=0;i<words.length;i++){
-        if(fillerList.includes(words[i])) cnt++;
-      }
-      return cnt;
-    }
-
+    function tokenize(text){ if(!text) return []; return text.toLowerCase().replace(/[^\w'\s]/g,' ').split(/\s+/).filter(Boolean); }
+    function lexicalMetrics(words){ if(words.length===0) return {TTR:0, vocab:0}; const set = new Set(words); return { TTR: set.size / words.length, vocab: set.size }; }
+    function countFillers(words){ let cnt=0; for(let i=0;i<words.length;i++){ if(fillerList.includes(words[i])) cnt++; } return cnt; }
     const to9 = v => Math.max(0, Math.min(9, +(v*9).toFixed(1)));
 
     /***********************
-     * Scoring model
+     * Scoring model (unchanged)
      ***********************/
-    async function analyzeBlobAndScore(blob, part){
+    async function analyzeBlobAndScore(blob, part, transcriptOverride){
       const audioBuf = await decodeAudio(blob);
       const data = audioBuf.getChannelData(0);
       const sr = audioBuf.sampleRate;
@@ -581,7 +1014,7 @@
       const silenceRatio = duration > 0 ? sil.totalSilence / duration : 0;
       let voicedRatio = 0;
       try{ voicedRatio = voicednessRatio(data, sr); }catch(e){ console.warn('voicedness failed', e); }
-      const transcript = (state.transcripts[part] || '').trim();
+      const transcript = (typeof transcriptOverride === 'string' && transcriptOverride.trim()) ? transcriptOverride.trim() : (state.transcripts[part] || '').trim();
       const words = tokenize(transcript);
       const wordCount = words.length;
       const speechRate = duration>0 ? (wordCount / duration) : 0; // words/sec
@@ -623,7 +1056,7 @@
       const critEl = el(part + 'Crit');
       if(critEl){
         critEl.innerHTML = `
-          <strong>Transcript:</strong> ${transcript ? ('<em>'+transcript+'</em>') : '<em>(no transcript)</em>'}
+          <strong>Transcript (used):</strong> ${transcript ? ('<em>' + escapeHtml(transcript) + '</em>') : '<em>(no transcript)</em>'}
           <br>
           <span class="small">dur: ${duration.toFixed(1)}s · words: ${wordCount} · silence: ${(silenceRatio*100).toFixed(1)}% · long pauses: ${sil.longPauses} · voiced: ${(voicedRatio*100).toFixed(0)}%</span>
         `;
@@ -726,7 +1159,6 @@
       alert('Yozuv to‘xtatildi va baholash bajarildi (agar audio bo‘lsa).');
     });
 
-    // per-part toggle buttons
     document.querySelectorAll('[data-rec]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
         const part = btn.getAttribute('data-rec');
@@ -755,12 +1187,19 @@
       parts.forEach(p=>{
         state.files[p]=null;
         state.transcripts[p]='';
+        state.interim[p]='';
         state.scores[p]=null;
         const a = el(p+'Audio'); if(a) a.src='';
         el(p+'Score').textContent = '—';
         el('r_'+p).textContent = '—';
         const crit = el(p+'Crit'); if(crit) crit.innerHTML='';
         const c = el(p+'Wave'); if(c) c.getContext('2d').clearRect(0,0,c.width,c.height);
+        const tnode = el(p+'Transcript'); if(tnode) tnode.textContent = '';
+        const bub = el(p + 'AccBubble'); if(bub) bub.style.display = 'none';
+        const pct = el(p + 'AccPct'); if(pct) pct.textContent = '0%';
+        const ref = el(p + 'Ref'); if(ref) ref.value = '';
+        const exp = el(p + 'Expected'); if(exp) { exp.style.display='none'; exp.innerHTML=''; }
+        const act = el(p + 'Actual'); if(act) { act.style.display='none'; act.innerHTML=''; }
       });
       el('globalTimer').textContent = '00:00';
       el('phasePill').textContent = 'Standby';
@@ -771,7 +1210,20 @@
     });
 
     /***********************
-     * Exports
+     ***********************/
+    el('btnExportTxt').addEventListener('click', ()=>{
+      const out = {
+        p1: state.transcripts.p1 || '',
+        p2: state.transcripts.p2 || '',
+        p3: state.transcripts.p3 || ''
+      };
+      const txt = `Part1:\n${out.p1}\n\nPart2:\n${out.p2}\n\nPart3:\n${out.p3}\n`;
+      const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `speaking_transcript_${new Date().toISOString().slice(0,10)}.txt`; a.click(); URL.revokeObjectURL(url);
+    });
+
+    /***********************
      ***********************/
     el('btnExportSession').addEventListener('click', ()=>{
       state.session.transcripts = state.transcripts; state.session.scores = state.scores;
@@ -798,14 +1250,13 @@
         const canvas = await html2canvas(node, {scale:2, useCORS:true, backgroundColor: getComputedStyle(document.body).backgroundColor});
         canvas.toBlob((blob)=>{
           const url = URL.createObjectURL(blob);
-          const a=document.createElement('a'); a.href=url; a.download = `speaking_results_${new Date().toISOString().slice(0,10)}.png`; a.click(); URL.revokeObjectURL(url);
+          const a=document.createElement('a'); a.href = url; a.download = `speaking_results_${new Date().toISOString().slice(0,10)}.png`; a.click(); URL.revokeObjectURL(url);
           el('btnExportPNG').textContent = '🖼️ Export Result PNG';
         }, 'image/png');
       }catch(e){ alert('PNG yaratishda xato: ' + e); el('btnExportPNG').textContent = '🖼️ Export Result PNG'; }
     });
 
     /***********************
-     * Hotkeys: Space
      ***********************/
     window.addEventListener('keydown', async (e)=>{
       if(e.code === 'Space' && (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')){
@@ -823,7 +1274,6 @@
     });
 
     /***********************
-     * Init UI content
      ***********************/
     function genQuestions(){
       el('p1Qs').innerHTML = '<div class="question">What do you do in your free time?</div><div class="question">Do you prefer mornings or evenings?</div>';
@@ -833,8 +1283,29 @@
     genQuestions();
     el('srStatus').textContent = (window.SpeechRecognition || window.webkitSpeechRecognition) ? 'available' : 'unsupported';
 
+    document.querySelectorAll('[data-compare]').forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        const part = btn.getAttribute('data-compare');
+        const ref = (el(part + 'Ref').value || '').trim();
+        const combined = ((state.transcripts[part] || '') + ' ' + (state.interim[part] || '')).trim();
+        compareAndRender(part, combined, ref);
+      });
+    });
+    document.querySelectorAll('[data-clear]').forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        const part = btn.getAttribute('data-clear');
+        el(part + 'Ref').value = '';
+        // hide aligned displays
+        const expectedEl = el(part + 'Expected');
+        const actualEl = el(part + 'Actual');
+        if(expectedEl){ expectedEl.style.display='none'; expectedEl.innerHTML=''; }
+        if(actualEl){ actualEl.style.display='none'; actualEl.innerHTML=''; }
+        const combined = ((state.transcripts[part] || '') + ' ' + (state.interim[part] || '')).trim();
+        renderTranscriptArea(part, combined, false);
+      });
+    });
+
     /***********************
-     * Redraw waves on theme change
      ***********************/
     const observer = new MutationObserver(()=> {
       parts.forEach(p=>{
@@ -843,12 +1314,35 @@
       });
     });
     observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
+    /***********************
+     ***********************/
+    function escapeHtml(str){
+      return str.replace(/[&<>"']/g, function(m){ return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]; });
+    }
+
+    setInterval(()=> {
+      const p = state.currentPart || 'p1';
+      const combined = ((state.transcripts[p] || '') + ' ' + (state.interim[p] || '')).trim();
+      const ref = (el(p + 'Ref') && el(p + 'Ref').value) || '';
+      const expectedEl = el(p + 'Expected');
+      if(ref && expectedEl && expectedEl.style.display === 'block'){
+      } else {
+        if(combined) renderTranscriptArea(p, combined, !!state.interim[p]);
+        else renderTranscriptArea(p, combined, !!state.interim[p]);
+      }
+    }, 600);
+
+    (function ensureAccBubbles(){
+      parts.forEach(p=>{
+        const id = p + 'AccBubble';
+        if(!document.getElementById(id)){
+        }
+      });
+    })();
+
+    try{ initSpeechRecognition(); }catch(e){ /* ignore */ }
+
   </script>
 </body>
 </html>
-
-
-
-
-
-
