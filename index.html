@@ -135,21 +135,21 @@
     .row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
     .label{font-size:13px;color:var(--muted)}
     .meter{height:10px;background:#06102a;border:1px solid var(--stroke);border-radius:999px;overflow:hidden}
-    .timer{font-variant-numeric:tabular-nums;font-size:24px;font-weight:800}
+    .timer{font-variant-numeric:tabular-nums;font-size:28px;font-weight:800}
     .pill{font-size:13px;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:var(--chip); color:var(--text)}
     .section{border:1px solid var(--stroke);background:var(--panel);border-radius:var(--card-radius);margin-top:var(--section-gap)}
-    .section .head{padding:14px 16px}
-    .section .body{padding:14px 16px;border-top:1px solid var(--stroke)}
-    .card{background:linear-gradient(180deg,var(--bg2),var(--panel));border:1px solid var(--stroke);border-radius:var(--card-radius);padding:18px}
+    .section .head{padding:18px 16px}
+    .section .body{padding:18px 16px;border-top:1px solid var(--stroke)}
+    .card{background:linear-gradient(180deg,var(--bg2),var(--panel));border:1px solid var(--stroke);border-radius:var(--card-radius);padding:22px}
     .muted{color:var(--muted);font-size:14px;margin:0}
 
     .qa{display:grid;gap:10px}
-    .question{padding:10px 12px;border:1px solid var(--stroke);background:var(--chip);border-radius:12px;position:relative;font-size:15px}
+    .question{padding:12px 14px;border:1px solid var(--stroke);background:var(--chip);border-radius:12px;position:relative;font-size:15px}
     textarea{width:100%;min-height:90px;border-radius:12px;border:1px solid var(--stroke);background:var(--chip);color:var(--text);padding:10px;font-size:14px}
 
     .audio-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     audio{width:100%}
-    canvas{width:100%;height:46px;background:var(--chip);border:1px solid var(--stroke);border-radius:10px}
+    canvas{width:100%;height:56px;background:var(--chip);border:1px solid var(--stroke);border-radius:10px}
 
     .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media(max-width:640px){ .cols{grid-template-columns:1fr} }
@@ -157,46 +157,47 @@
     .range{display:flex;align-items:center;gap:8px}
     .score-pill{
       font-weight:800;
-      padding:8px 12px;
+      padding:10px 14px;
       border-radius:12px;
       background: linear-gradient(90deg, var(--bg2), var(--panel));
       border:1px solid var(--stroke);
       color: var(--text);
       display:inline-block;
       box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      font-size:16px;
     }
     .crit{font-size:13px;color:var(--muted);display:block;margin-top:8px}
     .small{font-size:13px;color:var(--muted)}
 
     /* Grid spacing increased with --gutter */
     .grid{display:grid;gap:var(--gutter);margin-top:18px;grid-template-columns:1fr}
-    @media(min-width:1050px){ .grid{grid-template-columns:1.12fr .88fr} }
+    /* MAKE TEST PANEL LARGER: left column much wider, right column slimmer */
+    @media(min-width:1050px){ .grid{grid-template-columns:1.6fr .4fr} }
 
     /* part tabs */
-    .tabs{display:flex;gap:12px;margin-top:16px}
+    .tabs{display:flex;gap:16px;margin-top:18px}
     .tab-btn{
-      padding:8px 12px;border-radius:12px;border:1px solid var(--stroke);background:var(--btn-ghost-bg);color:var(--text);font-weight:700;font-size:14px;cursor:pointer;
+      padding:10px 16px;border-radius:14px;border:1px solid var(--stroke);background:var(--btn-ghost-bg);color:var(--text);font-weight:800;font-size:15px;cursor:pointer;
     }
     .tab-btn.active{
       background: linear-gradient(90deg,var(--brand),var(--mint));
-      color: #fff; border-color: transparent; box-shadow: 0 8px 22px rgba(0,0,0,0.12);
-      transform: translateY(-2px);
+      color: #fff; border-color: transparent; box-shadow: 0 10px 28px rgba(0,0,0,0.14);
+      transform: translateY(-3px);
     }
 
-    aside .pill{padding:6px 10px;font-size:13px}
+    aside .pill{padding:8px 12px;font-size:14px}
     .status-muted{ font-size:13px; color:var(--muted) }
 
-    /* Transcript display (added minimal UI but kept layout intact) */
-    .transcript-line{margin-top:10px; padding:10px 12px; background:var(--chip); border-radius:10px; border:1px solid var(--stroke); color:var(--text); line-height:1.6; min-height:56px; white-space:pre-wrap; word-break:break-word}
-    .suspect{background:var(--suspect-bg); border-bottom:2px solid var(--suspect-border); padding:2px 4px; border-radius:4px; font-weight:700; color:var(--text)}
-    .ok{background:var(--ok-bg); border-bottom:2px solid var(--ok-border); padding:2px 4px; border-radius:4px; font-weight:700; color:var(--ok-text)}
-    /* new: explicit error styling for comparison results */
-    .err{ background: var(--err-bg); border-bottom:2px solid var(--err-border); padding:2px 4px; border-radius:4px; font-weight:800; color:var(--err-text) }
-    .misplaced{ background: var(--misplaced-bg); border-bottom:2px solid var(--misplaced-border); padding:2px 4px; border-radius:4px; font-weight:800; color:var(--misplaced-text) }
-    .extra{ background: var(--extra-bg); border-bottom:2px solid var(--extra-border); padding:2px 4px; border-radius:4px; font-weight:800; color:var(--extra-text) }
+    /* Transcript display */
+    .transcript-line{margin-top:10px; padding:14px 12px; background:var(--chip); border-radius:12px; border:1px solid var(--stroke); color:var(--text); line-height:1.6; min-height:72px; white-space:pre-wrap; word-break:break-word}
+    .suspect{background:var(--suspect-bg); border-bottom:2px solid var(--suspect-border); padding:3px 6px; border-radius:6px; font-weight:800; color:var(--text)}
+    .ok{background:var(--ok-bg); border-bottom:2px solid var(--ok-border); padding:3px 6px; border-radius:6px; font-weight:800; color:var(--ok-text)}
+    .err{ background: var(--err-bg); border-bottom:2px solid var(--err-border); padding:3px 6px; border-radius:6px; font-weight:800; color:var(--err-text) }
+    .misplaced{ background: var(--misplaced-bg); border-bottom:2px solid var(--misplaced-border); padding:3px 6px; border-radius:6px; font-weight:800; color:var(--misplaced-text) }
+    .extra{ background: var(--extra-bg); border-bottom:2px solid var(--extra-border); padding:3px 6px; border-radius:6px; font-weight:800; color:var(--extra-text) }
 
     /* expected/actual small display */
-    .aligned-expected, .aligned-actual { margin-top:8px; padding:8px; border-radius:8px; background:var(--chip); border:1px solid var(--stroke); white-space:pre-wrap; word-break:break-word; color:var(--text) }
+    .aligned-expected, .aligned-actual { margin-top:10px; padding:10px; border-radius:10px; background:var(--chip); border:1px solid var(--stroke); white-space:pre-wrap; word-break:break-word; color:var(--text) }
 
     /* accuracy badge inside transcript */
     .accuracy-bubble{
@@ -207,32 +208,82 @@
       float:right;
       margin: -8px 0 8px 8px;
       background: linear-gradient(180deg,#ffffff22,#ffffff11);
-      padding:6px 10px;
+      padding:8px 12px;
       border-radius:999px;
       border:1px solid var(--stroke);
       font-weight:800;
-      font-size:13px;
+      font-size:14px;
     }
 
     /* accessibility - focus */
-    :focus { outline: 3px solid var(--ring); outline-offset:3px; border-radius:10px; }
+    :focus { outline: 3px solid var(--ring); outline-offset:3px; border-radius:12px; }
 
     /* subtle responsive tweaks */
     @media(max-width:1050px){
-      .head{padding:8px 16px}
+      .head{padding:10px 16px}
       .wrap{padding:18px}
-      .card{padding:14px}
+      .card{padding:16px}
       .tabs{gap:10px}
       .accuracy-bubble{float:none; display:block; margin:8px 0}
+      .timer{font-size:22px}
     }
 
     /* small helpers */
-    .ref-row{margin-top:10px; display:flex; gap:8px; align-items:flex-start}
-    .ref-area{min-height:64px; font-size:13px; padding:8px; border-radius:8px}
-    .token { margin-right:6px; display:inline-block; padding:2px 6px; border-radius:6px; font-weight:700 }
+    .ref-row{margin-top:12px; display:flex; gap:12px; align-items:flex-start}
+    .ref-area{min-height:72px; font-size:14px; padding:10px; border-radius:12px}
+    .token { margin-right:6px; display:inline-block; padding:4px 8px; border-radius:8px; font-weight:800 }
+
+    /* ----------------- Final-only visibility control ----------------- */
+    .final-only { display: none !important; }
+    /* when body has data-finalized="true" show final-only elements */
+    body[data-finalized="true"] .final-only { display: initial !important; }
+
+    /* ----------------- Intro card styles ----------------- */
+    .intro {
+      display:block;
+      margin-bottom:18px;
+      border-radius:16px;
+      padding:20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid var(--stroke);
+    }
+    .intro .title { font-size:20px; font-weight:800; margin:0 0 8px 0; }
+    .intro .desc { color:var(--muted); margin:0 0 12px 0; font-size:14px }
+    .intro .grid-form { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media(max-width:700px){ .intro .grid-form{ grid-template-columns:1fr } }
+    .intro input, .intro select { width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--stroke); background:var(--chip); color:var(--text); }
+    .intro .tips { margin-top:12px; color:var(--muted); font-size:14px; line-height:1.5; }
+    .intro .start-row{ display:flex; gap:12px; margin-top:16px; align-items:center }
+    .locked { opacity: .6; pointer-events: none; }
+
+    /* ----------------- Tidy button layout inside test header/controls ----------------- */
+    .section .head .controls {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    /* make primary controls larger and uniform */
+    .section .head .btn {
+      min-width:120px;
+      padding:10px 14px;
+      font-size:14px;
+      border-radius:12px;
+      flex: none;
+    }
+    /* group smaller ghost buttons together */
+    .section .head .btn.ghost { padding:8px 12px; min-width:92px; }
+
+    /* Make part-record buttons clearer */
+    [data-rec] { min-width:160px; padding:12px 16px; font-weight:800; border-radius:12px; }
+
+    /* Make tabs and left panel visually heavier for emphasis */
+    #test { box-shadow: 0 14px 40px rgba(0,0,0,0.15); border-radius:16px; }
+    #resultsPanel { position:sticky; top:84px; }
+
   </style>
 </head>
-<body>
+<body data-finalized="false">
   <header>
     <div class="head">
       <div class="logo" aria-label="Logo">
@@ -249,9 +300,68 @@
   </header>
 
   <main class="wrap">
+    <!-- INTRO: candidate details + tips + Start Test button -->
+    <section class="intro card" id="introCard" aria-label="Kirish - ma'lumotlar">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <div class="title">Kirish: Speaking ma'lumotlari</div>
+          <div class="desc">Iltimos imtihonchi haqidagi ma'lumotlarni kiriting. "Start Test" bosilgandan keyin test paneliga o'tasiz.</div>
+        </div>
+        <div style="text-align:right">
+          <div class="small" style="color:var(--muted)">Tartibli va aniq ma'lumotlar natijani kuzatishda yordam beradi.</div>
+        </div>
+      </div>
+
+      <div class="grid-form" style="margin-top:12px">
+        <div>
+          <label class="label">Ism, Familiya</label>
+          <input id="candidateName" placeholder="Masalan: Alijon Akbarov" />
+        </div>
+        <div>
+          <label class="label">ID / Roll raqami (ixtiyoriy)</label>
+          <input id="candidateID" placeholder="Masalan: 2025-0042" />
+        </div>
+        <div>
+          <label class="label">Test sanasi</label>
+          <input id="testDate" type="date" />
+        </div>
+        <div>
+          <label class="label">Maqsad band</label>
+          <select id="targetBand">
+            <option value="">Tanlang (ixtiyoriy)</option>
+            <option>Band 6</option>
+            <option>Band 6.5</option>
+            <option>Band 7</option>
+            <option>Band 7.5</option>
+            <option>Band 8+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="tips">
+        <strong>Foydali maslahatlar:</strong>
+        <ul style="margin:8px 0 0 18px; color:var(--muted)">
+          <li>Yozuvdan oldin mikrofonni tekshiring (Mic test).</li>
+          <li>Har bir partni alohida yozing — oxirida natijalar avtomatik hisoblanadi.</li>
+          <li>Qo'shimcha: "Expected text" maydoniga javob namunangizni joylashtirib taqqoslashingiz mumkin.</li>
+        </ul>
+      </div>
+
+      <div class="start-row">
+        <button id="btnStartTest" class="btn ok">▶️ Start Test</button>
+        <button id="btnStartTestNoMic" class="btn ghost">▶️ Iltimos, mikrofon yo'q — davom etish</button>
+        <div class="spacer"></div>
+        <div style="display:flex;gap:8px">
+          <button id="btnLoadSample" class="btn ghost">📚 Sample Qs</button>
+          <button id="btnClearIntro" class="btn ghost">✖ Clear</button>
+        </div>
+      </div>
+    </section>
+
     <div class="grid">
-      <section class="card" id="test" aria-live="polite">
-        <h2>Test paneli</h2>
+      <!-- TEST PANEL: hidden until "Start Test" clicked -->
+      <section class="card" id="test" aria-live="polite" style="display:none">
+        <h2 style="font-size:22px; margin-bottom:6px">Test paneli</h2>
 
         <!-- PART TABS -->
         <div class="tabs" role="tablist" aria-label="Parts tabs">
@@ -263,37 +373,51 @@
         <p class="muted" style="margin-top:10px">Mikrofonga ruxsat bering, keyin <b>Start</b> yoki har bir part uchun ⏺️ tugmasini bosing. Hotkeys: Space — toggle record.</p>
 
         <div class="section" aria-hidden="false">
-          <div class="head row">
-            <div class="timer" id="globalTimer">00:00</div>
-            <span class="pill" id="phasePill">Standby</span>
-            <div class="spacer"></div>
-            <label class="label" for="langSelect" style="align-self:center;margin-right:8px">SR til:</label>
-            <select id="langSelect" class="pill" style="padding:6px;border-radius:10px;background:transparent;border:1px solid var(--stroke);color:var(--text)">
-              <option value="en-US" selected>English (US)</option>
-              <option value="en-GB">English (UK)</option>
-              <option value="uz-UZ">O'zbekcha (agar qo'llab-quvvatlansa)</option>
-              <option value="ru-RU">Русский</option>
-            </select>
-            <button id="btnSetup" class="btn">🎙️ Mic test</button>
-            <button id="btnStart" class="btn ok">▶️ Start</button>
-            <button id="btnStop" class="btn danger" disabled>⏹️ Stop</button>
-            <button id="btnReset" class="btn ghost">↺ Reset</button>
+          <div class="head row" style="align-items:center; justify-content:space-between;">
+            <div style="display:flex; gap:14px; align-items:center;">
+              <div class="timer" id="globalTimer">00:00</div>
+              <span class="pill" id="phasePill">Standby</span>
+            </div>
+
+            <div class="controls" style="display:flex; gap:10px; align-items:center;">
+              <label class="label" for="langSelect" style="margin-right:6px">SR til:</label>
+              <select id="langSelect" class="pill" style="padding:8px;border-radius:10px;background:transparent;border:1px solid var(--stroke);color:var(--text); min-width:160px">
+                <option value="en-US" selected>English (US)</option>
+                <option value="en-GB">English (UK)</option>
+                <option value="uz-UZ">O'zbekcha (agar qo'llab-quvvatlansa)</option>
+                <option value="ru-RU">Русский</option>
+              </select>
+
+              <button id="btnSetup" class="btn">🎙️ Mic test</button>
+              <button id="btnStart" class="btn ok">▶️ Start</button>
+              <button id="btnStop" class="btn danger" disabled>⏹️ Stop</button>
+              <button id="btnReset" class="btn ghost">↺ Reset</button>
+              <!-- Visible only when all parts completed -->
+              <button id="btnShowResults" class="btn ok final-only" style="display:none; margin-left:8px">✅ Ko'rsatish: Natijalar</button>
+            </div>
           </div>
+
           <div class="body">
             <div class="row" style="align-items:flex-start">
-              <div style="flex:1;min-width:260px">
+              <div style="flex:1;min-width:320px">
                 <div class="label">Ovoz darajasi</div>
                 <div class="meter" style="margin-bottom:8px;"><div class="bar" id="levelBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--brand),var(--mint));"></div></div>
-                <canvas id="liveWave" height="46" aria-hidden="true"></canvas>
+                <canvas id="liveWave" height="56" aria-hidden="true"></canvas>
               </div>
-              <div style="min-width:260px">
+              <div style="min-width:340px; max-width:420px;">
                 <div class="label">Rejim</div>
                 <div class="list" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
                   <span class="pill" id="micStatus">Mic: unknown</span>
                   <span class="pill" id="recStatus">Rec: idle</span>
-                  <button id="btnExportTxt" class="btn ghost" title="Export transcript" style="padding:6px 8px;font-weight:600">💾 TXT</button>
+                  <button id="btnExportTxt" class="btn ghost" title="Export transcript" style="padding:8px 10px;font-weight:700">💾 TXT</button>
                 </div>
-                <div class="small" style="margin-top:10px">SpeechRecognition: <span id="srStatus">unsupported</span></div>
+                <div class="small" style="margin-top:12px">SpeechRecognition: <span id="srStatus">unsupported</span></div>
+
+                <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="btn" data-rec="p1">⏺️ Record Part 1</button>
+                  <button class="btn" data-rec="p2">⏺️ Record Part 2</button>
+                  <button class="btn" data-rec="p3">⏺️ Record Part 3</button>
+                </div>
               </div>
             </div>
           </div>
@@ -302,19 +426,17 @@
         <!-- P1 -->
         <div class="section" id="p1" aria-hidden="false" style="display:block">
           <div class="head row">
-            <strong>Part 1 — Introduction</strong>
-            <span class="pill" id="p1Score">—</span>
-            <div class="spacer"></div>
-            <button class="btn" data-rec="p1">⏺️ P1 Start/Stop</button>
+            <strong style="font-size:16px">Part 1 — Introduction</strong>
+            <div style="display:flex; align-items:center; gap:10px">
+              <span class="pill final-only" id="p1Score">—</span>
+            </div>
           </div>
           <div class="body">
             <div class="qa" id="p1Qs">Savollar...</div>
 
-            <!-- Transcript display added under part body (plain text, not an image) -->
-            <div class="accuracy-bubble" id="p1AccBubble" style="display:none"><span id="p1AccPct">0%</span> Accuracy</div>
+            <div class="accuracy-bubble final-only" id="p1AccBubble" style="display:none"><span id="p1AccPct">0%</span> Accuracy</div>
             <div class="transcript-line" id="p1Transcript" aria-live="polite" role="log"></div>
 
-            <!-- Reference area for compare -->
             <div class="ref-row">
               <textarea id="p1Ref" class="ref-area" placeholder="Expected text (paste the correct/reference sentence here)"></textarea>
               <div style="display:flex;flex-direction:column;gap:8px">
@@ -323,30 +445,30 @@
               </div>
             </div>
 
-            <div class="aligned-expected" id="p1Expected" style="display:none"></div>
-            <div class="aligned-actual" id="p1Actual" style="display:none; margin-top:8px"></div>
+            <div class="aligned-expected final-only" id="p1Expected" style="display:none"></div>
+            <div class="aligned-actual final-only" id="p1Actual" style="display:none; margin-top:8px"></div>
 
-            <div class="audio-row" style="margin-top:10px">
+            <div class="audio-row" style="margin-top:12px">
               <audio id="p1Audio" controls></audio>
               <a id="p1Dl" class="btn ghost" download>⬇️ Yuklab olish</a>
-              <canvas id="p1Wave" height="46" aria-hidden="true"></canvas>
+              <canvas id="p1Wave" height="56" aria-hidden="true"></canvas>
             </div>
-            <div class="crit" id="p1Crit"></div>
+            <div class="crit final-only" id="p1Crit"></div>
           </div>
         </div>
 
         <!-- P2 -->
         <div class="section" id="p2" aria-hidden="true" style="display:none">
           <div class="head row">
-            <strong>Part 2 — Long Turn</strong>
-            <span class="pill" id="p2Score">—</span>
-            <div class="spacer"></div>
-            <button class="btn" data-rec="p2">⏺️ P2 Start/Stop</button>
+            <strong style="font-size:16px">Part 2 — Long Turn</strong>
+            <div style="display:flex; align-items:center; gap:10px">
+              <span class="pill final-only" id="p2Score">—</span>
+            </div>
           </div>
           <div class="body">
             <div class="question big prep" id="p2Card">Cue Card…</div>
 
-            <div class="accuracy-bubble" id="p2AccBubble" style="display:none"><span id="p2AccPct">0%</span> Accuracy</div>
+            <div class="accuracy-bubble final-only" id="p2AccBubble" style="display:none"><span id="p2AccPct">0%</span> Accuracy</div>
             <div class="transcript-line" id="p2Transcript" aria-live="polite" role="log"></div>
 
             <div class="ref-row">
@@ -357,27 +479,27 @@
               </div>
             </div>
 
-            <div class="aligned-expected" id="p2Expected" style="display:none"></div>
-            <div class="aligned-actual" id="p2Actual" style="display:none; margin-top:8px"></div>
+            <div class="aligned-expected final-only" id="p2Expected" style="display:none"></div>
+            <div class="aligned-actual final-only" id="p2Actual" style="display:none; margin-top:8px"></div>
 
-            <textarea id="p2Notes" placeholder="Eslatmalar" style="margin-top:10px"></textarea>
-            <div class="audio-row" style="margin-top:10px"><audio id="p2Audio" controls></audio><a id="p2Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p2Wave" height="46" aria-hidden="true"></canvas></div>
-            <div class="crit" id="p2Crit"></div>
+            <textarea id="p2Notes" placeholder="Eslatmalar" style="margin-top:12px"></textarea>
+            <div class="audio-row" style="margin-top:12px"><audio id="p2Audio" controls></audio><a id="p2Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p2Wave" height="56" aria-hidden="true"></canvas></div>
+            <div class="crit final-only" id="p2Crit"></div>
           </div>
         </div>
 
         <!-- P3 -->
         <div class="section" id="p3" aria-hidden="true" style="display:none">
           <div class="head row">
-            <strong>Part 3 — Discussion</strong>
-            <span class="pill" id="p3Score">—</span>
-            <div class="spacer"></div>
-            <button class="btn" data-rec="p3">⏺️ P3 Start/Stop</button>
+            <strong style="font-size:16px">Part 3 — Discussion</strong>
+            <div style="display:flex; align-items:center; gap:10px">
+              <span class="pill final-only" id="p3Score">—</span>
+            </div>
           </div>
           <div class="body">
             <div class="qa" id="p3Qs">Savollar...</div>
 
-            <div class="accuracy-bubble" id="p3AccBubble" style="display:none"><span id="p3AccPct">0%</span> Accuracy</div>
+            <div class="accuracy-bubble final-only" id="p3AccBubble" style="display:none"><span id="p3AccPct">0%</span> Accuracy</div>
             <div class="transcript-line" id="p3Transcript" aria-live="polite" role="log"></div>
 
             <div class="ref-row">
@@ -388,16 +510,17 @@
               </div>
             </div>
 
-            <div class="aligned-expected" id="p3Expected" style="display:none"></div>
-            <div class="aligned-actual" id="p3Actual" style="display:none; margin-top:8px"></div>
+            <div class="aligned-expected final-only" id="p3Expected" style="display:none"></div>
+            <div class="aligned-actual final-only" id="p3Actual" style="display:none; margin-top:8px"></div>
 
-            <div class="audio-row" style="margin-top:10px"><audio id="p3Audio" controls></audio><a id="p3Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p3Wave" height="46" aria-hidden="true"></canvas></div>
-            <div class="crit" id="p3Crit"></div>
+            <div class="audio-row" style="margin-top:12px"><audio id="p3Audio" controls></audio><a id="p3Dl" class="btn ghost" download>⬇️ Yuklab olish</a><canvas id="p3Wave" height="56" aria-hidden="true"></canvas></div>
+            <div class="crit final-only" id="p3Crit"></div>
           </div>
         </div>
       </section>
 
-      <aside class="card" id="resultsPanel">
+      <!-- RESULTS PANEL: hidden (final-only) until finalized -->
+      <aside class="card final-only" id="resultsPanel" style="display:block">
         <h2>Natijalar & Eksport</h2>
         <p class="muted">Avtomatik baholash — faqat amaliy qo‘llanma sifatida qarang.</p>
 
@@ -415,6 +538,11 @@
               <button id="btnExportAll" class="btn">📦 Hammasini ZIP</button>
               <button id="btnExportPNG" class="btn ghost">🖼️ Export Result PNG</button>
             </div>
+
+            <div style="margin-top:12px" class="row">
+              <button id="btnFinalize" class="btn ok final-only" style="display:none">🔒 Locked (results shown)</button>
+            </div>
+            <div id="finalNote" class="small" style="margin-top:10px;color:var(--muted)"></div>
           </div>
         </div>
       </aside>
@@ -445,7 +573,8 @@
       transcripts: {p1:'', p2:'', p3:''},
       interim: {p1:'', p2:'', p3:''},
       scores: {p1:null,p2:null,p3:null},
-      session: {}
+      session: {},
+      locked: false // once results shown, lock further testing
     };
     const pad = n => String(n).padStart(2,'0');
     const fmt = s => `${pad(Math.floor(s/60))}:${pad(Math.floor(s%60))}`;
@@ -474,6 +603,42 @@
     el('btnPrint').addEventListener('click', () => window.print());
 
     /***********************
+     * Intro -> Test flow
+     ***********************/
+    const introCard = el('introCard');
+    const testSection = el('test');
+    const btnStartTest = el('btnStartTest');
+    const btnStartTestNoMic = el('btnStartTestNoMic');
+    const btnLoadSample = el('btnLoadSample');
+    const btnClearIntro = el('btnClearIntro');
+
+    btnStartTest.addEventListener('click', async () => {
+      // ensure mic available or at least allow setup
+      try{
+        await navigator.mediaDevices.getUserMedia({audio:true});
+      }catch(e){
+        if(!confirm('Mikrofonga ruxsat yo\'q yoki bloklangan. Davom etishni xohlaysizmi?')) return;
+      }
+      introCard.style.display = 'none';
+      testSection.style.display = 'block';
+      // initialize mic if not yet
+      if(!state.stream){ try{ await setupMic(); }catch(e){} }
+    });
+    btnStartTestNoMic.addEventListener('click', ()=> {
+      introCard.style.display = 'none';
+      testSection.style.display = 'block';
+    });
+    btnLoadSample.addEventListener('click', ()=> {
+      el('p1Qs').innerHTML = '<div class="question">What do you do in your free time?</div><div class="question">Do you prefer mornings or evenings?</div>';
+      el('p2Card').textContent = 'Describe a memorable journey you had. You should say: where you went, how you traveled, and explain why it was memorable.';
+      el('p3Qs').innerHTML = '<div class="question">How has technology changed communication?</div><div class="question">What makes a city livable?</div>';
+      alert('Sample questions loaded.');
+    });
+    btnClearIntro.addEventListener('click', ()=> {
+      el('candidateName').value=''; el('candidateID').value=''; el('testDate').value=''; el('targetBand').value='';
+    });
+
+    /***********************
      * Show/hide parts (tabs)
      ***********************/
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -496,7 +661,10 @@
       });
       state.currentPart = part;
     }
-    tabButtons.forEach(btn=>{ btn.addEventListener('click', ()=> showPart(btn.getAttribute('data-target'))); });
+    tabButtons.forEach(btn=>{ btn.addEventListener('click', ()=> {
+      if(state.locked) return; // prevent switching after locked
+      showPart(btn.getAttribute('data-target'));
+    }); });
     showPart(state.currentPart || 'p1');
 
     /***********************
@@ -562,6 +730,7 @@
     }
 
     function startRecording(part){
+      if(state.locked){ alert('Test yakunlandi — natijalarga qaytish mumkin emas.'); return false; }
       if(!state.stream){ alert('Avval Mic test bosing'); return false; }
       if(state.recorder && state.recorder.state === 'recording'){ console.warn('Already recording'); return false; }
       state.chunks = [];
@@ -605,6 +774,7 @@
           try{ await analyzeBlobAndScore(blob, part, state.transcripts[part]); }catch(e){ console.error('Analyze error', e); }
           try{ await drawRecordedWave(blob, part); }catch(e){ console.warn('draw wave fail', e); }
           state.recorder = null;
+          updateFinalizeAvailability();
           resolve(blob);
         };
         try{ rec.stop(); }catch(e){ console.error(e); resolve(null); }
@@ -861,27 +1031,8 @@
       }
 
       // also mark actual transcript tokens in main transcript area (highlight err/misplaced)
-      // Build an "actual tokens markup" similar to displayActual but without the "(missing: )" placeholders - those are already in actual
       const mainNode = el(part + 'Transcript');
       if(mainNode){
-        // Extract tokens from displayActual but strip any "(missing: ...)" since those aren't real actual tokens
-        // We'll show only actualTokens annotated: for ops that used actual token (match, sub, extra, misplaced) show the token with class
-        const frag = document.createDocumentFragment();
-        ops.forEach((e,i)=>{
-          if(e.a){
-            const span = document.createElement('span');
-            let cls = '';
-            if(e.op === 'match') cls = 'ok';
-            else if(e.op === 'sub') cls = 'err';
-            else if(e.op === 'extra'){
-              const aLow = e.a.toLowerCase();
-              // if we earlier classified as misplaced, it appears as .misplaced in displayActual. Detect by comparing displayActual token (contains 'misplaced')
-              // Simpler: recompute: if unmatchedExpected contained e.a originally we consumed it — but we've already decremented. To detect, check if displayActual[i] contains 'misplaced'
-              // Use op detection: we already set misplaced when we consumed unmatchedExpected in the step above; we can detect by checking the generated displayActual markup at same index (but not accessible easily). Instead, compute map: build a set of indices that were labelled misplaced during pass.
-            }
-          }
-        });
-        // Instead of complicated mapping, simpler approach: set mainNode to actualEl content (which already contains tokens annotated)
         mainNode.innerHTML = actualEl.innerHTML;
       }
 
@@ -1045,6 +1196,7 @@
 
       const final = +(( (fluencyScore + lexicalScore + grammarScore + pronScore) / 4 ).toFixed(1));
 
+      // Save to state.scores (DOM is hidden until finalize)
       state.scores[part] = {
         fluency: fluencyScore,
         lexical: lexicalScore,
@@ -1053,6 +1205,7 @@
         final
       };
 
+      // Update per-part crit (kept hidden until finalize)
       const critEl = el(part + 'Crit');
       if(critEl){
         critEl.innerHTML = `
@@ -1062,8 +1215,12 @@
         `;
       }
 
-      el(part + 'Score').textContent = final.toFixed(1);
-      el('r_' + part).textContent = final.toFixed(1);
+      // we still set textContent for score elements (they are hidden by CSS until finalize)
+      const scoreEl = el(part + 'Score');
+      if(scoreEl) scoreEl.textContent = final.toFixed(1);
+      const rEl = el('r_' + part);
+      if(rEl) rEl.textContent = final.toFixed(1);
+
       computeOverallAndDisplay();
     }
 
@@ -1136,6 +1293,7 @@
     }
 
     el('btnStart').addEventListener('click', ()=>{
+      if(state.locked){ alert('Test yakunlandi — natijalarga qaytish mumkin emas.'); return; }
       if(!state.stream){
         if(!confirm('Mikrofon ruxsatisiz davom etilsinmi? (avval Mic test bosing)')) return;
       }
@@ -1148,6 +1306,7 @@
     });
 
     el('btnStop').addEventListener('click', async ()=>{
+      if(state.locked){ alert('Test yakunlandi — natijalarga qaytish mumkin emas.'); return; }
       if(state.recorder && state.recorder.state === 'recording'){
         const part = state.currentPart || 'p1';
         await stopRecording(part);
@@ -1161,6 +1320,7 @@
 
     document.querySelectorAll('[data-rec]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
+        if(state.locked){ alert('Test yakunlandi — natijalarga qaytish mumkin emas.'); return; }
         const part = btn.getAttribute('data-rec');
         if(state.recorder && state.recorder.state === 'recording'){
           if(state.currentPart === part){
@@ -1181,6 +1341,7 @@
     });
 
     el('btnReset').addEventListener('click', ()=>{
+      if(state.locked){ alert('Test yakunlandi — reset mumkin emas.'); return; }
       if(!confirm('Butun sessiyani reset qilinsinmi?')) return;
       if(state.recorder && state.recorder.state === 'recording'){ try{ state.recorder.stop(); }catch(e){} }
       stopGlobal();
@@ -1207,6 +1368,14 @@
       el('btnStop').disabled = true;
       el('avgOverall').textContent = '—';
       state.session = {};
+      // hide final-only UI and reset finalize button
+      document.body.setAttribute('data-finalized','false');
+      state.locked = false;
+      updateFinalizeAvailability();
+      // enable tabs
+      document.querySelectorAll('.tab-btn').forEach(b=> b.classList.remove('locked'));
+      document.querySelectorAll('[data-rec]').forEach(b=> b.disabled = false);
+      el('btnStart').disabled = false; el('btnStop').disabled = true;
     });
 
     /***********************
@@ -1257,10 +1426,51 @@
     });
 
     /***********************
+     * Finalize / Show Results logic:
+     * - btnShowResults appears when all parts completed
+     * - clicking it reveals resultsPanel (body[data-finalized]="true"), disables further testing
+     ***********************/
+    const btnShowResults = el('btnShowResults');
+    function allPartsCompleted(){
+      return parts.every(p => state.scores[p] && typeof state.scores[p].final === 'number');
+    }
+    function updateFinalizeAvailability(){
+      const note = el('finalNote');
+      const showBtn = el('btnShowResults');
+      if(allPartsCompleted() && !state.locked){
+        // show button to reveal results (outside results panel)
+        showBtn.style.display = 'inline-flex';
+        showBtn.disabled = false;
+        note.textContent = 'Barcha partlar tugadi — "Ko\'rsatish: Natijalar" tugmasini bosing.';
+      } else {
+        showBtn.style.display = 'none';
+        const missing = parts.filter(p => !(state.scores[p] && typeof state.scores[p].final === 'number'));
+        note.textContent = missing.length ? `Waiting for: ${missing.join(', ')} — results hidden until all parts are done.` : '';
+      }
+    }
+
+    btnShowResults.addEventListener('click', ()=> {
+      if(!allPartsCompleted()) return alert('Hali barcha partlar to‘liq emas.');
+      // reveal results and lock test UI
+      document.body.setAttribute('data-finalized','true');
+      state.locked = true;
+      // disable recording controls and tab switching
+      document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.add('locked'); b.style.pointerEvents='none'; });
+      document.querySelectorAll('[data-rec]').forEach(b=> { b.disabled = true; });
+      el('btnStart').disabled = true; el('btnStop').disabled = true; el('btnReset').disabled = true;
+      // ensure final-only elements are visible (CSS handles it)
+      computeOverallAndDisplay();
+      // hide the show results button
+      btnShowResults.style.display = 'none';
+      el('finalNote').textContent = 'Natijalar ko‘rsatildi va testlar qulflandi — testlarga qaytish mumkin emas.';
+    });
+
+    /***********************
      ***********************/
     window.addEventListener('keydown', async (e)=>{
       if(e.code === 'Space' && (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA')){
         e.preventDefault();
+        if(state.locked){ alert('Test yakunlandi — qo\'shimcha yozuvlar qabul qilinmaydi.'); return; }
         if(state.recorder && state.recorder.state === 'recording'){
           const part = state.currentPart || 'p1';
           await stopRecording(part);
@@ -1274,14 +1484,23 @@
     });
 
     /***********************
+     * Compare & clear handlers
      ***********************/
-    function genQuestions(){
-      el('p1Qs').innerHTML = '<div class="question">What do you do in your free time?</div><div class="question">Do you prefer mornings or evenings?</div>';
-      el('p2Card').textContent = 'Describe a memorable journey you had. You should say: where you went, how you traveled, and explain why it was memorable.';
-      el('p3Qs').innerHTML = '<div class="question">How has technology changed communication?</div><div class="question">What makes a city livable?</div>';
+    function escapeHtml(str){
+      return str.replace(/[&<>"']/g, function(m){ return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]; });
     }
-    genQuestions();
-    el('srStatus').textContent = (window.SpeechRecognition || window.webkitSpeechRecognition) ? 'available' : 'unsupported';
+
+    setInterval(()=> {
+      const p = state.currentPart || 'p1';
+      const combined = ((state.transcripts[p] || '') + ' ' + (state.interim[p] || '')).trim();
+      const ref = (el(p + 'Ref') && el(p + 'Ref').value) || '';
+      const expectedEl = el(p + 'Expected');
+      if(ref && expectedEl && expectedEl.style.display === 'block'){
+      } else {
+        if(combined) renderTranscriptArea(p, combined, !!state.interim[p]);
+        else renderTranscriptArea(p, combined, !!state.interim[p]);
+      }
+    }, 600);
 
     document.querySelectorAll('[data-compare]').forEach(btn=>{
       btn.addEventListener('click', ()=> {
@@ -1317,21 +1536,13 @@
 
     /***********************
      ***********************/
-    function escapeHtml(str){
-      return str.replace(/[&<>"']/g, function(m){ return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]; });
-    }
+    (function genQuestions(){
+      el('p1Qs').innerHTML = '<div class="question">What do you do in your free time?</div><div class="question">Do you prefer mornings or evenings?</div>';
+      el('p2Card').textContent = 'Describe a memorable journey you had. You should say: where you went, how you traveled, and explain why it was memorable.';
+      el('p3Qs').innerHTML = '<div class="question">How has technology changed communication?</div><div class="question">What makes a city livable?</div>';
+    })();
 
-    setInterval(()=> {
-      const p = state.currentPart || 'p1';
-      const combined = ((state.transcripts[p] || '') + ' ' + (state.interim[p] || '')).trim();
-      const ref = (el(p + 'Ref') && el(p + 'Ref').value) || '';
-      const expectedEl = el(p + 'Expected');
-      if(ref && expectedEl && expectedEl.style.display === 'block'){
-      } else {
-        if(combined) renderTranscriptArea(p, combined, !!state.interim[p]);
-        else renderTranscriptArea(p, combined, !!state.interim[p]);
-      }
-    }, 600);
+    el('srStatus').textContent = (window.SpeechRecognition || window.webkitSpeechRecognition) ? 'available' : 'unsupported';
 
     (function ensureAccBubbles(){
       parts.forEach(p=>{
@@ -1343,6 +1554,16 @@
 
     try{ initSpeechRecognition(); }catch(e){ /* ignore */ }
 
+    // initial finalize availability check
+    updateFinalizeAvailability();
+
   </script>
 </body>
 </html>
+
+
+
+
+
+
+umuman bolmayapti iltimos profisionalikk bilan qilib ber kirish qismida ushbu qilingan speaking ni malumotlari kiritilsin !!! 

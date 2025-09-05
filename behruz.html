@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Speaking — Parts 1/2/3 (Updated: questions from Dashboard)</title>
+  <style>
+    :root{--bg:#f5f8fb;--card:#fff;--accent:#0b6cff;--muted:#6b7280;--danger:#e11d48;--success:#16a34a}
+    body{font-family:Inter,system-ui,Arial;margin:20px;background:var(--bg);color:#0b0b0b}
+    .card{max-width:980px;margin:0 auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(15,23,42,0.04)}
+    h1{margin:0 0 6px}
+    .small{color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:center}
+    .btn{padding:8px 12px;border-radius:8px;border:1px solid #d1dbe8;background:#fff;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .meter{flex:1;height:12px;background:#eef2f6;border-radius:999px;overflow:hidden}
+    .level{height:100%;width:0%;background:linear-gradient(90deg,#34d399,#10b981)}
+    .panel{margin-top:14px}
+    .question-box{padding:12px;border-radius:8px;border:1px solid #eef6ff;background:#fbfeff}
+    .transcript{margin-top:10px;padding:10px;border-radius:8px;border:1px solid #eee;background:#fff}
+    .rec-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--danger);margin-left:8px;vertical-align:middle;opacity:0}
+    .rec-dot.recording{animation:pulse 900ms infinite;opacity:1}
+    @keyframes pulse {0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+    .recording-bar{height:8px;background:#f3f3f3;border-radius:999px;overflow:hidden;margin-top:10px}
+    .recording-bar > .bar{height:100%;width:0%;background:linear-gradient(90deg,#ffb84d,#ff8a00);transition:width 0.2s linear}
+    .badge{padding:4px 8px;border-radius:999px;background:#eef2ff;border:1px solid #dbeafe;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Speaking Test (Updated)</h1>
+    <div class="small">This speaking page listens to questions published to <code>speaking_questions_v1</code>.</div>
+
+    <div class="row" style="margin-top:12px">
+      <button id="micTest" class="btn primary">Test Microphone</button>
+      <button id="restartBtn" class="btn">Restart (clear saved transcripts)</button>
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <div class="small">Level</div>
+        <div class="meter" aria-hidden="true"><div id="liveLevel" class="level"></div></div>
+        <div id="levelLabel" class="small">Silent</div>
+      </div>
+      <div>Overall avg: <strong id="overallAvg">0.0</strong></div>
+    </div>
+
+    <div class="panel" id="mainPanel"></div>
+
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button id="showResults" class="btn">Show Results</button>
+      <button id="reloadQuestions" class="btn">Reload Questions</button>
+    </div>
+  </div>
+
+<script>
+/* speaking_updated.html (modified)
+   - Implements a fully working Test Microphone toggle (start/stop)
+   - Adds a Restart button that clears saved transcripts and scores (STORAGE_KEY)
+   - Keeps questions published by dashboard in speaking_questions_v1
+*/
+
+/* KEYS */
+const QUESTIONS_KEY = 'speaking_questions_v1';   // created by dashboard
+const STORAGE_KEY = 'speaking_app_v1';           // speaking internal data (transcripts/scores)
+
+/* Default (fallback) questions */
+const DEFAULT_QUESTIONS = {
+  part1: [
+    "Did you have a favourite book when you were a child?",
+    "What kinds of books do you read for pleasure? Why?",
+    "Do you prefer physical books or e-books? Explain your reason."
+  ],
+  part2: [
+    "Describe a big city you would like to visit."
+  ],
+  part3: [
+    "Why do people move to big cities?",
+    "What problems do big cities face?",
+    "How can cities be made more livable?",
+    "Do you think technology improves city life? Why?"
+  ]
+};
+
+/* Application state */
+let QUESTIONS = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+
+/* Mic test variables */
+let audioCtx = null, analyser = null, micStreamTest = null, rafId = null;
+
+/* load questions from storage if available */
+function loadQuestions(){
+  try{
+    const raw = localStorage.getItem(QUESTIONS_KEY);
+    if(!raw) { QUESTIONS = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS)); return; }
+    const parsed = JSON.parse(raw);
+    QUESTIONS.part1 = parsed.part1 && parsed.part1.length ? parsed.part1.slice() : DEFAULT_QUESTIONS.part1.slice();
+    QUESTIONS.part2 = parsed.part2 && parsed.part2.length ? parsed.part2.slice() : DEFAULT_QUESTIONS.part2.slice();
+    QUESTIONS.part3 = parsed.part3 && parsed.part3.length ? parsed.part3.slice() : DEFAULT_QUESTIONS.part3.slice();
+  }catch(e){
+    console.warn('loadQuestions error', e);
+    QUESTIONS = JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+  }
+}
+
+/* Speaking internal state (transcripts/scores) kept in STORAGE_KEY (speaking_app_v1) */
+function loadInternalState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {
+      p1Trans: Array(QUESTIONS.part1.length).fill(''),
+      p2Trans: Array(QUESTIONS.part2.length).fill(''),
+      p3Trans: Array(QUESTIONS.part3.length).fill(''),
+      p1Scores: Array(QUESTIONS.part1.length).fill(null),
+      p2Scores: Array(QUESTIONS.part2.length).fill(null),
+      p3Scores: Array(QUESTIONS.part3.length).fill(null)
+    };
+    const parsed = JSON.parse(raw);
+    // ensure arrays match question counts
+    parsed.p1Trans = parsed.p1Trans || []; while(parsed.p1Trans.length < QUESTIONS.part1.length) parsed.p1Trans.push('');
+    parsed.p1Trans.length = QUESTIONS.part1.length;
+    parsed.p2Trans = parsed.p2Trans || []; while(parsed.p2Trans.length < QUESTIONS.part2.length) parsed.p2Trans.push('');
+    parsed.p2Trans.length = QUESTIONS.part2.length;
+    parsed.p3Trans = parsed.p3Trans || []; while(parsed.p3Trans.length < QUESTIONS.part3.length) parsed.p3Trans.push('');
+    parsed.p3Trans.length = QUESTIONS.part3.length;
+
+    parsed.p1Scores = parsed.p1Scores || []; while(parsed.p1Scores.length < QUESTIONS.part1.length) parsed.p1Scores.push(null);
+    parsed.p1Scores.length = QUESTIONS.part1.length;
+    parsed.p2Scores = parsed.p2Scores || []; while(parsed.p2Scores.length < QUESTIONS.part2.length) parsed.p2Scores.push(null);
+    parsed.p2Scores.length = QUESTIONS.part2.length;
+    parsed.p3Scores = parsed.p3Scores || []; while(parsed.p3Scores.length < QUESTIONS.part3.length) parsed.p3Scores.push(null);
+    parsed.p3Scores.length = QUESTIONS.part3.length;
+
+    return parsed;
+  }catch(e){
+    console.warn('loadInternalState error', e);
+    return {
+      p1Trans: Array(QUESTIONS.part1.length).fill(''),
+      p2Trans: Array(QUESTIONS.part2.length).fill(''),
+      p3Trans: Array(QUESTIONS.part3.length).fill(''),
+      p1Scores: Array(QUESTIONS.part1.length).fill(null),
+      p2Scores: Array(QUESTIONS.part2.length).fill(null),
+      p3Scores: Array(QUESTIONS.part3.length).fill(null)
+    };
+  }
+}
+function saveInternalState(state){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.warn('saveInternalState error', e); }
+}
+
+/* load initial */
+loadQuestions();
+let STATE = loadInternalState();
+
+/* Rendering UI */
+const mainPanel = document.getElementById('mainPanel');
+const overallAvgEl = document.getElementById('overallAvg');
+const liveLevelEl = document.getElementById('liveLevel');
+const levelLabel = document.getElementById('levelLabel');
+
+function computeOverall(){
+  const arr = [...STATE.p1Scores, ...STATE.p2Scores, ...STATE.p3Scores].filter(v=>v!==null && v!==undefined);
+  if(arr.length===0) return '0.0';
+  return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
+}
+
+function render(){
+  overallAvgEl.textContent = computeOverall();
+  mainPanel.innerHTML = '';
+
+  // Part1 block
+  const block1 = document.createElement('div'); block1.className='panel question-box';
+  const h1 = document.createElement('div'); h1.innerHTML = `<strong>Part 1 — Short questions</strong> <span class="small">(${QUESTIONS.part1.length} items)</span>`;
+  block1.appendChild(h1);
+  QUESTIONS.part1.forEach((q,i)=>{
+    const wrap = document.createElement('div'); wrap.style.marginTop='12px';
+    wrap.innerHTML = `<div style="font-weight:700">${escapeHtml(q)}</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button data-part="p1" data-i="${i}" class="btn playBtn">🔊 Listen</button>
+        <button data-part="p1" data-i="${i}" class="btn recordBtn primary">🎤 Record</button>
+        <span style="flex:1"></span>
+        <span class="badge">${STATE.p1Scores[i] !== null ? 'Score: '+STATE.p1Scores[i] : (STATE.p1Trans[i] ? 'Saved' : 'Not recorded')}</span>
+      </div>
+      <div id="d_p1_${i}" style="margin-top:8px">${ STATE.p1Trans[i] ? `<div class="transcript"><div class="small">Transcript</div><div>${escapeHtml(STATE.p1Trans[i])}</div></div>` : '' }</div>`;
+    block1.appendChild(wrap);
+  });
+  mainPanel.appendChild(block1);
+
+  // Part2 block
+  const block2 = document.createElement('div'); block2.className='panel question-box'; block2.style.marginTop='12px';
+  block2.innerHTML = `<div><strong>Part 2 — Cue card</strong> <span class="small">(${QUESTIONS.part2.length} items)</span></div>`;
+  QUESTIONS.part2.forEach((q,i)=>{
+    const wrap = document.createElement('div'); wrap.style.marginTop='12px';
+    wrap.innerHTML = `<div style="font-weight:700">${escapeHtml(q)}</div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <button data-part="p2" data-i="${i}" class="btn playBtn">🔊 Listen</button>
+        <button data-part="p2" data-i="${i}" class="btn recordBtn primary">🎤 Start speaking (2m)</button>
+        <span style="flex:1"></span>
+        <span class="badge">${STATE.p2Scores[i] !== null ? 'Score: '+STATE.p2Scores[i] : (STATE.p2Trans[i] ? 'Saved' : 'Not recorded')}</span>
+      </div>
+      <div id="d_p2_${i}" style="margin-top:8px">${ STATE.p2Trans[i] ? `<div class="transcript"><div class="small">Transcript</div><div>${escapeHtml(STATE.p2Trans[i])}</div></div>` : '' }</div>`;
+    block2.appendChild(wrap);
+  });
+  mainPanel.appendChild(block2);
+
+  // Part3 block
+  const block3 = document.createElement('div'); block3.className='panel question-box'; block3.style.marginTop='12px';
+  block3.innerHTML = `<div><strong>Part 3 — Discussion</strong> <span class="small">(${QUESTIONS.part3.length} items)</span></div>`;
+  QUESTIONS.part3.forEach((q,i)=>{
+    const wrap = document.createElement('div'); wrap.style.marginTop='12px';
+    wrap.innerHTML = `<div style="font-weight:700">${escapeHtml(q)}</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button data-part="p3" data-i="${i}" class="btn playBtn">🔊 Listen</button>
+        <button data-part="p3" data-i="${i}" class="btn recordBtn primary">🎤 Record</button>
+        <span style="flex:1"></span>
+        <span class="badge">${STATE.p3Scores[i] !== null ? 'Score: '+STATE.p3Scores[i] : (STATE.p3Trans[i] ? 'Saved' : 'Not recorded')}</span>
+      </div>
+      <div id="d_p3_${i}" style="margin-top:8px">${ STATE.p3Trans[i] ? `<div class="transcript"><div class="small">Transcript</div><div>${escapeHtml(STATE.p3Trans[i])}</div></div>` : '' }</div>`;
+    block3.appendChild(wrap);
+  });
+  mainPanel.appendChild(block3);
+
+  // wire buttons
+  Array.from(document.getElementsByClassName('playBtn')).forEach(b => {
+    const part = b.dataset.part, i = Number(b.dataset.i||0);
+    b.onclick = ()=> {
+      let txt = '';
+      if(part==='p1') txt = QUESTIONS.part1[i];
+      if(part==='p2') txt = QUESTIONS.part2[i];
+      if(part==='p3') txt = QUESTIONS.part3[i];
+      speakText(txt);
+    };
+  });
+
+  Array.from(document.getElementsByClassName('recordBtn')).forEach(b=>{
+    b.onclick = ()=> {
+      const part = b.dataset.part, idx = Number(b.dataset.i||0);
+      startRecordingUI(part, idx);
+    };
+  });
+
+  overallAvgEl.textContent = computeOverall();
+}
+
+/* Simple recorder UI (in-page minimal) */
+let recorderStream=null, recorder=null, recChunks=[], recStart=0, recTimerInterval=null;
+const recModal = (()=>{
+  const el = document.createElement('div');
+  el.style.position='fixed'; el.style.inset='0'; el.style.display='none'; el.style.alignItems='center'; el.style.justifyContent='center';
+  el.style.background='rgba(0,0,0,0.5)'; el.style.zIndex='9999';
+  el.innerHTML = `<div style="background:#fff;padding:14px;border-radius:8px;min-width:320px;">
+    <div id="recQuestionTitle" style="font-weight:700;margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="recStopBtn" class="btn">Stop</button>
+      <div id="recTimerDisplay" style="font-family:monospace;font-weight:700"></div>
+      <div style="flex:1"></div>
+      <div id="recProgressBar" style="height:8px;background:#f3f3f3;border-radius:999px;overflow:hidden;width:150px"><div id="recProgressInner" style="height:100%;width:0%;background:linear-gradient(90deg,#ffb84d,#ff8a00)"></div></div>
+    </div>
+    <div id="recLiveTranscript" style="margin-top:10px"></div>
+  </div>`;
+  document.body.appendChild(el);
+  return el;
+})();
+const recQuestionTitle = recModal.querySelector('#recQuestionTitle');
+const recStopBtn = recModal.querySelector('#recStopBtn');
+const recTimerDisplay = recModal.querySelector('#recTimerDisplay');
+const recProgressInner = recModal.querySelector('#recProgressInner');
+const recLiveTranscript = recModal.querySelector('#recLiveTranscript');
+
+/* We'll use a simple local SpeechRecognition instance when available for live transcript */
+let recognizerLocal = null;
+
+async function startRecordingUI(part, idx){
+  const maxSeconds = (part==='p2') ? 120 : 90;
+  try{
+    recorderStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  }catch(e){ alert('Mikrofonga ruxsat yoʻq.'); return; }
+  recChunks = [];
+  recorder = new MediaRecorder(recorderStream);
+  recorder.ondataavailable = (ev)=> { if(ev.data && ev.data.size>0) recChunks.push(ev.data); };
+  recorder.onstop = async ()=>{
+    const blob = new Blob(recChunks, { type:'audio/webm' });
+    const transcript = (window.__finalTranscript || '').trim();
+    const checked = aiCheck(transcript);
+    const score = scoreTranscript(transcript, checked);
+
+    if(part==='p1'){ STATE.p1Trans[idx] = transcript; STATE.p1Scores[idx] = score; }
+    else if(part==='p2'){ STATE.p2Trans[idx] = transcript; STATE.p2Scores[idx] = score; }
+    else if(part==='p3'){ STATE.p3Trans[idx] = transcript; STATE.p3Scores[idx] = score; }
+
+    saveInternalState(STATE);
+    render();
+
+    if(recorderStream){ recorderStream.getTracks().forEach(t=>t.stop()); recorderStream=null; }
+    if(recTimerInterval){ clearInterval(recTimerInterval); recTimerInterval=null; }
+    recModal.style.display='none';
+    window.__finalTranscript = '';
+    window.__interimTranscript = '';
+    if(recognizerLocal){ try{ recognizerLocal.stop(); }catch(e){} recognizerLocal=null; }
+  };
+
+  // start speech recognition if available
+  if(window.SpeechRecognition || window.webkitSpeechRecognition){
+    try{
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognizerLocal = new SR();
+      recognizerLocal.lang='en-US';
+      recognizerLocal.interimResults = true;
+      recognizerLocal.continuous = true;
+      window.__finalTranscript = ''; window.__interimTranscript = '';
+      recognizerLocal.onresult = (ev)=>{
+        let interim=''; for(let i=ev.resultIndex;i<ev.results.length;i++){ if(ev.results[i].isFinal) window.__finalTranscript += ev.results[i][0].transcript + ' '; else interim += ev.results[i][0].transcript + ' '; }
+        window.__interimTranscript = interim;
+        recLiveTranscript.innerHTML = `<div class="small">Live: ${escapeHtml((window.__finalTranscript + window.__interimTranscript).trim())}</div>`;
+      };
+      recognizerLocal.onerror = (e)=> console.warn('SR error', e);
+      recognizerLocal.start();
+    }catch(e){ recognizerLocal = null; }
+  } else {
+    recLiveTranscript.innerHTML = `<div class="small">SpeechRecognition not supported in this browser; audio will still be recorded.</div>`;
+  }
+
+  // start recorder
+  recorder.start();
+  recQuestionTitle.textContent = (part==='p1'? QUESTIONS.part1[idx] : (part==='p2' ? QUESTIONS.part2[idx] : QUESTIONS.part3[idx]));
+  recModal.style.display = 'flex';
+  recTimerDisplay.textContent = '00:00';
+  recProgressInner.style.width = '0%';
+  recStart = Date.now();
+  recTimerInterval = setInterval(()=>{
+    const elapsed = Math.floor((Date.now()-recStart)/1000);
+    recTimerDisplay.textContent = `${String(Math.floor(elapsed/60)).padStart(2,'0')}:${String(elapsed%60).padStart(2,'0')}`;
+    const pct = Math.min(100, Math.round((elapsed/maxSeconds)*100));
+    recProgressInner.style.width = pct + '%';
+    if(elapsed >= maxSeconds){ if(recorder && recorder.state === 'recording') recorder.stop(); }
+  }, 300);
+
+  recStopBtn.onclick = ()=> { if(recorder && recorder.state === 'recording') recorder.stop(); };
+}
+
+/* AI-check heuristics and scoring (same as previous) */
+const COMMON_CORRECTIONS = {"\\bim\\b":"I'm","\\bdont\\b":"don't","\\bdoesnt\\b":"doesn't","\\bdidnt\\b":"didn't","\\bcant\\b":"can't","\\bwont\\b":"won't","\\bive\\b":"I've","\\bill\\b":"I'll","\\bits\\b":"it's"};
+function aiCheck(inputText){
+  if(!inputText) return {annotatedHTML:'<em>(no transcript)</em>', corrected:'', issuesCount:0, wordCount:0};
+  let text = inputText.trim().replace(/\s+/g,' ');
+  let corrected = text;
+  for(const p in COMMON_CORRECTIONS){ try{ const re = new RegExp(p,'gi'); corrected = corrected.replace(re, COMMON_CORRECTIONS[p]); }catch(e){} }
+  corrected = corrected.charAt(0).toUpperCase() + corrected.slice(1);
+  if(!/[.?!]$/.test(corrected)) corrected = corrected + '.';
+  const origWords = text.split(/\s+/);
+  const corrWords = corrected.replace(/[.?!]$/,'').split(/\s+/);
+  const len = Math.max(origWords.length, corrWords.length);
+  let annotatedParts = []; let issues = 0;
+  for(let i=0;i<len;i++){
+    const o = origWords[i]||'', c = corrWords[i]||'';
+    if(!o) annotatedParts.push(escapeHtml(c));
+    else if(o.trim().toLowerCase() === c.trim().toLowerCase()) annotatedParts.push(escapeHtml(c));
+    else { issues++; annotatedParts.push(`<span style="color:${'#e11d48'};font-weight:700">${escapeHtml(o)}</span>`); }
+  }
+  return { annotatedHTML: annotatedParts.join(' '), corrected, issuesCount: issues, wordCount: origWords.filter(w=>w.trim()).length };
+}
+function scoreTranscript(transcript, checkObj){
+  const words = checkObj.wordCount || (transcript ? transcript.split(/\s+/).length : 0);
+  const issues = checkObj.issuesCount || 0;
+  const wordRatio = Math.min(1, words / 40);
+  const wordPoints = Math.round(wordRatio * 6);
+  const accuracy = words > 0 ? Math.max(0, 1 - (issues / Math.max(1, Math.floor(words/5)))) : 0;
+  const accPoints = Math.round(accuracy * 3);
+  let raw = wordPoints + accPoints;
+  if(raw > 9) raw = 9;
+  if(words === 0) raw = 0;
+  return raw;
+}
+
+/* Helpers */
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function speakText(text){ if(!text) return; if('speechSynthesis' in window){ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-US'; window.speechSynthesis.speak(u); } else alert('Speech synthesis not supported'); }
+
+/* ========== Mic test (start/stop) ========== */
+function bytesToRMS(bytes){
+  let sum = 0;
+  for(let i=0;i<bytes.length;i++){
+    const v = (bytes[i]-128)/128;
+    sum += v*v;
+  }
+  return Math.sqrt(sum/bytes.length);
+}
+async function startMicTest(){
+  try{
+    micStreamTest = await navigator.mediaDevices.getUserMedia({ audio:true });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(micStreamTest);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.fftSize);
+    function update(){
+      analyser.getByteTimeDomainData(data);
+      const rms = bytesToRMS(data);
+      const pct = Math.min(100, Math.round(rms*200));
+      liveLevelEl.style.width = pct + '%';
+      levelLabel.textContent = pct < 3 ? 'Silent' : 'Listening ('+pct+'%)';
+      rafId = requestAnimationFrame(update);
+    }
+    update();
+    document.getElementById('micTest').textContent = 'Stop Microphone Test';
+  }catch(e){
+    alert('Mikrofon olishda xatolik. Iltimos brauzerga ruxsat bering.');
+  }
+}
+function stopMicTest(){
+  if(micStreamTest){ micStreamTest.getTracks().forEach(t=>t.stop()); micStreamTest=null; }
+  if(audioCtx){ try{ audioCtx.close(); }catch(e){} audioCtx=null; }
+  if(rafId) cancelAnimationFrame(rafId);
+  liveLevelEl.style.width='0%'; levelLabel.textContent='Silent';
+  document.getElementById('micTest').textContent = 'Test Microphone';
+}
+
+/* Wire micTest button */
+document.getElementById('micTest').addEventListener('click', ()=>{
+  if(!micStreamTest) startMicTest(); else stopMicTest();
+});
+
+/* ========== Restart (clear STORAGE_KEY) ========== */
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  if(!confirm('Restart: barcha saqlangan transcriptlar va ballar oʻchiriladi. Davom etilsinmi?')) return;
+
+  // Stop any active recording UI & streams
+  try{ if(recognizerLocal){ try{ recognizerLocal.stop(); }catch(e){} recognizerLocal=null; } }catch(e){}
+  try{ if(recorder && recorder.state === 'recording') recorder.stop(); }catch(e){}
+  try{ if(recorderStream){ recorderStream.getTracks().forEach(t=>t.stop()); recorderStream=null; } }catch(e){}
+  try{ if(micStreamTest){ micStreamTest.getTracks().forEach(t=>t.stop()); micStreamTest=null; } }catch(e){}
+  try{ if(audioCtx){ audioCtx.close(); audioCtx=null; } }catch(e){}
+  if(rafId) cancelAnimationFrame(rafId);
+  liveLevelEl.style.width='0%'; levelLabel.textContent='Silent';
+  document.getElementById('micTest').textContent = 'Test Microphone';
+  // Clear stored app data
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  // Reinitialize STATE
+  STATE = {
+    p1Trans: Array(QUESTIONS.part1.length).fill(''),
+    p2Trans: Array(QUESTIONS.part2.length).fill(''),
+    p3Trans: Array(QUESTIONS.part3.length).fill(''),
+    p1Scores: Array(QUESTIONS.part1.length).fill(null),
+    p2Scores: Array(QUESTIONS.part2.length).fill(null),
+    p3Scores: Array(QUESTIONS.part3.length).fill(null)
+  };
+  saveInternalState(STATE);
+  render();
+  alert('Barcha saqlangan transcriptlar va ballar oʻchirildi va UI tozalandi.');
+});
+
+/* Storage events: when dashboard writes QUESTIONS_KEY, reload questions and render */
+window.addEventListener('storage', (e)=>{
+  if(e.key === QUESTIONS_KEY){
+    loadQuestions();
+    STATE = loadInternalState();
+    render();
+    alert('Questions updated from dashboard — UI refreshed.');
+  }
+});
+
+/* also wire reload questions button */
+document.getElementById('reloadQuestions').addEventListener('click', ()=> {
+  loadQuestions();
+  STATE = loadInternalState();
+  render();
+  alert('Questions reloaded from localStorage.');
+});
+
+/* show results (simple alert) */
+document.getElementById('showResults').addEventListener('click', ()=> {
+  const allScores = [...STATE.p1Scores, ...STATE.p2Scores, ...STATE.p3Scores].filter(v=>v!==null && v!==undefined);
+  const avg = allScores.length ? (allScores.reduce((a,b)=>a+b,0)/allScores.length).toFixed(2) : '0.00';
+  alert('Overall average score: ' + avg + ' / 9\nUse dashboard for detailed view.');
+});
+
+/* startup render */
+render();
+
+</script>
+</body>
+</html>
