@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard — Listening Questions Editor</title>
+  <style>
+    :root{
+      --bg:#f4f7fb; --card:#fff; --accent:#0b6cff; --muted:#6b7280; --danger:#e11d48;
+      --soft:#eef6ff;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial;background:var(--bg);margin:18px;color:#071232}
+    .container{max-width:1100px;margin:0 auto}
+    .card{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 12px 36px rgba(11,18,40,0.06)}
+    h1{margin:0 0 8px}
+    .muted{color:var(--muted);font-size:13px}
+    .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .panel{background:var(--soft);padding:12px;border-radius:10px;border:1px solid rgba(11,108,255,0.06)}
+    .parts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    textarea, input[type="text"], select {width:100%;padding:8px;border-radius:8px;border:1px solid #dbeafe;background:#fff}
+    label.small{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    button{padding:8px 10px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;transition:transform .12s}
+    button.secondary{background:#fff;color:#0b6cff;border:1px solid rgba(11,108,255,0.12)}
+    button.warn{background:var(--danger)}
+    .q-item{display:grid;grid-template-columns:1fr 120px;gap:8px;align-items:start;margin-bottom:8px}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+    .mini{font-size:12px;color:var(--muted)}
+    .btn-ghost{background:transparent;border:1px dashed rgba(11,108,255,0.08);color:#0b6cff;padding:6px 8px;border-radius:8px}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .count{background:#e9f0ff;padding:6px 8px;border-radius:999px;color:#0456d6;font-weight:700}
+    @media (max-width:900px){ .parts{grid-template-columns:1fr} .q-item{grid-template-columns:1fr 90px} .top{flex-direction:column;align-items:stretch} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="top">
+        <div>
+          <h1>Listening Dashboard</h1>
+          <div class="muted">Bu sahifa listening test uchun passage va savollarni tahrirlaydi. Saqlangandan soʻng listening sahifasi avtomatik yangilanadi.</div>
+        </div>
+        <div style="text-align:right">
+          <div class="mini">Client ID <span id="clientId" style="font-weight:700"></span></div>
+          <div style="margin-top:8px"><button id="openListening" class="secondary">Open Listening</button></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label class="small">Key (localStorage): <strong>speaking_listening_questions_v1</strong></label>
+      </div>
+
+      <div class="parts">
+        <!-- Part editors -->
+        <div class="panel">
+          <h3>Part 1 — Passage & Questions (10)</h3>
+          <label class="small">Passage (audio text)</label>
+          <textarea id="p1Pass" rows="4"></textarea>
+          <div id="p1List" style="margin-top:10px"></div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="p1Add" class="btn-ghost">+ Add Q</button>
+            <div style="flex:1"></div>
+            <div class="count" id="p1Count">0</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Part 2 — Passage & Questions (10)</h3>
+          <label class="small">Passage (audio text)</label>
+          <textarea id="p2Pass" rows="4"></textarea>
+          <div id="p2List" style="margin-top:10px"></div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="p2Add" class="btn-ghost">+ Add Q</button>
+            <div style="flex:1"></div>
+            <div class="count" id="p2Count">0</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Part 3 — Passage & Questions (10)</h3>
+          <label class="small">Passage (audio text)</label>
+          <textarea id="p3Pass" rows="4"></textarea>
+          <div id="p3List" style="margin-top:10px"></div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="p3Add" class="btn-ghost">+ Add Q</button>
+            <div style="flex:1"></div>
+            <div class="count" id="p3Count">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls" style="justify-content:flex-end">
+        <button id="resetBtn" class="secondary">Reset to Sample</button>
+        <button id="removeKey" class="btn-ghost">Remove Key</button>
+        <button id="saveBtn" style="background:linear-gradient(90deg,#06b39a,#039f83);color:#fff">Save & Publish</button>
+      </div>
+
+      <div style="margin-top:12px" class="mini muted">Saqlashdan oldin barcha savollar soni 10 tagacha bo‘lishi tavsiya etiladi. Boshqa tablar BroadcastChannel va storage yordamida yangilanadi.</div>
+    </div>
+  </div>
+
+<script>
+/* Dashboard script: publishes questions (passages + question objects) to localStorage key speaking_listening_questions_v1
+   Also notifies other tabs via BroadcastChannel.
+*/
+const QUESTIONS_KEY = 'speaking_listening_questions_v1';
+const CLIENT_KEY = 'listening_dash_client';
+let CLIENT_ID = sessionStorage.getItem(CLIENT_KEY);
+if(!CLIENT_ID){ CLIENT_ID = Math.random().toString(36).slice(2)+Date.now().toString(36); sessionStorage.setItem(CLIENT_KEY, CLIENT_ID); }
+document.getElementById('clientId').textContent = CLIENT_ID;
+
+/* sample data — 10 questions per part, mix of types */
+const SAMPLE = {
+  part1: {
+    passage: "This is Part 1 sample passage. Listen and answer short multiple choice questions. The lighthouse was built in the 1800s and had several unique features mentioned by the speaker.",
+    questions: [
+      {type:'multi', text:'Which TWO features of the lighthouse does Lou mention?', choices:['why it was built','who built it','how long it took to build','who staffed it','what it was built with'], correct:[]},
+      {type:'radio', text:'What colour is the lighthouse?', choices:['red','white','green'], correct:[]},
+      {type:'radio', text:'Is the lighthouse open to visitors?', choices:['Yes','No','Some days'], correct:[]},
+      {type:'radio', text:'What is the keeper\'s name mentioned?', choices:['John','Lou','Marry'], correct:[]},
+      {type:'radio', text:'How often is the light maintained?', choices:['daily','monthly','yearly'], correct:[]},
+      {type:'radio', text:'What material used was dominant?', choices:['stone','wood','metal'], correct:[]},
+      {type:'radio', text:'Which view is highlighted?', choices:['sea view','garden view','mountain view'], correct:[]},
+      {type:'radio', text:'Who repaired the lantern?', choices:['crew','volunteers','government'], correct:[]},
+      {type:'radio', text:'When was it restored?', choices:['1990s','2000s','2010s'], correct:[]},
+      {type:'radio', text:'What was the original fuel?', choices:['oil','electricity','gas'], correct:[]}
+    ]
+  },
+  part2:{
+    passage: "Part 2 passage. This one is longer and composed of dialogues and opinions. Two speakers discuss opinions about a play and aspects of the production including set, lighting, costume and music.",
+    questions:[
+      {type:'opinion', text:'Opinions', choices:['They both expected this to be more traditional.','They both thought this was original.','They agree this created the right atmosphere.','They agree this was a major strength.','They were both disappointed by this.','They disagree about why this was an issue.','They disagree about how this could be improved.'], correct:[]},
+      {type:'select', text:'The set was', choices:['a) modern','b) traditional','c) minimal'], correct:[]},
+      {type:'select', text:'The lighting was', choices:['a) atmospheric','b) poor','c) dazzling'], correct:[]},
+      {type:'select', text:'Costume design was', choices:['a) creative','b) boring','c) accurate'], correct:[]},
+      {type:'select', text:'Music was', choices:['a) supportive','b) distracting','c) absent'], correct:[]},
+      {type:'select', text:'Actors delivery was', choices:['a) convincing','b) flat','c) overacted'], correct:[]},
+      {type:'radio', text:'Did they like the play overall?', choices:['Yes','No','Mixed'], correct:[]},
+      {type:'radio', text:'Was it longer than expected?', choices:['Yes','No','Shorter'], correct:[]},
+      {type:'radio', text:'Would they recommend it?', choices:['Yes','No','Maybe'], correct:[]},
+      {type:'radio', text:'Would they go again?', choices:['Yes','No','Only if invited'], correct:[]}
+    ]
+  },
+  part3:{
+    passage: "Boat trip round Tasmania: The passage describes logistics, number of people allowed, boat colours, lunchbox options and litter rules.",
+    questions:[
+      {type:'radio', text:'What is the maximum number of people who can stand on each side of the boat?', choices:['9','15','18'], correct:[]},
+      {type:'radio', text:'What colour are the tour boats?', choices:['dark red','jet black','light green'], correct:[]},
+      {type:'radio', text:'Which lunchbox is suitable for vegetarian?', choices:['Lunchbox1','Lunchbox2','Lunchbox3'], correct:[]},
+      {type:'radio', text:'What should people do with their litter?', choices:['take it home','hand to staff','put in bins'], correct:[]},
+      {type:'radio', text:'How long is the trip?', choices:['2 hours','3 hours','4 hours'], correct:[]},
+      {type:'radio', text:'Is safety briefing required?', choices:['Yes','No','Optional'], correct:[]},
+      {type:'radio', text:'Where do they meet?', choices:['pier A','station','market'], correct:[]},
+      {type:'radio', text:'What is provided?', choices:['life jackets','blankets','sunglasses'], correct:[]},
+      {type:'radio', text:'What is the main target audience?', choices:['families','solo travellers','backpackers'], correct:[]},
+      {type:'radio', text:'Is booking needed?', choices:['Yes','No','Sometimes'], correct:[]}
+    ]
+  },
+  part4:{
+    passage: "Part 4 — extended lecture style passage. This contains facts, dates, and comparisons. Use it to answer detail questions and map-matching tasks.",
+    questions:[
+      {type:'radio', text:'Main topic of lecture?', choices:['History of trade','Maritime technology','Art movement'], correct:[]},
+      {type:'radio', text:'Which century is emphasized?', choices:['18th','19th','20th'], correct:[]},
+      {type:'radio', text:'Which country is mentioned most?', choices:['UK','France','Spain'], correct:[]},
+      {type:'radio', text:'What system was introduced?', choices:['steam','electric','diesel'], correct:[]},
+      {type:'radio', text:'Primary benefit noted?', choices:['speed','cost','safety'], correct:[]},
+      {type:'radio', text:'Who funded the project?', choices:['government','private','charity'], correct:[]},
+      {type:'radio', text:'How was the data collected?', choices:['surveys','archives','fieldwork'], correct:[]},
+      {type:'radio', text:'Which evidence is most convincing?', choices:['photographs','reports','testimonials'], correct:[]},
+      {type:'radio', text:'What challenge remains?', choices:['funding','training','infrastructure'], correct:[]},
+      {type:'radio', text:'Lecture tone is', choices:['critical','neutral','celebratory'], correct:[]}
+    ]
+  }
+};
+
+/* DOM refs */
+const p1Pass = document.getElementById('p1Pass'), p2Pass = document.getElementById('p2Pass'), p3Pass = document.getElementById('p3Pass');
+const p1List = document.getElementById('p1List'), p2List = document.getElementById('p2List'), p3List = document.getElementById('p3List');
+const p1Add = document.getElementById('p1Add'), p2Add = document.getElementById('p2Add'), p3Add = document.getElementById('p3Add');
+const saveBtn = document.getElementById('saveBtn'), resetBtn = document.getElementById('resetBtn'), removeKey = document.getElementById('removeKey');
+const openListening = document.getElementById('openListening');
+const p1Count = document.getElementById('p1Count'), p2Count = document.getElementById('p2Count'), p3Count = document.getElementById('p3Count');
+
+let DATA = null;
+
+/* load existing or sample */
+function load(){
+  try{
+    const raw = localStorage.getItem(QUESTIONS_KEY);
+    if(!raw){ DATA = JSON.parse(JSON.stringify(SAMPLE)); return; }
+    DATA = JSON.parse(raw);
+    // ensure each part has 10 questions (or at least existing)
+    ['part1','part2','part3','part4'].forEach(k=>{
+      if(!DATA[k]) DATA[k] = JSON.parse(JSON.stringify(SAMPLE[k]));
+      if(!DATA[k].questions) DATA[k].questions = DATA[k].questions || [];
+      // pad to at least 10 with empty radios
+      while(DATA[k].questions.length < 10) DATA[k].questions.push({type:'radio', text:'New question', choices:['A','B','C'], correct:[]});
+      if(!DATA[k].passage) DATA[k].passage = '';
+    });
+  }catch(e){ console.warn('parse', e); DATA = JSON.parse(JSON.stringify(SAMPLE)); }
+}
+
+/* render lists (we only allow editing first 3 parts on this dashboard for brevity; part4 is in DATA) */
+function render(){
+  p1Pass.value = DATA.part1.passage || '';
+  p2Pass.value = DATA.part2.passage || '';
+  p3Pass.value = DATA.part3.passage || '';
+  renderList(DATA.part1.questions, p1List, 'part1');
+  renderList(DATA.part2.questions, p2List, 'part2');
+  renderList(DATA.part3.questions, p3List, 'part3');
+  p1Count.textContent = DATA.part1.questions.length;
+  p2Count.textContent = DATA.part2.questions.length;
+  p3Count.textContent = DATA.part3.questions.length;
+}
+
+/* render question array */
+function renderList(arr, container, partKey){
+  container.innerHTML = '';
+  arr.forEach((q, idx)=>{
+    const div = document.createElement('div'); div.className='q-item';
+    const left = document.createElement('div');
+    const ta = document.createElement('textarea'); ta.value = q.text || ''; ta.rows = 2;
+    ta.addEventListener('input', ()=> { DATA[partKey].questions[idx].text = ta.value; });
+    left.appendChild(ta);
+    // choices editor
+    const chwrap = document.createElement('div'); chwrap.style.display='flex'; chwrap.style.gap='6px'; chwrap.style.marginTop='6px';
+    const type = document.createElement('select');
+    ['radio','multi','select','opinion'].forEach(t=>{ const opt = document.createElement('option'); opt.value=t; opt.textContent=t; if(q.type===t) opt.selected=true; type.appendChild(opt); });
+    type.addEventListener('change', ()=> { DATA[partKey].questions[idx].type = type.value; render(); saveLocalPreview(); });
+    chwrap.appendChild(type);
+    // choices field (comma separated)
+    const choicesInput = document.createElement('input'); choicesInput.type='text';
+    choicesInput.value = (q.choices || []).join(' | ');
+    choicesInput.addEventListener('input', ()=> { DATA[partKey].questions[idx].choices = choicesInput.value.split('|').map(s=>s.trim()).filter(Boolean); });
+    chwrap.appendChild(choicesInput);
+    left.appendChild(chwrap);
+
+    const right = document.createElement('div'); right.style.display='flex'; right.style.flexDirection='column'; right.style.gap='6px';
+    const up = document.createElement('button'); up.textContent='↑'; up.className='btn-ghost';
+    up.onclick=()=>{ if(idx>0){ arr.splice(idx-1,0,arr.splice(idx,1)[0]); render(); } };
+    const down = document.createElement('button'); down.textContent='↓'; down.className='btn-ghost';
+    down.onclick=()=>{ if(idx < arr.length-1){ arr.splice(idx+1,0,arr.splice(idx,1)[0]); render(); } };
+    const del = document.createElement('button'); del.textContent='✖'; del.className='btn-ghost';
+    del.onclick=()=>{ if(confirm('O`chirishni tasdiqlaysizmi?')){ arr.splice(idx,1); render(); } };
+    right.appendChild(up); right.appendChild(down); right.appendChild(del);
+
+    div.appendChild(left); div.appendChild(right);
+    container.appendChild(div);
+  });
+}
+
+/* add question */
+p1Add.addEventListener('click', ()=> { DATA.part1.questions.push({type:'radio',text:'New question',choices:['A','B','C'],correct:[]}); render(); });
+p2Add.addEventListener('click', ()=> { DATA.part2.questions.push({type:'radio',text:'New question',choices:['A','B','C'],correct:[]}); render(); });
+p3Add.addEventListener('click', ()=> { DATA.part3.questions.push({type:'radio',text:'New question',choices:['A','B','C'],correct:[]}); render(); });
+
+/* save to localStorage and broadcast */
+saveBtn.addEventListener('click', ()=>{
+  DATA.part1.passage = p1Pass.value; DATA.part2.passage = p2Pass.value; DATA.part3.passage = p3Pass.value;
+  DATA.meta = { updatedAt: Date.now(), sourceId: CLIENT_ID };
+  try{
+    localStorage.setItem(QUESTIONS_KEY, JSON.stringify(DATA));
+    // broadcast if supported
+    try{ const bc = new BroadcastChannel('listening_channel'); bc.postMessage({type:'questions_updated', sourceId:CLIENT_ID}); bc.close(); }catch(e){}
+    alert('Saved & published to localStorage.');
+  }catch(e){ alert('Save failed: '+e.message); }
+});
+
+/* reset to sample */
+resetBtn.addEventListener('click', ()=>{ if(!confirm('Reset to sample content?')) return; DATA = JSON.parse(JSON.stringify(SAMPLE)); render(); });
+
+/* remove key */
+removeKey.addEventListener('click', ()=>{ if(!confirm('Remove questions key from localStorage? other tabs will fallback to sample.')) return; localStorage.removeItem(QUESTIONS_KEY); try{ const bc = new BroadcastChannel('listening_channel'); bc.postMessage({type:'questions_removed', sourceId:CLIENT_ID}); bc.close(); }catch(e){} DATA = JSON.parse(JSON.stringify(SAMPLE)); render(); alert('Removed.'); });
+
+/* open listening */
+openListening.addEventListener('click', ()=> { const w = window.open('listening.html','_blank'); if(!w) alert('Popup blocked — iltimos listening.html faylini oching.'); });
+
+/* when storage changed externally (other tab saved), reload */
+window.addEventListener('storage', (e)=>{ if(e.key === QUESTIONS_KEY){ if(!e.newValue) { DATA = JSON.parse(JSON.stringify(SAMPLE)); } else { try{ DATA = JSON.parse(e.newValue); }catch(e){ DATA = JSON.parse(JSON.stringify(SAMPLE)); } } render(); alert('Questions updated from another tab.'); } });
+
+/* initial */
+load(); render();
+
+/* helper to save local preview while typing */
+function saveLocalPreview(){ DATA.part1.passage = p1Pass.value; DATA.part2.passage = p2Pass.value; DATA.part3.passage = p3Pass.value; try{ localStorage.setItem(QUESTIONS_KEY, JSON.stringify(DATA)); }catch(e){} }
+</script>
+</body>
+</html>

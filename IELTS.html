@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IELTS Portal — Final (Listening/Reading/Writing/Speaking)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7fbff; --card:#fff; --accent:#0b6cff; --accent-2:#07b39b; --muted:#6b7280;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;padding:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#eef7ff 0%, #ffffff 60%);color:#071232;overflow:hidden}
+  .app{height:100vh;display:flex;flex-direction:column;gap:14px;padding:14px}
+  .topbar{display:flex;align-items:center;gap:14px;padding:12px;border-radius:12px;background:linear-gradient(90deg,#fff,#f3fbff);box-shadow:0 10px 30px rgba(11,18,40,0.06)}
+  .logo{display:flex;align-items:center;gap:12px;cursor:pointer}
+  .logo .img{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;overflow:hidden}
+  .logo .img img{width:100%;height:100%;object-fit:cover;display:block}
+  .logo .title{font-weight:800}
+  .logo .sub{font-size:12px;color:var(--muted)}
+  .nav{display:flex;gap:8px;margin-left:12px}
+  .nav-btn{padding:8px 14px;border-radius:10px;border:0;background:transparent;cursor:pointer;font-weight:700;color:var(--muted);transition:transform .12s,color .12s}
+  .nav-btn:hover{transform:translateY(-3px);color:var(--accent)}
+  .nav-btn.active{color:#fff;background:linear-gradient(90deg,var(--accent),#0a5be6);box-shadow:0 8px 20px rgba(11,108,255,0.12)}
+  .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .badge{background:linear-gradient(90deg,#e6f4ff,#f3fcff);padding:6px 12px;border-radius:999px;border:1px solid rgba(11,108,255,0.06);font-weight:700;color:#0456d6}
+  .icon-btn{background:#fff;border:0;padding:8px;border-radius:10px;cursor:pointer;box-shadow:0 8px 20px rgba(11,18,40,0.04)}
+  .top-right-img{width:38px;height:38px;border-radius:8px;object-fit:cover;border:1px solid rgba(11,108,255,0.06);box-shadow:0 8px 20px rgba(11,18,40,0.04);cursor:pointer}
+  .viewer{flex:1;background:var(--card);border-radius:12px;border:1px solid rgba(11,108,255,0.04);overflow:hidden;display:flex;flex-direction:column;min-height:0;position:relative}
+  .viewer header{display:flex;align-items:center;padding:12px;border-bottom:1px solid rgba(11,108,255,0.02);background:linear-gradient(90deg,#fbfdff,#fff)}
+  .viewer .title{font-weight:800}
+  .viewer .url{margin-left:auto;color:var(--muted);font-size:13px}
+  iframe{width:100%;height:100%;border:0;display:block;background:#fff;overflow:hidden}
+  .loader{position:absolute;left:22px;top:22px;padding:8px 12px;border-radius:12px;background:rgba(11,108,255,0.06);display:flex;align-items:center;gap:10px;z-index:60;backdrop-filter:blur(4px)}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:dotPulse 900ms infinite}
+  @keyframes dotPulse{0%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.5}100%{transform:scale(1);opacity:1}}
+  .diag{position:absolute;left:22px;bottom:22px;padding:10px;border-radius:8px;background:#fff;border:1px solid rgba(201,76,76,0.06);box-shadow:0 8px 30px rgba(11,18,40,0.04);display:none;z-index:70;max-width:50%;}
+  .diag pre{white-space:pre-wrap;margin:0;font-size:13px;color:#333}
+  /* PREMIUM MODAL */
+  .premium-modal{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    display:none;flex-direction:column;align-items:center;gap:12px;
+    background:#fff;padding:24px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.2);z-index:100;
+    animation:fadeIn 0.5s ease-in-out;
+  }
+  .premium-modal img{
+    width:120px;height:120px;border-radius:16px;cursor:pointer;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);transition:transform 0.3s ease;
+  }
+  .premium-modal img:hover{transform:scale(1.08);}
+  .premium-text{
+    font-weight:800;font-size:18px;color:#0b6cff;text-align:center;
+    animation:glow 1.5s ease-in-out infinite alternate;
+    cursor:pointer;
+  }
+  @keyframes fadeIn{from{opacity:0;transform:translate(-50%,-60%);}to{opacity:1;transform:translate(-50%,-50%);}}
+  @keyframes glow{
+    from{text-shadow:0 0 5px #0b6cff;}
+    to{text-shadow:0 0 20px #07b39b;}
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="logo" id="homeBtn" title="Go to Listening">
+        <div class="img"><img src="image copy 2.png" alt="Logo"></div>
+        <div>
+          <div class="title">IELTS Portal</div>
+          <div class="sub"></div>
+        </div>
+      </div>
+      <div class="nav" role="tablist" aria-label="Sections">
+        <button class="nav-btn active" id="btnListening" data-key="listening">Listening</button>
+        <button class="nav-btn" id="btnReading" data-key="reading">Reading</button>
+        <button class="nav-btn" id="btnWriting" data-key="writing">Writing</button>
+        <button class="nav-btn" id="btnSpeaking" data-key="speaking">Speaking</button>
+      </div>
+      <div class="right">
+        <div class="badge" id="currentLabel">Listening</div>
+        <img src="image copy 3.png" alt="Top right" class="top-right-img" id="paymeImg" title="Click to Pay">
+        <button class="icon-btn" id="btnReload" title="Reload current">⟳</button>
+        <button class="icon-btn" id="btnOpen" title="Open current in new tab">⤢</button>
+      </div>
+    </div>
+
+    <div class="viewer" id="viewer">
+      <div class="loader" id="loader" style="display:none"><div class="dot"></div><div id="loaderText"></div></div>
+      <header><div class="title" id="viewerTitle">Listening</div><div class="url" id="viewerUrl"></div></header>
+      <iframe id="iframeViewer" srcdoc="<div style='padding:22px;color:#666'>No content loaded. Use the section buttons above to open files like <strong>listening.html</strong>.</div>"></iframe>
+      <div class="diag" id="diag" role="status" aria-live="polite"><pre id="diagText"></pre></div>
+
+      <!-- PREMIUM MODAL -->
+      <div class="premium-modal" id="premiumModal">
+        <img src="image copy 3.png" alt="Premium" id="premiumImg">
+        <div class="premium-text" id="premiumText">Bizning Premiummizni oling!</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const DEFAULT = { listening: 'listening.html', reading: 'reading.html', writing: 'writing.html', speaking: 'speaking.html' };
+const STORAGE_KEY = 'ielts_portal_links_final_v1';
+
+const navButtons = [...document.querySelectorAll(".nav-btn")];
+const iframeViewer = document.getElementById('iframeViewer');
+const loader = document.getElementById('loader');
+const loaderText = document.getElementById('loaderText');
+const viewerUrl = document.getElementById('viewerUrl');
+const viewerTitle = document.getElementById('viewerTitle');
+const currentLabel = document.getElementById('currentLabel');
+const diag = document.getElementById('diag');
+const diagText = document.getElementById('diagText');
+const premiumModal = document.getElementById('premiumModal');
+const premiumImg = document.getElementById('premiumImg');
+const premiumText = document.getElementById('premiumText');
+
+const btnReload = document.getElementById('btnReload');
+const btnOpen = document.getElementById('btnOpen');
+const homeBtn = document.getElementById('homeBtn');
+const paymeImg = document.getElementById('paymeImg');
+
+let LINKS = loadLinks();
+let activeKey = 'listening';
+setActive('listening');
+
+function loadLinks(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {...DEFAULT};
+    return Object.assign({}, DEFAULT, JSON.parse(raw));
+  }catch(e){
+    return {...DEFAULT};
+  }
+}
+function saveLinks(obj){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }catch(e){} }
+
+function setActive(key){
+  activeKey = key;
+  navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.key === key));
+  const label = key.charAt(0).toUpperCase() + key.slice(1);
+  currentLabel.textContent = label;
+  viewerTitle.textContent = label;
+  loadFor(key);
+  // Premium modal faqat Listeningda ko‘rinmasin
+  if (key === 'listening') {
+    premiumModal.style.display = "none";
+  } else {
+    premiumModal.style.display = "flex";
+  }
+}
+
+function sanitize(u){
+  if(!u) return '';
+  u = u.trim();
+  if(u.match(/^javascript:/i)) return '';
+  return u;
+}
+
+async function loadFor(key){
+  const raw = LINKS[key] || DEFAULT[key];
+  const url = sanitize(raw);
+  viewerUrl.textContent = url || '—';
+  hideDiag();
+  loader.style.display = 'flex';
+  loaderText.textContent = 'Loading...';
+
+  if(!url){ iframeViewer.srcdoc = `<div style='padding:22px;color:#666'>No file set for ${key}.</div>`; loader.style.display='none'; return; }
+
+  try{
+    const resp = await fetch(url, {cache:'no-store'});
+    if(resp.ok){
+      const html = await resp.text();
+      iframeViewer.srcdoc = html;
+      loader.style.display = 'none';
+      return;
+    } else {
+      iframeViewer.src = url;
+      loaderText.textContent = `Fetch returned ${resp.status}; trying direct load.`;
+      showDiag(`Fetch returned ${resp.status} ${resp.statusText} for "${url}". Fallback: iframe.src = "${url}".`);
+      return;
+    }
+  }catch(err){
+    iframeViewer.src = url;
+    loaderText.textContent = 'Direct load attempt.';
+  }
+}
+
+function showDiag(msg){
+  diagText.textContent = msg;
+  diag.style.display = 'block';
+}
+function hideDiag(){ diag.style.display = 'none'; diagText.textContent = ''; }
+
+navButtons.forEach(btn=>{
+  btn.addEventListener('click',()=> setActive(btn.dataset.key));
+});
+
+btnReload.addEventListener('click', ()=> {
+  try{
+    const srcdoc = iframeViewer.getAttribute('srcdoc');
+    const src = iframeViewer.getAttribute('src');
+    if(src && src !== 'about:blank'){ iframeViewer.src = src; }
+    else if(srcdoc){ iframeViewer.srcdoc = srcdoc; }
+    loader.style.display = 'flex'; loaderText.textContent = 'Reloading...';
+    setTimeout(()=> loader.style.display = 'none', 900);
+  }catch(e){ alert('Reload failed'); }
+});
+
+btnOpen.addEventListener('click', ()=> {
+  const raw = LINKS[activeKey] || DEFAULT[activeKey];
+  const url = sanitize(raw);
+  if(!url){ alert('No URL to open'); return; }
+  window.open(url, '_blank');
+});
+
+homeBtn.addEventListener('click', ()=> setActive('listening'));
+paymeImg.addEventListener('click', () => {
+  window.open("https://payme.uz/checkout/68beb36a09ed787f40eb1c53?back=https:%2F%2Fzehnly.ai%2Fpremium&timeout=15000&lang=ru", "_blank");
+});
+premiumImg.addEventListener('click', () => {
+  window.open("https://payme.uz/checkout/68beb36a09ed787f40eb1c53?back=https:%2F%2Fzehnly.ai%2Fpremium&timeout=15000&lang=ru", "_blank");
+});
+premiumText.addEventListener('click', () => {
+  window.open("https://payme.uz/checkout/68beb36a09ed787f40eb1c53?back=https:%2F%2Fzehnly.ai%2Fpremium&timeout=15000&lang=ru", "_blank");
+});
+
+iframeViewer.addEventListener('load', ()=> { loader.style.display = 'none'; });
+
+loadFor(activeKey);
+</script>
+</body>
+</html>
