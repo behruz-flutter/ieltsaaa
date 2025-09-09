@@ -67,6 +67,8 @@
 
       <div style="display:flex;gap:8px;align-items:center">
         <button id="openDashboard" class="btn ghost">Open Dashboard</button>
+        <!-- Fullscreen button added (minimal, non-invasive) -->
+        <button id="btnFullscreen" class="btn ghost" title="Toggle fullscreen">⛶ Fullscreen</button>
       </div>
     </div>
 
@@ -444,6 +446,52 @@ loadPassages();
 STATE = loadState();
 render();
 
+/* ------------------ FULLSCREEN: small, non-invasive addition ------------------
+   Adds a fullscreen toggle button (already present in HTML). Uses Fullscreen API.
+   This does not change other functionality or layout.
+*/
+(function setupFullscreen(){
+  const btn = document.getElementById('btnFullscreen');
+  if(!btn) return;
+  function isFull(){
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+  }
+  async function requestFull(el){
+    if(el.requestFullscreen) return el.requestFullscreen();
+    if(el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+    if(el.mozRequestFullScreen) return el.mozRequestFullScreen();
+    if(el.msRequestFullscreen) return el.msRequestFullscreen();
+  }
+  async function exitFull(){
+    if(document.exitFullscreen) return document.exitFullscreen();
+    if(document.webkitExitFullscreen) return document.webkitExitFullscreen();
+    if(document.mozCancelFullScreen) return document.mozCancelFullScreen();
+    if(document.msExitFullscreen) return document.msExitFullscreen();
+  }
+  btn.addEventListener('click', async ()=>{
+    try{
+      if(!isFull()){
+        // Make the .card element fullscreen so UI maximizes nicely
+        const card = document.querySelector('.card') || document.documentElement;
+        await requestFull(card);
+      } else {
+        await exitFull();
+      }
+    }catch(e){
+      console.warn('Fullscreen error', e);
+    }
+  });
+  // Update button label on change
+  function updateLabel(){
+    if(isFull()){ btn.textContent = '⤫ Exit Fullscreen'; btn.classList.add('primary'); }
+    else { btn.textContent = '⛶ Fullscreen'; btn.classList.remove('primary'); }
+  }
+  document.addEventListener('fullscreenchange', updateLabel);
+  document.addEventListener('webkitfullscreenchange', updateLabel);
+  document.addEventListener('mozfullscreenchange', updateLabel);
+  document.addEventListener('MSFullscreenChange', updateLabel);
+  updateLabel();
+})();
 </script>
 </body>
 </html>

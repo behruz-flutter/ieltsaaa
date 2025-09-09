@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IELTS Dashboards Portal — Listening / Reading / Writing / Speaking</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f8ff;
+    --card:#ffffff;
+    --accent:#0b6cff;
+    --accent-2:#07b39b;
+    --muted:#6b7280;
+    --glass: rgba(255,255,255,0.7);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;padding:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#eef7ff,#fff);color:#071232}
+  /* full layout with topbar + two-column on wide screens */
+  .wrap{max-width:1200px;margin:18px auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+  .topbar{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(90deg,#fff,#f3fbff);box-shadow:0 10px 30px rgba(11,18,40,0.06)}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer}
+  .brand .logo{width:52px;height:52px;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(11,108,255,0.07)}
+  .brand .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .brand .title{font-weight:800;font-size:18px}
+  .brand .sub{font-size:13px;color:var(--muted)}
+  .nav{display:flex;gap:8px;margin-left:12px}
+  .nav button{padding:8px 12px;border-radius:10px;border:0;background:transparent;cursor:pointer;font-weight:700;color:var(--muted);transition:all .14s}
+  .nav button:hover{transform:translateY(-3px);color:var(--accent)}
+  .nav button.active{background:linear-gradient(90deg,var(--accent),#0a5be6);color:#fff;box-shadow:0 8px 22px rgba(11,108,255,0.12)}
+  .top-actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .small{font-size:13px;color:var(--muted)}
+  .card{background:var(--card);border-radius:12px;padding:12px;border:1px solid rgba(11,108,255,0.04);box-shadow:0 12px 40px rgba(11,18,40,0.04)}
+  .layout{display:grid;grid-template-columns:360px 1fr;gap:14px;margin-top:8px}
+  @media (max-width:920px){ .layout{grid-template-columns:1fr} .nav{display:flex;overflow:auto} }
+  .left{display:flex;flex-direction:column;gap:10px}
+  .section{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfeff);border:1px solid rgba(11,108,255,0.03)}
+  .section h3{margin:0 0 8px 0;font-size:15px}
+  .row{display:flex;gap:8px;align-items:center}
+  input.link-input{flex:1;padding:10px;border-radius:10px;border:1px solid #eef6ff}
+  .btn{padding:8px 12px;border-radius:10px;border:0;background:#fff;cursor:pointer;box-shadow:0 8px 18px rgba(11,18,40,0.04);font-weight:700}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),#0060f0);color:#fff}
+  .btn.ghost{background:transparent;border:1px solid rgba(11,108,255,0.06)}
+  .viewer{min-height:560px;border-radius:12px;overflow:hidden;position:relative}
+  .viewer header{display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid rgba(11,108,255,0.03);background:linear-gradient(90deg,#fbfdff,#fff)}
+  .viewer .title{font-weight:800}
+  .viewer .meta{margin-left:auto;color:var(--muted);font-size:13px}
+  iframe#frame{width:100%;height:calc(100% - 56px);border:0;display:block;background:#fff}
+  .loader{position:absolute;left:14px;top:14px;padding:8px 12px;border-radius:10px;background:rgba(11,108,255,0.06);display:flex;align-items:center;gap:8px;z-index:50}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:dot 900ms infinite}
+  @keyframes dot{0%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.5}100%{transform:scale(1);opacity:1}}
+  .hint{font-size:13px;color:var(--muted);margin-top:6px}
+  /* nice toast */
+  .toast{position:fixed;right:18px;bottom:18px;background:#0652ff;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(6,82,255,0.12)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand" id="home">
+        <div class="logo"><img src="image-removebg-preview (12).png" alt="Logo"></div>
+        <div>
+          <div class="title">IELTS Dashboards</div>
+          <div class="sub">Load each section's dashboard HTML file</div>
+        </div>
+      </div>
+
+      <nav class="nav" role="tablist" aria-label="Sections">
+        <button id="nav-listening" class="active" data-key="listening">Listening</button>
+        <button id="nav-reading" data-key="reading">Reading</button>
+        <button id="nav-writing" data-key="writing">Writing</button>
+        <button id="nav-speaking" data-key="speaking">Speaking</button>
+      </nav>
+
+      <div class="top-actions">
+        <!-- top-right logo image (user requested) -->
+        <img id="topLogo" src="image-removebg-preview (12).png" alt="Top logo" style="width:40px;height:40px;border-radius:8px;object-fit:cover;cursor:pointer" title="Logo">
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: controls to enter filenames/URLs for each dashboard -->
+      <div class="left">
+        <div class="section card">
+          <h3>Dashboard fayllarini kiriting</h3>
+          <div class="hint">Har bir bo'lim uchun HTML fayl nomi yoki to'liq URL kiriting (masalan: listening_dashboard.html yoki https://...).</div>
+
+          <div style="margin-top:8px">
+            <label class="small">Listening</label>
+            <div class="row" style="margin-top:6px">
+              <input id="fListening" class="link-input" placeholder="listening_dashboard.html">
+              <button id="loadListening" class="btn primary">Yukla</button>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label class="small">Reading</label>
+            <div class="row" style="margin-top:6px">
+              <input id="fReading" class="link-input" placeholder="reading_dashboard.html">
+              <button id="loadReading" class="btn primary">Yukla</button>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label class="small">Writing</label>
+            <div class="row" style="margin-top:6px">
+              <input id="fWriting" class="link-input" placeholder="writing_dashboard.html">
+              <button id="loadWriting" class="btn primary">Yukla</button>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label class="small">Speaking</label>
+            <div class="row" style="margin-top:6px">
+              <input id="fSpeaking" class="link-input" placeholder="speaking_dashboard.html">
+              <button id="loadSpeaking" class="btn primary">Yukla</button>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="saveAll" class="btn">Saqlash</button>
+            <button id="resetDefaults" class="btn ghost">Standartlar</button>
+            <button id="clearStorage" class="btn ghost">Tozalash</button>
+          </div>
+        </div>
+
+        <div class="section card" style="margin-top:8px">
+          <h3>Tez harakatlar</h3>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="openNewTab" class="btn">Ochiq yangi oynada</button>
+            <button id="reloadFrame" class="btn">Qayta yukla</button>
+          </div>
+          <div class="hint" style="margin-top:8px">Agar iframe ichidagi fayl X-Frame-Options bilan bloklansa, "Ochiq yangi oynada" tugmasi bilan alohida tabda oching.</div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: viewer -->
+      <div class="viewer card" id="viewer">
+        <div class="loader" id="loader" style="display:none"><div class="dot"></div><div id="loaderText">Loading...</div></div>
+        <header>
+          <div class="title" id="viewerTitle">Listening Dashboard</div>
+          <div class="meta" id="viewerMeta">—</div>
+        </header>
+
+        <!-- iframe initially blank message -->
+        <iframe id="frame" srcdoc="<div style='padding:20px;color:#666;font-family:Inter,sans-serif'>Hech narsa yuklanmadi. Chap paneldan fayl nomini kiriting yoki oldindan saqlangan fayllardan tanlang va 'Yukla' tugmasini bosing.</div>"></iframe>
+      </div>
+    </div>
+  </div>
+
+<script>
+/*
+  Dashboard portal script
+  - Store filenames in localStorage
+  - Try fetch() first and set iframe.srcdoc when possible (works on same-origin / served files)
+  - Fallback to iframe.src to let browser attempt to load (works when served or file accessible)
+  - Top-right logo clickable (goes home)
+*/
+const STORAGE_KEY = 'ielts_dash_links_v1';
+const DEFAULTS = {
+  listening: 'listening_dashboard.html',
+  reading: 'reading_dashboard.html',
+  writing: 'writing_dashboard.html',
+  speaking: 'speaking_dashboard.html'
+};
+
+// DOM refs
+const fListening = document.getElementById('fListening');
+const fReading  = document.getElementById('fReading');
+const fWriting  = document.getElementById('fWriting');
+const fSpeaking = document.getElementById('fSpeaking');
+
+const loadListening = document.getElementById('loadListening');
+const loadReading  = document.getElementById('loadReading');
+const loadWriting  = document.getElementById('loadWriting');
+const loadSpeaking = document.getElementById('loadSpeaking');
+
+const saveAll = document.getElementById('saveAll');
+const resetDefaults = document.getElementById('resetDefaults');
+const clearStorage = document.getElementById('clearStorage');
+
+const openNewTab = document.getElementById('openNewTab');
+const reloadFrame = document.getElementById('reloadFrame');
+
+const frame = document.getElementById('frame');
+const loader = document.getElementById('loader');
+const loaderText = document.getElementById('loaderText');
+const viewerTitle = document.getElementById('viewerTitle');
+const viewerMeta = document.getElementById('viewerMeta');
+
+const navBtns = {
+  listening: document.getElementById('nav-listening'),
+  reading:  document.getElementById('nav-reading'),
+  writing:  document.getElementById('nav-writing'),
+  speaking: document.getElementById('nav-speaking')
+};
+const topLogo = document.getElementById('topLogo');
+const home = document.getElementById('home');
+
+// load saved links or defaults
+function loadLinks(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {...DEFAULTS};
+    const parsed = JSON.parse(raw);
+    return Object.assign({}, DEFAULTS, parsed || {});
+  }catch(e){
+    return {...DEFAULTS};
+  }
+}
+let LINKS = loadLinks();
+
+// populate inputs
+function fillInputs(){
+  fListening.value = LINKS.listening || DEFAULTS.listening;
+  fReading.value  = LINKS.reading  || DEFAULTS.reading;
+  fWriting.value  = LINKS.writing  || DEFAULTS.writing;
+  fSpeaking.value = LINKS.speaking || DEFAULTS.speaking;
+}
+fillInputs();
+
+// save links
+function saveLinks(){
+  LINKS.listening = sanitize(fListening.value) || DEFAULTS.listening;
+  LINKS.reading   = sanitize(fReading.value)  || DEFAULTS.reading;
+  LINKS.writing   = sanitize(fWriting.value)  || DEFAULTS.writing;
+  LINKS.speaking  = sanitize(fSpeaking.value) || DEFAULTS.speaking;
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(LINKS)); toast('Saqlandi'); }catch(e){ toast('Saqlash xatosi'); }
+}
+
+// sanitize to prevent javascript: URIs
+function sanitize(u){
+  if(!u) return '';
+  u = u.trim();
+  if(/^javascript:/i.test(u)) return '';
+  return u;
+}
+
+// show toast
+function toast(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent = msg; document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=> t.remove(),400); },2000);
+}
+
+// loading into iframe with fetch fallback
+let lastLoadedUrl = null;
+async function loadIntoFrame(url, title){
+  if(!url) return;
+  viewerTitle.textContent = title || url;
+  viewerMeta.textContent = url;
+  loader.style.display = 'flex';
+  loaderText.textContent = 'Yuklanmoqda...';
+
+  // clear previous content immediately (user requested)
+  frame.srcdoc = "<div style='padding:20px;color:#666;font-family:Inter,sans-serif'>Loading...</div>";
+  lastLoadedUrl = url;
+
+  // If absolute HTTP or data/blob -> use direct src
+  if(/^https?:\/\//i.test(url) || url.startsWith('data:') || url.startsWith('blob:')){
+    frame.src = url;
+    setTimeout(()=> loader.style.display = 'none', 800);
+    return;
+  }
+
+  // Try fetch (works on same-origin / served files)
+  try{
+    const resp = await fetch(url, {cache: 'no-store'});
+    if(resp.ok){
+      const html = await resp.text();
+      // put as srcdoc so it displays even if cross-origin embedding blocked
+      frame.srcdoc = html;
+      loader.style.display = 'none';
+      return;
+    } else {
+      // fallback to setting src so browser will try to open it
+      frame.src = url;
+      loaderText.textContent = `Fetch returned ${resp.status}; fallback to direct load.`;
+      setTimeout(()=> loader.style.display = 'none', 1000);
+      return;
+    }
+  }catch(err){
+    // fetch failed (CORS or file://), fallback to src
+    frame.src = url;
+    loaderText.textContent = 'Fetch failed; attempting direct load.';
+    setTimeout(()=> loader.style.display = 'none', 900);
+    return;
+  }
+}
+
+// wired buttons: load specific
+loadListening.addEventListener('click', ()=> {
+  const url = sanitize(fListening.value) || DEFAULTS.listening; LINKS.listening = url; saveLinks();
+  activateNav('listening'); loadIntoFrame(url, 'listeningDash.html');
+});
+loadReading.addEventListener('click', ()=> {
+  const url = sanitize(fReading.value) || DEFAULTS.reading; LINKS.reading = url; saveLinks();
+  activateNav('reading'); loadIntoFrame(url, 'readingDash.html');
+});
+loadWriting.addEventListener('click', ()=> {
+  const url = sanitize(fWriting.value) || DEFAULTS.writing; LINKS.writing = url; saveLinks();
+  activateNav('writing'); loadIntoFrame(url, 'writingDash.html');
+});
+loadSpeaking.addEventListener('click', ()=> {
+  const url = sanitize(fSpeaking.value) || DEFAULTS.speaking; LINKS.speaking = url; saveLinks();
+  activateNav('speaking'); loadIntoFrame(url, 'SpeakingDash.html');
+});
+
+saveAll.addEventListener('click', ()=> { saveLinks(); toast('Barcha linklar saqlandi'); });
+resetDefaults.addEventListener('click', ()=> {
+  if(!confirm('Standartlarga qaytmoqchimisiz?')) return;
+  LINKS = Object.assign({}, DEFAULTS);
+  fillInputs();
+  saveLinks();
+  toast('Standartlarga qaytildi');
+});
+clearStorage.addEventListener('click', ()=> {
+  if(!confirm('Saqlangan linklarni o\'chirmoqchimisiz?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  LINKS = Object.assign({}, DEFAULTS);
+  fillInputs();
+  frame.srcdoc = "<div style='padding:20px;color:#666'>Hech narsa yuklanmadi.</div>";
+  toast('Saqlash tozalandi');
+});
+
+// open current frame in new tab (prefer URL)
+openNewTab.addEventListener('click', ()=> {
+  const active = getActiveKey();
+  const url = LINKS[active] || DEFAULTS[active];
+  if(!url){ toast('Hech narsa topilmadi'); return; }
+  window.open(url, '_blank');
+});
+reloadFrame.addEventListener('click', ()=> {
+  // reload current frame content (if srcdoc present, reassign)
+  try{
+    const srcdoc = frame.getAttribute('srcdoc');
+    const src = frame.getAttribute('src') || '';
+    if(src && src !== 'about:blank'){ frame.src = src; }
+    else if(srcdoc){ frame.srcdoc = srcdoc; }
+    loader.style.display = 'flex'; loaderText.textContent = 'Qayta yuklanmoqda...';
+    setTimeout(()=> loader.style.display = 'none', 900);
+  }catch(e){ toast('Qayta yuklashda xato'); }
+});
+
+// nav buttons behaviour
+function activateNav(key){
+  Object.keys(navBtns).forEach(k => {
+    const el = navBtns[k];
+    if(!el) return;
+    if(k === key) el.classList.add('active'); else el.classList.remove('active');
+  });
+}
+function getActiveKey(){
+  for(const k of Object.keys(navBtns)){
+    const el = navBtns[k];
+    if(el && el.classList.contains('active')) return k;
+  }
+  return 'listening';
+}
+
+navBtns.listening.addEventListener('click', ()=> { activateNav('listening'); loadIntoFrame(LINKS.listening || DEFAULTS.listening, 'Listening Dashboard'); });
+navBtns.reading.addEventListener('click',  ()=> { activateNav('reading');  loadIntoFrame(LINKS.reading  || DEFAULTS.reading,  'Reading Dashboard'); });
+navBtns.writing.addEventListener('click',  ()=> { activateNav('writing');  loadIntoFrame(LINKS.writing  || DEFAULTS.writing,  'Writing Dashboard'); });
+navBtns.speaking.addEventListener('click',  ()=> { activateNav('speaking'); loadIntoFrame(LINKS.speaking || DEFAULTS.speaking, 'Speaking Dashboard'); });
+
+// top logo click -> go home (listening)
+topLogo.addEventListener('click', ()=> { activateNav('listening'); loadIntoFrame(LINKS.listening || DEFAULTS.listening, 'Listening Dashboard'); });
+home.addEventListener('click', ()=> { activateNav('listening'); loadIntoFrame(LINKS.listening || DEFAULTS.listening, 'Listening Dashboard'); });
+
+// initial load: auto-load listening dashboard if present
+window.addEventListener('load', ()=> {
+  // ensure inputs reflect stored LINKS
+  fillInputs();
+  activateNav('listening');
+  loadIntoFrame(LINKS.listening || DEFAULTS.listening, 'Listening Dashboard');
+});
+</script>
+</body>
+</html>

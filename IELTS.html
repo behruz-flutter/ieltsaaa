@@ -18,10 +18,12 @@
   .logo .img img{width:100%;height:100%;object-fit:cover;display:block}
   .logo .title{font-weight:800}
   .logo .sub{font-size:12px;color:var(--muted)}
-  .nav{display:flex;gap:8px;margin-left:12px}
+  .nav{display:flex;gap:8px;margin-left:12px;align-items:center}
   .nav-btn{padding:8px 14px;border-radius:10px;border:0;background:transparent;cursor:pointer;font-weight:700;color:var(--muted);transition:transform .12s,color .12s}
   .nav-btn:hover{transform:translateY(-3px);color:var(--accent)}
   .nav-btn.active{color:#fff;background:linear-gradient(90deg,var(--accent),#0a5be6);box-shadow:0 8px 20px rgba(11,108,255,0.12)}
+  .pricing-btn{padding:8px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,#ff9a00,#ff6b6b);cursor:pointer;color:#fff;font-weight:800;box-shadow:0 8px 20px rgba(255,107,107,0.12);transform:translateY(0);transition:transform .12s}
+  .pricing-btn:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(255,107,107,0.18)}
   .right{margin-left:auto;display:flex;gap:8px;align-items:center}
   .badge{background:linear-gradient(90deg,#e6f4ff,#f3fcff);padding:6px 12px;border-radius:999px;border:1px solid rgba(11,108,255,0.06);font-weight:700;color:#0456d6}
   .icon-btn{background:#fff;border:0;padding:8px;border-radius:10px;cursor:pointer;box-shadow:0 8px 20px rgba(11,18,40,0.04)}
@@ -53,11 +55,26 @@
     animation:glow 1.5s ease-in-out infinite alternate;
     cursor:pointer;
   }
-  @keyframes fadeIn{from{opacity:0;transform:translate(-50%,-60%);}to{opacity:1;transform:translate(-50%,-50%);}}
-  @keyframes glow{
-    from{text-shadow:0 0 5px #0b6cff;}
-    to{text-shadow:0 0 20px #07b39b;}
+  .premium-close{position:absolute;right:10px;top:8px;background:transparent;border:0;font-size:22px;cursor:pointer}
+  @keyframes fadeIn{from{opacity:0;transform:translate(-50%,-60%);}to{opacity:1;transform:translate(-50%,-50%);} }
+  @keyframes glow{ from{text-shadow:0 0 5px #0b6cff;} to{text-shadow:0 0 20px #07b39b;} }
+
+  /* PRACTICE / PRICING MODAL */
+  .practice-modal{
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:86%;max-width:980px;height:78%;background:#fff;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,0.25);z-index:200;display:none;overflow:hidden;display:flex;flex-direction:column;
   }
+  .practice-header{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid #f0f4ff;background:linear-gradient(90deg,#fbfdff,#fff)}
+  .practice-title{font-weight:800;font-size:18px}
+  .practice-body{padding:14px;overflow:auto;flex:1}
+  .practice-sect{margin-bottom:16px}
+  .practice-sect h4{margin:6px 0;font-size:16px}
+  .practice-close{margin-left:auto;background:transparent;border:0;font-size:20px;cursor:pointer}
+  .practice-actions{display:flex;gap:8px;align-items:center;padding:12px;border-top:1px solid #f4f7ff;background:#fbfdff;justify-content:flex-end}
+  .btn-ghost{background:#fff;border:1px solid rgba(11,108,255,0.06);padding:8px 12px;border-radius:8px;cursor:pointer}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),#0060f0);color:#fff;padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+
+  /* responsive */
+  @media (max-width:720px){ .practice-modal{width:96%;height:86%} .premium-modal{width:90%} }
 </style>
 </head>
 <body>
@@ -75,6 +92,8 @@
         <button class="nav-btn" id="btnReading" data-key="reading">Reading</button>
         <button class="nav-btn" id="btnWriting" data-key="writing">Writing</button>
         <button class="nav-btn" id="btnSpeaking" data-key="speaking">Speaking</button>
+        <!-- New Pricing button next to Speaking (stands out) -->
+        <button class="pricing-btn" id="btnPricing">practice</button>
       </div>
       <div class="right">
         <div class="badge" id="currentLabel">Listening</div>
@@ -91,16 +110,148 @@
       <div class="diag" id="diag" role="status" aria-live="polite"><pre id="diagText"></pre></div>
 
       <!-- PREMIUM MODAL -->
-      <div class="premium-modal" id="premiumModal">
+      <div class="premium-modal" id="premiumModal" role="dialog" aria-modal="true">
+        <button class="premium-close" id="premiumClose" title="Close">&times;</button>
         <img src="image copy 3.png" alt="Premium" id="premiumImg">
         <div class="premium-text" id="premiumText">Bizning Premiummizni oling!</div>
       </div>
     </div>
   </div>
 
+  <!-- PRACTICE / PRICING MODAL (contains Part1/2/3 practice) -->
+  <div class="practice-modal" id="practiceModal" role="dialog" aria-modal="true">
+    <div class="practice-header">
+      <div class="practice-title">practice & Practice — Speaking material</div>
+      <button class="practice-close" id="practiceClose" title="Close">&times;</button>
+    </div>
+    <div class="practice-body" id="practiceBody">
+      <div class="practice-sect">
+        <h4>Part 1 — Introduction & Interview (Topics and sample questions)</h4>
+        <ul>
+          <li><strong>Work / Study</strong>
+            <ul>
+              <li>Do you work or are you a student?</li>
+              <li>What subjects are you studying / what is your job?</li>
+              <li>Why did you choose this field?</li>
+              <li>What do you enjoy most about it?</li>
+            </ul>
+          </li>
+          <li><strong>Hometown</strong>
+            <ul>
+              <li>Where is your hometown?</li>
+              <li>What is the best thing about your hometown?</li>
+              <li>Has your hometown changed recently?</li>
+            </ul>
+          </li>
+          <li><strong>Free time & Hobbies</strong>
+            <ul>
+              <li>What do you do in your free time?</li>
+              <li>Do you prefer staying at home or going out?</li>
+              <li>Which hobbies are popular where you live?</li>
+            </ul>
+          </li>
+          <li><strong>Travel</strong>
+            <ul>
+              <li>Do you like traveling?</li>
+              <li>Which place have you visited recently?</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="practice-sect">
+        <h4>Part 2 — Cue card (Speak for 1–2 minutes)</h4>
+        <p>Sample prompts (each: you have 1 minute to prepare, 1–2 minutes to speak):</p>
+        <ol>
+          <li><strong>Describe a book</strong> you enjoyed. You should say:
+            <ul>
+              <li>what the book was about</li>
+              <li>when you read it</li>
+              <li>who recommended it</li>
+              <li>and explain why you enjoyed it</li>
+            </ul>
+          </li>
+          <li><strong>Describe a person</strong> who inspired you.
+            <ul>
+              <li>who they are</li>
+              <li>how you know them</li>
+              <li>what they did to inspire you</li>
+              <li>and explain why they are inspiring</li>
+            </ul>
+          </li>
+          <li><strong>Describe a place</strong> you would like to visit.
+            <ul>
+              <li>where it is</li>
+              <li>when you want to visit</li>
+              <li>what you expect to do there</li>
+              <li>and explain why you want to visit</li>
+            </ul>
+          </li>
+          <li><strong>Describe a memorable event</strong> in your life.
+            <ul>
+              <li>what happened</li>
+              <li>who was there</li>
+              <li>what you felt</li>
+              <li>and why it was memorable</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="practice-sect">
+        <h4>Part 3 — Discussion (Follow-up questions)</h4>
+        <p>These are deeper questions related to the Part 2 topic. Practice giving extended answers and opinions.</p>
+        <ul>
+          <li><strong>Education & Learning</strong>
+            <ul>
+              <li>How has education changed in recent years?</li>
+              <li>What skills are most important for young people today?</li>
+              <li>Do you think online learning is as effective as in-person learning?</li>
+            </ul>
+          </li>
+          <li><strong>Books & Films</strong>
+            <ul>
+              <li>Are books still important in the digital age?</li>
+              <li>Why do some people prefer films to books?</li>
+              <li>How does technology affect the way people read and watch?</li>
+            </ul>
+          </li>
+          <li><strong>Role models</strong>
+            <ul>
+              <li>What makes a person a good role model?</li>
+              <li>Do celebrities make good role models?</li>
+              <li>How can parents be role models for children?</li>
+            </ul>
+          </li>
+          <li><strong>Travel & Culture</strong>
+            <ul>
+              <li>How does travel benefit people?</li>
+              <li>Is cultural exchange important?</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="practice-sect">
+        <h4>Practice tips</h4>
+        <ul>
+          <li>Part 1: Give short, natural answers — practice 2–3 sentence responses.</li>
+          <li>Part 2: Use the 1 minute preparation — jot down quick bullet points (who, what, when, why).</li>
+          <li>Part 3: Expand answers, give examples, compare and contrast, and give your opinion clearly.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="practice-actions">
+      <button class="btn-ghost" id="practiceCloseBottom">Close</button>
+      <button class="btn-primary" id="practiceDownload">Download PDF (sample)</button>
+    </div>
+  </div>
+
 <script>
 const DEFAULT = { listening: 'listening.html', reading: 'reading.html', writing: 'writing.html', speaking: 'speaking.html' };
 const STORAGE_KEY = 'ielts_portal_links_final_v1';
+const PREMIUM_KEY = 'ielts_portal_premium_dismissed_v1';
 
 const navButtons = [...document.querySelectorAll(".nav-btn")];
 const iframeViewer = document.getElementById('iframeViewer');
@@ -114,11 +265,18 @@ const diagText = document.getElementById('diagText');
 const premiumModal = document.getElementById('premiumModal');
 const premiumImg = document.getElementById('premiumImg');
 const premiumText = document.getElementById('premiumText');
+const premiumClose = document.getElementById('premiumClose');
 
 const btnReload = document.getElementById('btnReload');
 const btnOpen = document.getElementById('btnOpen');
 const homeBtn = document.getElementById('homeBtn');
 const paymeImg = document.getElementById('paymeImg');
+const btnPricing = document.getElementById('btnPricing');
+
+const practiceModal = document.getElementById('practiceModal');
+const practiceClose = document.getElementById('practiceClose');
+const practiceCloseBottom = document.getElementById('practiceCloseBottom');
+const practiceDownload = document.getElementById('practiceDownload');
 
 let LINKS = loadLinks();
 let activeKey = 'listening';
@@ -135,26 +293,27 @@ function loadLinks(){
 }
 function saveLinks(obj){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }catch(e){} }
 
+function sanitize(u){
+  if(!u) return '';
+  u = u.trim();
+  if(u.match(/^javascript:/i)) return '';
+  return u;
+}
+
 function setActive(key){
   activeKey = key;
   navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.key === key));
   const label = key.charAt(0).toUpperCase() + key.slice(1);
   currentLabel.textContent = label;
   viewerTitle.textContent = label;
-  loadFor(key);
-  // Premium modal faqat Listeningda ko‘rinmasin
-  if (key === 'listening') {
-    premiumModal.style.display = "none";
+  // Only show premium modal if not dismissed and not Listening
+  const premiumDismissed = localStorage.getItem(PREMIUM_KEY) === 'true';
+  if(key === 'listening' || premiumDismissed){
+    premiumModal.style.display = 'none';
   } else {
-    premiumModal.style.display = "flex";
+    premiumModal.style.display = 'flex';
   }
-}
-
-function sanitize(u){
-  if(!u) return '';
-  u = u.trim();
-  if(u.match(/^javascript:/i)) return '';
-  return u;
+  loadFor(key);
 }
 
 async function loadFor(key){
@@ -165,7 +324,11 @@ async function loadFor(key){
   loader.style.display = 'flex';
   loaderText.textContent = 'Loading...';
 
-  if(!url){ iframeViewer.srcdoc = `<div style='padding:22px;color:#666'>No file set for ${key}.</div>`; loader.style.display='none'; return; }
+  if(!url){
+    iframeViewer.srcdoc = `<div style='padding:22px;color:#666'>No file set for ${key}.</div>`;
+    loader.style.display='none';
+    return;
+  }
 
   try{
     const resp = await fetch(url, {cache:'no-store'});
@@ -183,6 +346,7 @@ async function loadFor(key){
   }catch(err){
     iframeViewer.src = url;
     loaderText.textContent = 'Direct load attempt.';
+    showDiag(`Fetch failed for "${url}". Attempted direct load (may be blocked by browser X-Frame-Options or file://).`);
   }
 }
 
@@ -215,19 +379,79 @@ btnOpen.addEventListener('click', ()=> {
 });
 
 homeBtn.addEventListener('click', ()=> setActive('listening'));
-paymeImg.addEventListener('click', () => {
+
+/* PREMIUM: when clicked, open payment and mark dismissed so when user returns modal won't reappear */
+function goToPay(){
+  // mark dismissed so it won't show when user returns
+  try{ localStorage.setItem(PREMIUM_KEY, 'true'); }catch(e){}
+  // open payment link
   window.open("https://payme.uz/checkout/68beb36a09ed787f40eb1c53?back=https:%2F%2Fzehnly.ai%2Fpremium&timeout=15000&lang=ru", "_blank");
-});
-premiumImg.addEventListener('click', () => {
-  window.open("https://payme.uz/checkout/68beb36a09ed787f40eb1c53?back=https:%2F%2Fzehnly.ai%2Fpremium&timeout=15000&lang=ru", "_blank");
-});
-premiumText.addEventListener('click', () => {
-  window.open("https://payme.uz/checkout/68beb36a09ed787f40eb1c53?back=https:%2F%2Fzehnly.ai%2Fpremium&timeout=15000&lang=ru", "_blank");
+  // hide modal immediately
+  premiumModal.style.display = 'none';
+}
+paymeImg.addEventListener('click', goToPay);
+premiumImg.addEventListener('click', goToPay);
+premiumText.addEventListener('click', goToPay);
+
+/* allow closing premium modal manually (and mark dismissed) */
+premiumClose.addEventListener('click', ()=>{
+  try{ localStorage.setItem(PREMIUM_KEY, 'true'); }catch(e){}
+  premiumModal.style.display = 'none';
 });
 
+/* PRACTICE / PRICING modal functionality */
+/* Open modal when Pricing button clicked */
+btnPricing.addEventListener('click', ()=>{
+  practiceModal.style.display = 'flex';
+  // slightly disable background loader and viewer interactions
+  practiceModal.focus();
+});
+practiceClose.addEventListener('click', ()=> practiceModal.style.display = 'none');
+practiceCloseBottom.addEventListener('click', ()=> practiceModal.style.display = 'none');
+/* Allow Esc to close practice modal */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(practiceModal.style.display === 'flex') practiceModal.style.display = 'none';
+    if(premiumModal.style.display === 'flex'){ premiumModal.style.display = 'none'; try{ localStorage.setItem(PREMIUM_KEY,'true'); }catch(e){} }
+  }
+});
+
+/* practiceDownload: create a simple text blob (client-side) as sample PDF replacement */
+practiceDownload.addEventListener('click', ()=>{
+  const content = [
+    "IELTS Speaking — Sample Practice Materials",
+    "",
+    "Part 1 — Topics & Questions:",
+    "- Work/Study: Do you work or are you a student? Why did you choose this?",
+    "- Hometown: What do you like about your hometown?",
+    "",
+    "Part 2 — Cue cards:",
+    "- Describe a book you enjoyed. Say what it was about, when you read it, who recommended it, and why you enjoyed it.",
+    "",
+    "Part 3 — Discussion:",
+    "- How has technology changed reading habits?",
+    "- What makes someone a good role model?",
+    "",
+    "Good luck!"
+  ].join("\n");
+
+  const blob = new Blob([content], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'IELTS_speaking_practice.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+/* hide loader when iframe loaded */
 iframeViewer.addEventListener('load', ()=> { loader.style.display = 'none'; });
 
+/* initial load */
 loadFor(activeKey);
+
 </script>
 </body>
 </html>

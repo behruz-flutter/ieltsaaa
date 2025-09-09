@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Speaking Test — Friendly & Animated</title>
+  <title>Speaking Test — IELTS-style (Realistic)</title>
   <style>
     /* ---------------- Theme & base ---------------- */
     :root{
@@ -83,6 +83,9 @@
     /* keyboard hint */
     .kbd{border:1px solid #e6eef8;background:#fff;padding:4px 8px;border-radius:6px;font-weight:700;font-size:13px}
 
+    /* small label for band */
+    .band-label{display:inline-block;margin-left:8px;font-weight:700;padding:4px 8px;border-radius:999px;background:rgba(6,95,212,0.08);color:#064e9b;font-size:13px}
+
     /* responsive tweaks */
     @media (max-width:720px){ .top-row{flex-direction:column;align-items:stretch} .top-right{text-align:left} .controls{justify-content:center} }
   </style>
@@ -90,8 +93,8 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>Speaking Test</h1>
-      <div class="subtitle"></div>
+      <h1>Speaking Test — IELTS-style</h1>
+      <div class="subtitle">Design follows IELTS Speaking structure: Part 1 (intro + short Qs), Part 2 (cue card: 1 min prep, 2 min speak), Part 3 (discussion)</div>
 
       <div class="top-row">
         <div style="display:flex;gap:8px;align-items:center">
@@ -127,25 +130,38 @@
             <button id="reloadQ" class="btn">Reload Questions</button>
           </div>
 
-          <div class="help"></div>
+          <div class="help">Tip: Press "Listen" to hear the examiner question. Use Space to start/stop recording. Part 2 requires at least 120s speaking (IELTS cue-card style).</div>
         </div>
       </div>
     </div>
   </div>
 
 <script>
-/* ----------------- Initialization & state ----------------- */
+/* ----------------- Initialization & state (IELTS-focused) ----------------- */
 const QUESTIONS_KEY = 'speaking_questions_v1';
 const STORAGE_KEY   = 'speaking_app_v1';
 const DEFAULT = {
-  part1: ["Did you have a favourite book when you were a child?","What kinds of books do you read for pleasure? Why?","Do you prefer physical books or e-books? Explain your reason."],
-  part2: ["Describe a big city you would like to visit."],
-  part3: ["Why do people move to big cities?","What problems do big cities face?","How can cities be made more livable?"]
+  part1: [
+    "What is your full name?",
+    "Where are you from?",
+    "What do you do — study or work?",
+    "Do you like listening to music? Why?",
+    "How often do you read books?"
+  ],
+  part2: [
+    "Describe a big city you would like to visit. You should say: where the city is, what you know about it, why you want to visit it, and explain how you would spend a day there."
+  ],
+  part3: [
+    "Why do people move to big cities?",
+    "What problems do big cities face?",
+    "How can cities be made more livable?",
+    "Do you think living in a big city changes people's lifestyle? How?"
+  ]
 };
 
 let QUESTIONS = JSON.parse(JSON.stringify(DEFAULT));
 let STATE = null;
-let inMemoryAudio = {};
+let inMemoryAudio = {}; // holds object URLs of recorded audio
 let CLIENT_ID = sessionStorage.getItem('speaking_client_id');
 if(!CLIENT_ID){ CLIENT_ID = Math.random().toString(36).slice(2)+Date.now().toString(36); sessionStorage.setItem('speaking_client_id', CLIENT_ID); }
 
@@ -173,7 +189,7 @@ function toast(msg, time=2200){
   setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, time);
 }
 
-/* load questions from storage (published by dashboard) */
+/* load questions from storage (dashboard may publish questions) */
 function loadQuestions(){
   try{
     const raw = localStorage.getItem(QUESTIONS_KEY);
@@ -224,10 +240,10 @@ function loadState(){
   }
 }
 function saveState(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }catch(e){ console.warn('saveState failed', e); }
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); overallAvg.textContent = computeOverall(); }catch(e){ console.warn('saveState failed', e); }
 }
 
-/* scoring & basic AI-check */
+/* scoring & "AI-check" (keeps returning 0-9 like IELTS band simplified) */
 const COMMON = {"\\bim\\b":"I'm","\\bdont\\b":"don't","\\bcant\\b":"can't","\\bits\\b":"it's","\\bive\\b":"I've"};
 function aiCheck(text){
   if(!text) return { corrected:'', issuesCount:0, wordCount:0, annotatedHTML:'<em>(no transcript)</em>' };
@@ -247,24 +263,37 @@ function aiCheck(text){
   }
   return { corrected, issuesCount: issues, wordCount: orig.filter(w=>w.trim()).length, annotatedHTML: parts.join(' ') };
 }
+
+/* scoreTranscript returns integer 0..9 (approx). This is a simplified proxy for IELTS band. */
 function scoreTranscript(transcript, checkObj){
   const words = checkObj.wordCount || (transcript ? transcript.split(/\s+/).length : 0);
   const issues = checkObj.issuesCount || 0;
-  const wordRatio = Math.min(1, words/40);
-  const wordPoints = Math.round(wordRatio * 6);
-  const accuracy = words>0 ? Math.max(0, 1 - (issues / Math.max(1, Math.floor(words/5)))) : 0;
-  const accPoints = Math.round(accuracy * 3);
-  let raw = wordPoints + accPoints;
-  if(raw > 9) raw = 9;
-  if(words === 0) raw = 0;
-  return raw;
+  const fluencyFactor = Math.min(1, words / 60); // more words ~ more fluency (clipped)
+  const accuracy = words>0 ? Math.max(0, 1 - (issues / Math.max(1, Math.floor(words/6)))) : 0;
+  // combine to 0..9
+  const raw = Math.round((fluencyFactor * 5) + (accuracy * 4)); // gives 0..9 roughly
+  return Math.max(0, Math.min(9, raw));
+}
+
+/* Map numeric score to band label (simple helper for display) */
+function getBandLabel(score){
+  if(score === null || score === undefined) return '—';
+  const s = Number(score);
+  if(s <= 3) return 'Band 3-4 (Limited)';
+  if(s === 4) return 'Band 4 (Limited)';
+  if(s === 5) return 'Band 5 (Modest)';
+  if(s === 6) return 'Band 6 (Competent)';
+  if(s === 7) return 'Band 7 (Good)';
+  if(s === 8) return 'Band 8 (Very good)';
+  if(s >= 9) return 'Band 9 (Expert)';
+  return 'Band ' + s;
 }
 
 /* sequential UI state */
 let currentPart = 'p1';
 let idxP1 = 0, idxP3 = 0;
 
-/* render single-question UI */
+/* render single-question UI (IELTS-like) */
 function render(){
   overallAvg.textContent = computeOverall();
   navP1.classList.toggle('active', currentPart==='p1');
@@ -277,8 +306,8 @@ function render(){
     mainArea.innerHTML = `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong class="question-title">PART 1</strong><div class="muted" style="font-size:13px">Question ${idxP1+1} / ${QUESTIONS.part1.length}</div></div>
-          <div><span class="status-badge">${STATE.p1Scores[idxP1]!==null ? 'Score: '+STATE.p1Scores[idxP1] : (STATE.p1Trans[idxP1] ? 'Saved' : 'Not recorded')}</span></div>
+          <div><strong class="question-title">PART 1 — Introduction & Short Questions</strong><div class="muted" style="font-size:13px">Answer briefly, naturally. Question ${idxP1+1} / ${QUESTIONS.part1.length}</div></div>
+          <div><span class="status-badge">${STATE.p1Scores[idxP1]!==null ? 'Score: '+STATE.p1Scores[idxP1] : (STATE.p1Trans[idxP1] ? 'Saved' : 'Not recorded')}</span><span class="band-label" id="p1Band">${STATE.p1Scores[idxP1]!==null?escapeHtml(getBandLabel(STATE.p1Scores[idxP1])):''}</span></div>
         </div>
         <div class="question-title" style="margin-top:12px">${escapeHtml(q)}</div>
         <div class="controls">
@@ -293,14 +322,14 @@ function render(){
         <div id="p1Transcript" class="transcript" style="display:${STATE.p1Trans[idxP1] ? 'block' : 'none'}">
           <div class="small muted">Saved transcript</div>
           <div style="margin-top:6px">${escapeHtml(STATE.p1Trans[idxP1]||'')}</div>
-          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p1Scores[idxP1]!==null?STATE.p1Scores[idxP1]:'—'}</div>
+          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p1Scores[idxP1]!==null?STATE.p1Scores[idxP1]:'—'} <span class="band-label">${STATE.p1Scores[idxP1]!==null?escapeHtml(getBandLabel(STATE.p1Scores[idxP1])):''}</span></div>
         </div>
         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
           <button id="p1Prev" class="btn">◀ Prev</button>
           <button id="p1Next" class="btn">Next ▶</button>
         </div>
       </div>`;
-    document.getElementById('p1Play').onclick = ()=> speakText(q);
+    document.getElementById('p1Play').onclick = ()=> speakText("Examiner: " + q);
     document.getElementById('p1Record').onclick = ()=> { if(isRecording) stopRecording(); else startRecording('p1', idxP1, 90); };
     document.getElementById('p1Next').onclick = ()=> { if(idxP1 < QUESTIONS.part1.length-1){ idxP1++; render(); } else { currentPart='p2'; render(); } };
     document.getElementById('p1Prev').onclick = ()=> { if(idxP1>0){ idxP1--; render(); } };
@@ -311,27 +340,34 @@ function render(){
     mainArea.innerHTML = `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong class="question-title">PART 2 — Cue card</strong><div class="muted" style="font-size:13px">Prep 60s — Speak 120s</div></div>
-          <div><span class="status-badge">${STATE.p2Scores[0]!==null ? 'Score: '+STATE.p2Scores[0] : (STATE.p2Trans[0] ? 'Saved' : 'Not recorded')}</span></div>
+          <div><strong class="question-title">PART 2 — Cue card</strong><div class="muted" style="font-size:13px">You will have 1 minute to prepare and 2 minutes to speak. Use the notes box for preparation.</div></div>
+          <div><span class="status-badge">${STATE.p2Scores[0]!==null ? 'Score: '+STATE.p2Scores[0] : (STATE.p2Trans[0] ? 'Saved' : 'Not recorded')}</span><span class="band-label" id="p2Band">${STATE.p2Scores[0]!==null?escapeHtml(getBandLabel(STATE.p2Scores[0])):''}</span></div>
         </div>
+
         <div class="question-title" style="margin-top:12px">${escapeHtml(q)}</div>
+        <div style="margin-top:8px;color:var(--muted);font-size:13px;">Cue prompts (examiner): <ul style="margin:6px 0 0 18px"><li>Where the city is</li><li>What you know about it</li><li>Why you want to visit</li><li>Explain how you'd spend a day there</li></ul></div>
+
         <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
           <div>Prep: <strong id="prepTimer">01:00</strong></div>
           <button id="startPrep" class="btn">Start prep</button>
           <div style="flex:1"></div>
           <button id="p2Record" class="btn primary" disabled>🎤 Start speaking (2m)</button>
         </div>
+
         <div style="margin-top:10px">
-          <textarea id="p2Notes" placeholder="Write notes..." style="width:100%;min-height:90px;padding:10px;border-radius:10px;border:1px solid #eef6ff"></textarea>
+          <textarea id="p2Notes" placeholder="Write notes — bullet points are ideal (you have 1 minute)..." style="width:100%;min-height:90px;padding:10px;border-radius:10px;border:1px solid #eef6ff"></textarea>
         </div>
+
         <div class="progress"><div id="p2Bar" class="bar" style="width:0%"></div></div>
         <div class="wave-wrap" style="display:none"><canvas id="wave"></canvas></div>
         <div id="p2Download" style="margin-top:10px"></div>
+
         <div id="p2Transcript" class="transcript" style="display:${STATE.p2Trans[0] ? 'block' : 'none'}">
           <div class="small muted">Saved transcript</div>
           <div style="margin-top:6px">${escapeHtml(STATE.p2Trans[0]||'')}</div>
-          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p2Scores[0]!==null ? STATE.p2Scores[0] : '—'}</div>
+          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p2Scores[0]!==null ? STATE.p2Scores[0] : '—'} <span class="band-label">${STATE.p2Scores[0]!==null?escapeHtml(getBandLabel(STATE.p2Scores[0])):''}</span></div>
         </div>
+
         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
           <button id="p2ToP1" class="btn">Back: Part 1</button>
           <button id="p2ToP3" class="btn">Next: Part 3</button>
@@ -348,8 +384,8 @@ function render(){
     mainArea.innerHTML = `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong class="question-title">PART 3</strong><div class="muted" style="font-size:13px">Question ${idxP3+1} / ${QUESTIONS.part3.length}</div></div>
-          <div><span class="status-badge">${STATE.p3Scores[idxP3]!==null ? 'Score: '+STATE.p3Scores[idxP3] : (STATE.p3Trans[idxP3] ? 'Saved' : 'Not recorded')}</span></div>
+          <div><strong class="question-title">PART 3 — Discussion</strong><div class="muted" style="font-size:13px">Longer, more analytical answers expected. Question ${idxP3+1} / ${QUESTIONS.part3.length}</div></div>
+          <div><span class="status-badge">${STATE.p3Scores[idxP3]!==null ? 'Score: '+STATE.p3Scores[idxP3] : (STATE.p3Trans[idxP3] ? 'Saved' : 'Not recorded')}</span><span class="band-label" id="p3Band">${STATE.p3Scores[idxP3]!==null?escapeHtml(getBandLabel(STATE.p3Scores[idxP3])):''}</span></div>
         </div>
         <div class="question-title" style="margin-top:12px">${escapeHtml(q)}</div>
         <div class="controls">
@@ -364,14 +400,14 @@ function render(){
         <div id="p3Transcript" class="transcript" style="display:${STATE.p3Trans[idxP3] ? 'block' : 'none'}">
           <div class="small muted">Saved transcript</div>
           <div style="margin-top:6px">${escapeHtml(STATE.p3Trans[idxP3]||'')}</div>
-          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p3Scores[idxP3]!==null ? STATE.p3Scores[idxP3] : '—'}</div>
+          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p3Scores[idxP3]!==null ? STATE.p3Scores[idxP3] : '—'} <span class="band-label">${STATE.p3Scores[idxP3]!==null?escapeHtml(getBandLabel(STATE.p3Scores[idxP3])):''}</span></div>
         </div>
         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
           <button id="p3Prev" class="btn">◀ Prev</button>
           <button id="p3Next" class="btn">Next ▶</button>
         </div>
       </div>`;
-    document.getElementById('p3Play').onclick = ()=> speakText(q);
+    document.getElementById('p3Play').onclick = ()=> speakText("Examiner: " + q);
     document.getElementById('p3Record').onclick = ()=> { if(isRecording) stopRecording(); else startRecording('p3', idxP3, 90); };
     document.getElementById('p3Prev').onclick = ()=> { if(idxP3>0){ idxP3--; render(); } else { currentPart='p2'; render(); } };
     document.getElementById('p3Next').onclick = ()=> { if(idxP3 < QUESTIONS.part3.length-1){ idxP3++; render(); } else { showResults(); } };
@@ -379,7 +415,7 @@ function render(){
   }
 }
 
-/* compute overall average */
+/* overall average compute */
 function computeOverall(){
   const arr = [...STATE.p1Scores, ...STATE.p2Scores, ...STATE.p3Scores].filter(v=>v!==null && v!==undefined);
   if(arr.length===0) return '0.0';
@@ -399,6 +435,7 @@ async function startMicTest(){
     src.connect(analyser);
     const data = new Uint8Array(analyser.fftSize);
     function tick(){
+      if(!analyser) return;
       analyser.getByteTimeDomainData(data);
       const rms = bytesToRMS(data);
       const pct = Math.min(100, Math.round(rms*200));
@@ -423,13 +460,16 @@ function stopMicTest(){
 }
 micTestBtn.addEventListener('click', ()=> { if(!micStreamTest) startMicTest(); else stopMicTest(); });
 
-/* start Prep for Part2 */
+/* Part 2 prep flow with visible prep countdown */
 let prepInterval = null;
 function startPrep(){
   const btn = document.getElementById('startPrep'); if(!btn) return;
   btn.disabled = true;
+  const notes = document.getElementById('p2Notes'); if(notes) notes.focus();
   let secs = 60;
   const display = document.getElementById('prepTimer'); display.textContent = '01:00';
+  // enable quick listen of cue
+  speakText("You have one minute to prepare. Start preparing now.");
   prepInterval = setInterval(()=>{
     secs--;
     display.textContent = `00:${String(secs).padStart(2,'0')}`;
@@ -437,8 +477,8 @@ function startPrep(){
   }, 1000);
 }
 
-/* Waveform drawing */
-let waveCanvas=null, waveCtx=null;
+/* Waveform drawing (visual only) */
+let waveCanvas=null, waveCtx=null, waveRAF=null;
 function ensureWaveCanvas(){
   const wrap = document.querySelector('.wave-wrap');
   if(!wrap) return null;
@@ -450,14 +490,14 @@ function ensureWaveCanvas(){
   waveCtx.scale(devicePixelRatio, devicePixelRatio);
   return waveCanvas;
 }
-function drawWave(analyser){
-  if(!waveCanvas || !waveCtx) ensureWaveCanvas();
-  if(!analyser || !waveCtx) return;
-  const bufferLength = analyser.fftSize;
+function drawWave(analyserLocal){
+  if(!analyserLocal) return;
+  ensureWaveCanvas();
+  const bufferLength = analyserLocal.fftSize;
   const arr = new Uint8Array(bufferLength);
   function frame(){
-    if(!isRecording || !analyser) return;
-    analyser.getByteTimeDomainData(arr);
+    if(!isRecording || !analyserLocal || !waveCtx) return;
+    analyserLocal.getByteTimeDomainData(arr);
     const width = waveCanvas.clientWidth;
     const height = 80;
     waveCtx.clearRect(0,0,width,height);
@@ -473,12 +513,12 @@ function drawWave(analyser){
       x += slice;
     }
     waveCtx.stroke();
-    requestAnimationFrame(frame);
+    waveRAF = requestAnimationFrame(frame);
   }
   frame();
 }
 
-/* Recognizer init */
+/* Recognizer init (when available) */
 function initRecognizer(lang='en-US'){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
   if(!SR) return null;
@@ -501,7 +541,7 @@ function initRecognizer(lang='en-US'){
   }catch(e){ return null; }
 }
 
-/* Recording flow */
+/* Recording flow (keeps previous behavior but tuned for IELTS timing) */
 async function startRecording(part, index, maxSeconds){
   if(isRecording) return;
   try{
@@ -511,7 +551,14 @@ async function startRecording(part, index, maxSeconds){
     return;
   }
   recordedChunks = []; finalTranscript=''; interimTranscript='';
-  try{ mediaRecorder = new MediaRecorder(recorderStream); }catch(e){ alert('MediaRecorder qo‘llab-quvvatlanmaydi.'); return; }
+  try{
+    const opts = { mimeType: 'audio/webm;codecs=opus' };
+    if(!MediaRecorder.isTypeSupported(opts.mimeType)) delete opts.mimeType;
+    mediaRecorder = new MediaRecorder(recorderStream, opts);
+  }catch(e){
+    alert('MediaRecorder boshlashda xatolik. Brauzeringiz MediaRecorder ni qo\'llab-quvvatlashi kerak.');
+    return;
+  }
 
   recognizer = initRecognizer('en-US');
   if(recognizer){ try{ recognizer.start(); }catch(e){} }
@@ -526,6 +573,7 @@ async function startRecording(part, index, maxSeconds){
     isRecording = false;
     if(recognizer){ try{ recognizer.stop(); }catch(e){} recognizer=null; }
     if(recorderStream){ try{ recorderStream.getTracks().forEach(t=>t.stop()); recorderStream=null; }catch(e){} }
+    if(waveRAF) cancelAnimationFrame(waveRAF);
     const waveWrap2 = document.querySelector('.wave-wrap'); if(waveWrap2) waveWrap2.style.display = 'none';
     if(recInterval){ clearInterval(recInterval); recInterval=null; }
     const duration = Math.floor((Date.now()-recStart)/1000);
@@ -535,7 +583,7 @@ async function startRecording(part, index, maxSeconds){
       render();
       return;
     }
-    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+    const blob = new Blob(recordedChunks, { type: recordedChunks[0]?.type || 'audio/webm' });
     const key = `${part}-${index}`;
     if(inMemoryAudio[key]) try{ URL.revokeObjectURL(inMemoryAudio[key]); }catch(e){}
     inMemoryAudio[key] = URL.createObjectURL(blob);
@@ -554,11 +602,11 @@ async function startRecording(part, index, maxSeconds){
       if(tx){ tx.classList.add('pop'); setTimeout(()=> tx.classList.remove('pop'), 700); }
     }, 80);
 
-    toast(`Recording saved (duration: ${duration}s). Score: ${score}`, 2800);
+    toast(`Recording saved (duration: ${duration}s). Score: ${score} (${getBandLabel(score)})`, 3000);
     render();
   };
 
-  mediaRecorder.start();
+  try{ mediaRecorder.start(); }catch(e){ alert('Recording start error: ' + (e.message || e)); return; }
   isRecording = true;
   recStart = Date.now();
   document.querySelectorAll('.rec-dot').forEach(n=>n.classList.add('recording'));
@@ -593,40 +641,40 @@ function stopRecordingImmediate(){
   document.querySelectorAll('.rec-dot').forEach(n=>n.classList.remove('recording'));
 }
 
-/* TTS */
+/* TTS (Examiner voice) */
 function speakText(text){
   if(!text) return;
-  if('speechSynthesis' in window){ window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang='en-US'; window.speechSynthesis.speak(u); }
+  if('speechSynthesis' in window){ window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang='en-US'; u.rate = 0.95; window.speechSynthesis.speak(u); }
   else alert('Speech synthesis not supported in this browser.');
 }
 
-/* Results view */
+/* Results view (adds band descriptor and breakdown) */
 function showResults(){
-  let html = `<div style="font-family:Inter,arial;padding:18px"><h2>Results</h2>`;
+  let html = `<div style="font-family:Inter,arial;padding:18px"><h2>Results — Summary</h2>`;
   let total=0,count=0;
   html += '<h3>Part 1</h3>';
   QUESTIONS.part1.forEach((q,i)=>{
     const t = STATE.p1Trans[i] || '';
     const sc = STATE.p1Scores[i] !== null ? STATE.p1Scores[i] : scoreTranscript(t, aiCheck(t));
     if(typeof sc === 'number'){ total+=sc; count++; }
-    html += `<div style="margin-bottom:10px"><strong>Q${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc}</div></div>`;
+    html += `<div style="margin-bottom:10px"><strong>Q${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc} — ${escapeHtml(getBandLabel(sc))}</div></div>`;
   });
   html += '<h3>Part 2</h3>';
   QUESTIONS.part2.forEach((q,i)=>{
     const t = STATE.p2Trans[i] || '';
     const sc = STATE.p2Scores[i] !== null ? STATE.p2Scores[i] : scoreTranscript(t, aiCheck(t));
     if(typeof sc === 'number'){ total+=sc; count++; }
-    html += `<div style="margin-bottom:10px"><strong>C${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc}</div></div>`;
+    html += `<div style="margin-bottom:10px"><strong>C${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc} — ${escapeHtml(getBandLabel(sc))}</div></div>`;
   });
   html += '<h3>Part 3</h3>';
   QUESTIONS.part3.forEach((q,i)=>{
     const t = STATE.p3Trans[i] || '';
     const sc = STATE.p3Scores[i] !== null ? STATE.p3Scores[i] : scoreTranscript(t, aiCheck(t));
     if(typeof sc === 'number'){ total+=sc; count++; }
-    html += `<div style="margin-bottom:10px"><strong>Q${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc}</div></div>`;
+    html += `<div style="margin-bottom:10px"><strong>Q${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc} — ${escapeHtml(getBandLabel(sc))}</div></div>`;
   });
   const avg = count ? (total/count).toFixed(2) : '0.00';
-  html = `<div style="padding:12px"><strong>Overall average:</strong> ${avg} / 9</div>` + html;
+  html = `<div style="padding:12px"><strong>Overall average score (approx):</strong> ${avg} / 9 — ${escapeHtml(getBandLabel(Math.round(avg)))} </div>` + html;
   const w = window.open('', '_blank', 'noopener');
   if(w){ w.document.write(html); w.document.close(); } else alert('Pop-up blocked — allow to view results.');
 }
@@ -668,7 +716,7 @@ document.addEventListener('keydown', (e)=>{
   }
 });
 
-/* storage event: listen for dashboard updates */
+/* storage event: listen for dashboard updates (so questions published by your dashboard appear) */
 window.addEventListener('storage', (e)=>{
   if(e.key === QUESTIONS_KEY){
     loadQuestions(); STATE = loadState(); saveState(); render(); toast('Questions updated from Dashboard');
@@ -685,7 +733,32 @@ showResultsBtn.addEventListener('click', showResults);
   saveState();
   render();
   const dot = document.createElement('div'); dot.className='rec-dot'; dot.style.position='fixed'; dot.style.top='22px'; dot.style.right='22px'; dot.title='Recording indicator'; document.body.appendChild(dot);
-  toast('App ready — space: start/stop, enter: next');
+  toast('IELTS-style speaking ready — space: start/stop, enter: next');
+})();
+
+/* ------------------ FULLSCREEN: kept (non-invasive) ------------------ */
+(function addFullscreenButton(){
+  const btn = document.createElement('button');
+  btn.id = 'btnFullscreen';
+  btn.className = 'btn';
+  btn.title = 'Toggle fullscreen';
+  btn.style.marginLeft = '8px';
+  btn.textContent = '⛶ Fullscreen';
+  const topRow = document.querySelector('.top-row');
+  if(topRow){ topRow.appendChild(btn); } else { document.body.appendChild(btn); }
+
+  function isFull() { return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement); }
+  async function requestFull(el){ if(el.requestFullscreen) return el.requestFullscreen(); if(el.webkitRequestFullscreen) return el.webkitRequestFullscreen(); if(el.mozRequestFullScreen) return el.mozRequestFullScreen(); if(el.msRequestFullscreen) return el.msRequestFullscreen(); }
+  async function exitFull(){ if(document.exitFullscreen) return document.exitFullscreen(); if(document.webkitExitFullscreen) return document.webkitExitFullscreen(); if(document.mozCancelFullScreen) return document.mozCancelFullScreen(); if(document.msExitFullscreen) return document.msExitFullscreen(); }
+
+  btn.addEventListener('click', async ()=>{ try{ if(!isFull()){ await requestFull(document.documentElement); } else { await exitFull(); } }catch(e){ console.warn('Fullscreen error', e); } });
+
+  function updateBtn(){ if(isFull()){ btn.textContent = '⤫ Exit Fullscreen'; btn.classList.add('primary'); } else { btn.textContent = '⛶ Fullscreen'; btn.classList.remove('primary'); } }
+  document.addEventListener('fullscreenchange', updateBtn);
+  document.addEventListener('webkitfullscreenchange', updateBtn);
+  document.addEventListener('mozfullscreenchange', updateBtn);
+  document.addEventListener('MSFullscreenChange', updateBtn);
+  updateBtn();
 })();
 </script>
 </body>

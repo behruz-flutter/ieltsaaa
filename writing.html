@@ -61,6 +61,9 @@
 
         <div style="display:flex;gap:8px;align-items:center">
           <button id="restartBtn" class="btn" title="Clear my saved answers">🔄 Restart</button>
+          <!-- Fullscreen button (non-invasive) -->
+          <button id="btnFullscreen" class="btn ghost" title="Toggle fullscreen">⛶ Fullscreen</button>
+
           <div style="width:180px">
             <div class="meter" aria-hidden="true"><div id="saveLevel" class="level" style="width:0%"></div></div>
             <div class="small" style="text-align:center;margin-top:6px" id="saveLabel">Autosave idle</div>
@@ -160,8 +163,6 @@ function loadApp(){
     return { answers: Array(PROMPTS.tasks.length).fill(''), savedAt: Array(PROMPTS.tasks.length).fill(null) };
   }
 }
-
-/* save app */
 function saveApp(state){
   try{
     localStorage.setItem(APP_KEY, JSON.stringify(state));
@@ -190,10 +191,10 @@ const nextBtn = document.getElementById('nextBtn');
 const progressBar = document.getElementById('progressBar');
 const saveLevel = document.getElementById('saveLevel');
 const saveLabel = document.getElementById('saveLabel');
-const openDashboard = document.getElementById('openDashboard');
 const restartBtn = document.getElementById('restartBtn');
 const acceptStatus = document.getElementById('acceptStatus');
 const finishBtn = document.getElementById('finishBtn');
+const btnFullscreen = document.getElementById('btnFullscreen');
 
 /* render current prompt (single sequential view) */
 function renderPrompt(idx){
@@ -323,7 +324,8 @@ editor.addEventListener('keydown', (e)=> {
 });
 
 /* open dashboard */
-openDashboard.addEventListener('click', ()=> {
+const openDashboardBtn = document.getElementById('openDashboard');
+openDashboardBtn.addEventListener('click', ()=> {
   // try to open dashboard file in same folder name
   const dash = location.origin + location.pathname.replace(/[^/]*$/, '') + 'writing-dashboard.html';
   window.open(dash, '_blank');
@@ -394,6 +396,50 @@ window.addEventListener('beforeunload', ()=> {
   saveApp(APP);
 });
 
+/* ------------------ FULLSCREEN: small, non-invasive addition ------------------
+   Adds a fullscreen toggle button that makes the .card element fullscreen.
+   It does not change other functionality.
+*/
+(function setupFullscreen(){
+  const btn = btnFullscreen;
+  if(!btn) return;
+  function isFull(){
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+  }
+  async function requestFull(el){
+    if(el.requestFullscreen) return el.requestFullscreen();
+    if(el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+    if(el.mozRequestFullScreen) return el.mozRequestFullScreen();
+    if(el.msRequestFullscreen) return el.msRequestFullscreen();
+  }
+  async function exitFull(){
+    if(document.exitFullscreen) return document.exitFullscreen();
+    if(document.webkitExitFullscreen) return document.webkitExitFullscreen();
+    if(document.mozCancelFullScreen) return document.mozCancelFullScreen();
+    if(document.msExitFullscreen) return document.msExitFullscreen();
+  }
+  btn.addEventListener('click', async ()=>{
+    try{
+      if(!isFull()){
+        const card = document.querySelector('.card') || document.documentElement;
+        await requestFull(card);
+      } else {
+        await exitFull();
+      }
+    }catch(e){
+      console.warn('Fullscreen error', e);
+    }
+  });
+  function updateLabel(){
+    if(isFull()){ btn.textContent = '⤫ Exit Fullscreen'; btn.classList.add('primary'); }
+    else { btn.textContent = '⛶ Fullscreen'; btn.classList.remove('primary'); }
+  }
+  document.addEventListener('fullscreenchange', updateLabel);
+  document.addEventListener('webkitfullscreenchange', updateLabel);
+  document.addEventListener('mozfullscreenchange', updateLabel);
+  document.addEventListener('MSFullscreenChange', updateLabel);
+  updateLabel();
+})();
 </script>
 </body>
 </html>

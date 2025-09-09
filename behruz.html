@@ -1,692 +1,722 @@
 <!doctype html>
 <html lang="uz">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Speaking Test — Friendly & Animated</title>
-  <style>
-    /* ---------------- Theme & base ---------------- */
-    :root{
-      --bg: #f7fbff;
-      --card: #ffffff;
-      --accent: #0b6cff;
-      --accent-2: #07b39b;
-      --muted: #6b7280;
-      --danger: #e11d48;
-      --success: #16a34a;
-      --glass: rgba(255,255,255,0.85);
-      --shadow: 0 12px 40px rgba(11,108,255,0.06);
-      --radius: 14px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:18px; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,#eef7ff 0%, #f9fcff 100%);
-      color:#071232;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-    .container{max-width:1100px;margin:0 auto}
-    .card{
-      background:var(--card); padding:22px; border-radius:var(--radius); box-shadow:var(--shadow);
-      border: 1px solid rgba(11,108,255,0.06);
-    }
-    h1{margin:0;font-size:20px}
-    .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
-
-    /* ---------------- Top row ---------------- */
-    .top-row{display:flex;gap:12px;align-items:center;margin-top:14px;flex-wrap:wrap}
-    .btn{
-      border:0;padding:10px 14px;border-radius:10px;background:#fff;cursor:pointer;
-      box-shadow:0 6px 18px rgba(11,18,40,0.03);transition:transform .12s, box-shadow .12s, background .12s;
-      border:1px solid rgba(11,108,255,0.06); font-weight:700; font-size:14px;
-    }
-    .btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(11,108,255,0.08)}
-    .btn:active{transform:translateY(0)}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),#0060f0);color:#fff;border-color:transparent}
-    .btn.ghost{background:transparent;border:1px dashed rgba(11,108,255,0.12)}
-    .btn.warn{background:linear-gradient(90deg,#ffb84d,#ff8a00);color:#141414}
-    .meter{flex:1;height:12px;background:#eef3fb;border-radius:999px;overflow:hidden}
-    .level{height:100%;width:0%;background:linear-gradient(90deg,#34d399,#10b981);transition:width .12s linear}
-    .top-right{margin-left:auto;text-align:right}
-    .small{font-size:13px;color:var(--muted)}
-
-    /* ---------------- Main panel ---------------- */
-    .panel{margin-top:18px}
-    .card-inner{background:linear-gradient(180deg,#ffffff,#fbfeff);border-radius:12px;padding:16px;border:1px solid #eef6ff}
-    .question-title{font-weight:700;font-size:18px;margin-top:8px}
-    .status-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef6ff;border:1px solid #dbeafe;color:#0353a4;font-weight:700}
-    .controls{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
-    .progress{height:12px;background:#f3f6fb;border-radius:999px;overflow:hidden;margin-top:10px}
-    .progress .bar{height:100%;width:0%;background:linear-gradient(90deg,#ffb84d,#ff8a00);transition:width .15s linear, background .4s}
-    .rec-dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--danger);opacity:0;transform:scale(1)}
-    .rec-dot.recording{opacity:1;animation:recPulse 1000ms infinite}
-    @keyframes recPulse{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(225,29,72,0.2)}70%{transform:scale(1.45);box-shadow:0 0 0 14px rgba(225,29,72,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(225,29,72,0)}}
-    .transcript{margin-top:12px;padding:12px;border-radius:10px;border:1px solid #eef6ff;background:linear-gradient(180deg,#fff,#fcfeff);transition:transform .18s,opacity .18s}
-    .transcript.pop{transform:scale(1.02);box-shadow:0 10px 30px rgba(11,108,255,0.06)}
-    .muted{color:var(--muted)}
-
-    /* waveform */
-    .wave-wrap{margin-top:14px;border-radius:10px;overflow:hidden;border:1px solid rgba(11,108,255,0.04);background:linear-gradient(180deg,#f8fbff,#ffffff);padding:6px;display:none}
-    canvas#wave{width:100%;height:80px;display:block}
-
-    /* nav tabs */
-    .nav{display:flex;gap:8px;margin-top:14px}
-    .nav .pill{padding:8px 12px;border-radius:999px;background:#fff;border:1px solid rgba(11,108,255,0.06);cursor:pointer;transition:transform .12s}
-    .nav .pill.active{background:linear-gradient(90deg,var(--accent),#0a5be6);color:#fff;transform:translateY(-3px)}
-
-    /* help footer */
-    .help{margin-top:12px;font-size:13px;color:var(--muted)}
-    .toast{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,var(--accent),#0950d6);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 30px rgba(9,80,214,0.12)}
-
-    /* keyboard hint */
-    .kbd{border:1px solid #e6eef8;background:#fff;padding:4px 8px;border-radius:6px;font-weight:700;font-size:13px}
-
-    /* responsive tweaks */
-    @media (max-width:720px){ .top-row{flex-direction:column;align-items:stretch} .top-right{text-align:left} .controls{justify-content:center} }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Topik so'zlari — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1619;
+    --panel:#10161a;
+    --muted:#93a0aa;
+    --text:#e6eef3;
+    --accent:#7c3aed;
+    --row-border: rgba(255,255,255,0.03);
+    --green:#14b37d;
+    --danger:#ef4444;
+    --surface: #0c1316;
+    --card: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:linear-gradient(180deg,#071015 0%, #071015 100%);color:var(--text);min-height:100vh;padding:28px}
+  .container{max-width:1200px;margin:0 auto}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  h1{margin:0;font-size:24px}
+  .breadcrumb{color:var(--muted);font-size:13px;margin-top:6px}
+  .card{background:var(--panel);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+  .controls-row{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .left-controls{display:flex;gap:12px;align-items:center}
+  .search{position:relative}
+  .search input{padding:10px 14px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text);min-width:300px}
+  .right-controls{display:flex;gap:12px;align-items:center}
+  .btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);cursor:pointer;font-weight:600}
+  .btn.ghost{background:transparent}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),#5b21b6);color:#fff;border:none}
+  .btn.icon{display:inline-flex;align-items:center;gap:8px;padding:8px;border-radius:999px}
+  .table-wrap{overflow:auto;border-radius:10px;border:1px solid rgba(255,255,255,0.02);min-height:220px}
+  table{width:100%;border-collapse:collapse;min-width:920px}
+  thead tr{background:rgba(255,255,255,0.02)}
+  th, td{padding:14px 12px;border-bottom:1px dashed rgba(255,255,255,0.02);font-size:14px;vertical-align:middle}
+  th:first-child, td:first-child{width:48px}
+  td.actions{width:64px;text-align:center}
+  tr.row-item{background:transparent;cursor:grab}
+  tr.row-item:active{cursor:grabbing}
+  tr.row-item:hover{background:rgba(255,255,255,0.01)}
+  tr.row-item.drag-over{outline:2px dashed rgba(124,58,237,0.6)}
+  .checkbox{width:18px;height:18px;border-radius:4px;border:1px solid rgba(255,255,255,0.06);display:inline-block;position:relative;cursor:pointer}
+  .checkbox.checked{background:var(--accent);border-color:var(--accent)}
+  .badge{display:inline-block;padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(20,179,125,0.12);color:var(--green);font-weight:700}
+  .audio-btn{width:40px;height:40px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#5b21b6);display:inline-flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;border:none}
+  .wave{display:inline-block;height:12px;vertical-align:middle;margin-left:8px}
+  .three-dots{cursor:pointer;color:var(--muted)}
+  .footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
+  .pagination{display:flex;align-items:center;gap:8px}
+  .select-mini{padding:6px 8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)}
+  .popover{position:absolute;background:var(--panel);border-radius:8px;border:1px solid rgba(255,255,255,0.04);padding:10px;box-shadow:0 8px 24px rgba(2,6,23,0.6);z-index:40}
+  .hidden{display:none}
+  .modal-backdrop{position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;z-index:60}
+  .modal{background:var(--panel);padding:16px;border-radius:12px;width:520px;border:1px solid rgba(255,255,255,0.03)}
+  .form-row{display:flex;gap:8px;margin-top:8px}
+  .form-row input{flex:1;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--text)}
+  .small{font-size:13px;color:var(--muted)}
+  /* density */
+  .density-compact th, .density-compact td{padding:8px 8px}
+  .density-comfort th, .density-comfort td{padding:18px 16px}
+  /* waveform visual */
+  .wave-canvas{display:inline-block;height:14px;width:90px;vertical-align:middle}
+  .wave-canvas .bar{display:inline-block;width:4px;height:8px;background:linear-gradient(180deg,#9f7aea,#6d28d9);margin-right:2px;border-radius:2px;opacity:0.9;transform-origin:bottom;animation:wave 1s linear infinite}
+  @keyframes wave{0%{transform:scaleY(0.3)}50%{transform:scaleY(1)}100%{transform:scaleY(0.3)}}
+  /* responsive small */
+  @media (max-width:900px){ .search input{min-width:160px} table{min-width:760px} }
+  /* visual hint when external drag over table */
+  .table-wrap.drop-active{box-shadow:0 0 0 4px rgba(124,58,237,0.08) inset}
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <h1>Speaking Test</h1>
-      <div class="subtitle">Yengil, sezgir va animatsiyalarga boy interfeys — ketma-ket savollar, Part 2 uchun ≥120s talab</div>
-
-      <div class="top-row">
-        <div style="display:flex;gap:8px;align-items:center">
-          <button id="micTest" class="btn primary" title="Mic test — bosish bilan yoqiladi/o‘chadi">Test Microphone</button>
-          <button id="restartBtn" class="btn ghost" title="Saqlangan speaking ma'lumotlarini tozalash">Restart (clear saved)</button>
-        </div>
-
-        <div style="display:flex;align-items:center;gap:12px;flex:1">
-          <div class="small">Mic level</div>
-          <div class="meter" aria-hidden="true"><div id="liveLevel" class="level"></div></div>
-          <div id="levelLabel" class="small muted">Silent</div>
-        </div>
-
-        <div class="top-right">
-          <div class="small">Overall avg</div>
-          <div style="font-weight:800;font-size:18px" id="overallAvg">0.0</div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="card-inner">
-          <div class="nav" role="tablist">
-            <div id="navP1" class="pill active" role="tab" tabindex="0">Part 1</div>
-            <div id="navP2" class="pill" role="tab" tabindex="0">Part 2</div>
-            <div id="navP3" class="pill" role="tab" tabindex="0">Part 3</div>
-          </div>
-
-          <div id="mainArea"></div>
-
-          <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end;align-items:center">
-            <div class="small muted">Quick keys: <span class="kbd">Space</span> start/stop — <span class="kbd">Enter</span> next</div>
-            <button id="showResults" class="btn">Show Results</button>
-            <button id="reloadQ" class="btn">Reload Questions</button>
-          </div>
-
-          <div class="help">Agar dashboardda savollar yangilanadigan bo‘lsa — sahifani qayta yuklang yoki dashboard orqali publish qiling.</div>
-        </div>
-      </div>
+<div class="container">
+  <div class="topbar">
+    <div>
+      <h1>Topik so'zlari <span class="small">(<span id="totalCount">0</span> so'z)</span></h1>
+      <div class="breadcrumb small">Asosiy • Flash Card • Topik • So'zlari</div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <button class="btn" id="addBtn">＋ Qo'shish</button>
+      <button class="btn ghost" id="exportAllBtn">Export</button>
     </div>
   </div>
 
+  <div class="card">
+    <div class="controls-row">
+      <div class="left-controls">
+        <div class="search">
+          <input id="searchInput" placeholder="Search..." aria-label="Search"/>
+        </div>
+        <div style="width:12px"></div>
+        <div style="position:relative">
+          <button class="btn" id="columnsBtn">Columns</button>
+          <div class="popover hidden" id="columnsPop" style="right:0;top:36px">
+            <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" data-col="col-word" checked> So'z</label>
+            <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" data-col="col-translate" checked> Tarjimasi</label>
+            <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" data-col="col-status" checked> Holat</label>
+            <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" data-col="col-audio" checked> Audio</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-controls">
+        <button class="btn" id="densityBtn">Density</button>
+        <button class="btn" id="importBtn">Import</button>
+        <button class="btn primary" id="downloadSelectedBtn">Download Selected</button>
+      </div>
+    </div>
+
+    <div class="table-wrap" id="tableWrap">
+      <table id="mainTable" class="density-comfort" role="table" aria-label="Words table">
+        <thead>
+          <tr>
+            <th><span class="checkbox" id="selectAll" title="Select all"></span></th>
+            <th class="col-word">So'z</th>
+            <th class="col-translate">Tarjimasi</th>
+            <th class="col-status">Holat</th>
+            <th class="col-audio">Audio</th>
+            <th>⋯</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- rows injected by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <div>
+        <span class="small">Rows per page:</span>
+        <select id="rowsPerPage" class="select-mini" aria-label="Rows per page">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+
+      <div class="pagination">
+        <div class="small" id="pageInfo">0–0 of 0</div>
+        <button class="btn" id="prevPage">‹</button>
+        <button class="btn" id="nextPage">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="modalRoot" class="hidden"></div>
+
+<!-- Import hidden file input -->
+<input type="file" id="importFile" accept=".json,.csv" style="display:none">
+
 <script>
-/* ----------------- Initialization & state ----------------- */
-const QUESTIONS_KEY = 'speaking_questions_v1';
-const STORAGE_KEY   = 'speaking_app_v1';
-const DEFAULT = {
-  part1: ["Did you have a favourite book when you were a child?","What kinds of books do you read for pleasure? Why?","Do you prefer physical books or e-books? Explain your reason."],
-  part2: ["Describe a big city you would like to visit."],
-  part3: ["Why do people move to big cities?","What problems do big cities face?","How can cities be made more livable?"]
+/* Dashboard JS
+- Fixed modal autofocusing so Add button lets you input immediately
+- External drop adds new word (word and translate heuristics)
+- Row drag & drop reorder fully working (move up/down including top)
+- All other original behaviors preserved
+*/
+
+// ---------- Helpers ----------
+const qs = s => document.querySelector(s);
+const qsa = s => Array.from(document.querySelectorAll(s));
+const STORAGE_KEY = 'topic_words_v1';
+function nowISO(){ return (new Date()).toISOString(); }
+
+// ---------- Sample data ----------
+const SAMPLE = [
+  {id:1, word:'Hot', translate:'Issiq', status:'Faol', created:nowISO()},
+  {id:2, word:'Cold', translate:'Sovuq', status:'Faol', created:nowISO()},
+  {id:3, word:'Sunny', translate:'Quyoshli', status:'Faol', created:nowISO()},
+  {id:4, word:'Rainy', translate:'Yom\'irli', status:'Faol', created:nowISO()},
+  {id:5, word:'Cloudy', translate:'Bulutli', status:'Faol', created:nowISO()},
+  {id:6, word:'Snowy', translate:'Qorli', status:'Faol', created:nowISO()},
+  {id:7, word:'Windy', translate:'Shamolli', status:'Faol', created:nowISO()},
+  {id:8, word:'Foggy', translate:'Tumanli', status:'Faol', created:nowISO()},
+  {id:9, word:'Stormy', translate:'Bajanli', status:'Faol', created:nowISO()},
+  {id:10, word:'Humid', translate:'Nam', status:'Faol', created:nowISO()}
+];
+
+// ---------- State ----------
+let state = {
+  items: [],
+  filter: '',
+  page: 1,
+  perPage: 10,
+  selected: new Set(),
+  density: 'comfort',
+  columns: { 'col-word': true, 'col-translate': true, 'col-status': true, 'col-audio': true }
 };
 
-let QUESTIONS = JSON.parse(JSON.stringify(DEFAULT));
-let STATE = null;
-let inMemoryAudio = {};
-let CLIENT_ID = sessionStorage.getItem('speaking_client_id');
-if(!CLIENT_ID){ CLIENT_ID = Math.random().toString(36).slice(2)+Date.now().toString(36); sessionStorage.setItem('speaking_client_id', CLIENT_ID); }
-
-/* Audio & recognition */
-let micStreamTest = null, audioCtx=null, analyser=null, rafId=null;
-let recorderStream=null, mediaRecorder=null, recordedChunks=[];
-let recognizer=null, finalTranscript='', interimTranscript='';
-let isRecording=false, recStart=0, recInterval=null;
-
-/* UI refs */
-const liveLevel = document.getElementById('liveLevel');
-const levelLabel = document.getElementById('levelLabel');
-const micTestBtn = document.getElementById('micTest');
-const restartBtn = document.getElementById('restartBtn');
-const overallAvg = document.getElementById('overallAvg');
-const navP1 = document.getElementById('navP1'), navP2 = document.getElementById('navP2'), navP3 = document.getElementById('navP3');
-const mainArea = document.getElementById('mainArea');
-const showResultsBtn = document.getElementById('showResults'), reloadQBtn = document.getElementById('reloadQ');
-
-/* helpers */
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
-function toast(msg, time=2200){
-  const el = document.createElement('div'); el.className='toast'; el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, time);
-}
-
-/* load questions from storage (published by dashboard) */
-function loadQuestions(){
-  try{
-    const raw = localStorage.getItem(QUESTIONS_KEY);
-    if(!raw){ QUESTIONS = JSON.parse(JSON.stringify(DEFAULT)); return; }
-    const parsed = JSON.parse(raw);
-    QUESTIONS.part1 = (parsed.part1 && parsed.part1.length) ? parsed.part1.slice() : DEFAULT.part1.slice();
-    QUESTIONS.part2 = (parsed.part2 && parsed.part2.length) ? parsed.part2.slice() : DEFAULT.part2.slice();
-    QUESTIONS.part3 = (parsed.part3 && parsed.part3.length) ? parsed.part3.slice() : DEFAULT.part3.slice();
-  }catch(e){
-    console.warn('loadQuestions error', e);
-    QUESTIONS = JSON.parse(JSON.stringify(DEFAULT));
-  }
-}
-
-/* load/save internal state */
+// ---------- Persistence ----------
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return {
-      p1Trans: Array(QUESTIONS.part1.length).fill(''),
-      p2Trans: Array(QUESTIONS.part2.length).fill(''),
-      p3Trans: Array(QUESTIONS.part3.length).fill(''),
-      p1Scores: Array(QUESTIONS.part1.length).fill(null),
-      p2Scores: Array(QUESTIONS.part2.length).fill(null),
-      p3Scores: Array(QUESTIONS.part3.length).fill(null),
-      meta: { updatedAt: Date.now() }
-    };
+    if(!raw){ state.items = SAMPLE.slice(); saveState(); return; }
     const parsed = JSON.parse(raw);
-    parsed.p1Trans = parsed.p1Trans || []; while(parsed.p1Trans.length < QUESTIONS.part1.length) parsed.p1Trans.push(''); parsed.p1Trans.length = QUESTIONS.part1.length;
-    parsed.p2Trans = parsed.p2Trans || []; while(parsed.p2Trans.length < QUESTIONS.part2.length) parsed.p2Trans.push(''); parsed.p2Trans.length = QUESTIONS.part2.length;
-    parsed.p3Trans = parsed.p3Trans || []; while(parsed.p3Trans.length < QUESTIONS.part3.length) parsed.p3Trans.push(''); parsed.p3Trans.length = QUESTIONS.part3.length;
-    parsed.p1Scores = parsed.p1Scores || []; while(parsed.p1Scores.length < QUESTIONS.part1.length) parsed.p1Scores.push(null); parsed.p1Scores.length = QUESTIONS.part1.length;
-    parsed.p2Scores = parsed.p2Scores || []; while(parsed.p2Scores.length < QUESTIONS.part2.length) parsed.p2Scores.push(null); parsed.p2Scores.length = QUESTIONS.part2.length;
-    parsed.p3Scores = parsed.p3Scores || []; while(parsed.p3Scores.length < QUESTIONS.part3.length) parsed.p3Scores.push(null); parsed.p3Scores.length = QUESTIONS.part3.length;
-    parsed.meta = parsed.meta || { updatedAt: Date.now() };
-    return parsed;
+    state.items = parsed.items || SAMPLE.slice();
   }catch(e){
-    console.warn('loadState error', e);
-    return {
-      p1Trans: Array(QUESTIONS.part1.length).fill(''),
-      p2Trans: Array(QUESTIONS.part2.length).fill(''),
-      p3Trans: Array(QUESTIONS.part3.length).fill(''),
-      p1Scores: Array(QUESTIONS.part1.length).fill(null),
-      p2Scores: Array(QUESTIONS.part2.length).fill(null),
-      p3Scores: Array(QUESTIONS.part3.length).fill(null),
-      meta: { updatedAt: Date.now() }
-    };
+    state.items = SAMPLE.slice();
+    console.error(e);
   }
 }
 function saveState(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }catch(e){ console.warn('saveState failed', e); }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: state.items }));
 }
 
-/* scoring & basic AI-check */
-const COMMON = {"\\bim\\b":"I'm","\\bdont\\b":"don't","\\bcant\\b":"can't","\\bits\\b":"it's","\\bive\\b":"I've"};
-function aiCheck(text){
-  if(!text) return { corrected:'', issuesCount:0, wordCount:0, annotatedHTML:'<em>(no transcript)</em>' };
-  let t = text.trim().replace(/\s+/g,' ');
-  let corrected = t;
-  for(const p in COMMON){ corrected = corrected.replace(new RegExp(p,'gi'), COMMON[p]); }
-  corrected = corrected.charAt(0).toUpperCase() + corrected.slice(1);
-  if(!/[.?!]$/.test(corrected)) corrected += '.';
-  const orig = t.split(/\s+/), corr = corrected.replace(/[.?!]$/,'').split(/\s+/);
-  const len = Math.max(orig.length, corr.length);
-  let parts=[], issues=0;
-  for(let i=0;i<len;i++){
-    const o = orig[i]||'', c = corr[i]||'';
-    if(!o) parts.push(escapeHtml(c));
-    else if(o.trim().toLowerCase() === c.trim().toLowerCase()) parts.push(escapeHtml(c));
-    else { issues++; parts.push(`<span style="color:${'#e11d48'};font-weight:700">${escapeHtml(o)}</span>`); }
-  }
-  return { corrected, issuesCount: issues, wordCount: orig.filter(w=>w.trim()).length, annotatedHTML: parts.join(' ') };
-}
-function scoreTranscript(transcript, checkObj){
-  const words = checkObj.wordCount || (transcript ? transcript.split(/\s+/).length : 0);
-  const issues = checkObj.issuesCount || 0;
-  const wordRatio = Math.min(1, words/40);
-  const wordPoints = Math.round(wordRatio * 6);
-  const accuracy = words>0 ? Math.max(0, 1 - (issues / Math.max(1, Math.floor(words/5)))) : 0;
-  const accPoints = Math.round(accuracy * 3);
-  let raw = wordPoints + accPoints;
-  if(raw > 9) raw = 9;
-  if(words === 0) raw = 0;
-  return raw;
-}
+// ---------- Drag state ----------
+let dragSrcId = null;
 
-/* sequential UI state */
-let currentPart = 'p1';
-let idxP1 = 0, idxP3 = 0;
+// ---------- Rendering ----------
+const tableBody = qs('#tableBody');
+const totalCountEl = qs('#totalCount');
+const pageInfo = qs('#pageInfo');
+const tableWrap = qs('#tableWrap');
 
-/* render single-question UI */
 function render(){
-  overallAvg.textContent = computeOverall();
-  navP1.classList.toggle('active', currentPart==='p1');
-  navP2.classList.toggle('active', currentPart==='p2');
-  navP3.classList.toggle('active', currentPart==='p3');
-  if(!STATE) STATE = loadState();
+  const filtered = state.items.filter(it=>{
+    const f = state.filter.trim().toLowerCase();
+    if(!f) return true;
+    return (it.word||'').toLowerCase().includes(f) || (it.translate||'').toLowerCase().includes(f);
+  });
 
-  if(currentPart === 'p1'){
-    const q = QUESTIONS.part1[idxP1] || '(no question)';
-    mainArea.innerHTML = `
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong class="question-title">PART 1</strong><div class="muted" style="font-size:13px">Question ${idxP1+1} / ${QUESTIONS.part1.length}</div></div>
-          <div><span class="status-badge">${STATE.p1Scores[idxP1]!==null ? 'Score: '+STATE.p1Scores[idxP1] : (STATE.p1Trans[idxP1] ? 'Saved' : 'Not recorded')}</span></div>
-        </div>
-        <div class="question-title" style="margin-top:12px">${escapeHtml(q)}</div>
-        <div class="controls">
-          <button id="p1Play" class="btn">🔊 Listen</button>
-          <button id="p1Record" class="btn primary" aria-pressed="${isRecording}">${isRecording ? 'Stop' : '🎤 Record'}</button>
-          <div style="flex:1"></div>
-          <div id="p1Time" class="muted"></div>
-        </div>
-        <div class="progress"><div id="p1Bar" class="bar" style="width:0%"></div></div>
-        <div class="wave-wrap" style="display:none"><canvas id="wave"></canvas></div>
-        <div id="p1Download" style="margin-top:10px"></div>
-        <div id="p1Transcript" class="transcript" style="display:${STATE.p1Trans[idxP1] ? 'block' : 'none'}">
-          <div class="small muted">Saved transcript</div>
-          <div style="margin-top:6px">${escapeHtml(STATE.p1Trans[idxP1]||'')}</div>
-          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p1Scores[idxP1]!==null?STATE.p1Scores[idxP1]:'—'}</div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
-          <button id="p1Prev" class="btn">◀ Prev</button>
-          <button id="p1Next" class="btn">Next ▶</button>
-        </div>
-      </div>`;
-    document.getElementById('p1Play').onclick = ()=> speakText(q);
-    document.getElementById('p1Record').onclick = ()=> { if(isRecording) stopRecording(); else startRecording('p1', idxP1, 90); };
-    document.getElementById('p1Next').onclick = ()=> { if(idxP1 < QUESTIONS.part1.length-1){ idxP1++; render(); } else { currentPart='p2'; render(); } };
-    document.getElementById('p1Prev').onclick = ()=> { if(idxP1>0){ idxP1--; render(); } };
-    const key = `p1-${idxP1}`; if(inMemoryAudio[key]) document.getElementById('p1Download').innerHTML = `<a href="${inMemoryAudio[key]}" download="${key}.webm" class="btn">⬇️ Download</a>`;
-  }
-  else if(currentPart === 'p2'){
-    const q = QUESTIONS.part2[0] || '(no cue)';
-    mainArea.innerHTML = `
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong class="question-title">PART 2 — Cue card</strong><div class="muted" style="font-size:13px">Prep 60s — Speak 120s</div></div>
-          <div><span class="status-badge">${STATE.p2Scores[0]!==null ? 'Score: '+STATE.p2Scores[0] : (STATE.p2Trans[0] ? 'Saved' : 'Not recorded')}</span></div>
-        </div>
-        <div class="question-title" style="margin-top:12px">${escapeHtml(q)}</div>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
-          <div>Prep: <strong id="prepTimer">01:00</strong></div>
-          <button id="startPrep" class="btn">Start prep</button>
-          <div style="flex:1"></div>
-          <button id="p2Record" class="btn primary" disabled>🎤 Start speaking (2m)</button>
-        </div>
-        <div style="margin-top:10px">
-          <textarea id="p2Notes" placeholder="Write notes..." style="width:100%;min-height:90px;padding:10px;border-radius:10px;border:1px solid #eef6ff"></textarea>
-        </div>
-        <div class="progress"><div id="p2Bar" class="bar" style="width:0%"></div></div>
-        <div class="wave-wrap" style="display:none"><canvas id="wave"></canvas></div>
-        <div id="p2Download" style="margin-top:10px"></div>
-        <div id="p2Transcript" class="transcript" style="display:${STATE.p2Trans[0] ? 'block' : 'none'}">
-          <div class="small muted">Saved transcript</div>
-          <div style="margin-top:6px">${escapeHtml(STATE.p2Trans[0]||'')}</div>
-          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p2Scores[0]!==null ? STATE.p2Scores[0] : '—'}</div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
-          <button id="p2ToP1" class="btn">Back: Part 1</button>
-          <button id="p2ToP3" class="btn">Next: Part 3</button>
-        </div>
-      </div>`;
-    document.getElementById('startPrep').onclick = startPrep;
-    document.getElementById('p2Record').onclick = ()=> { if(isRecording) stopRecording(); else startRecording('p2', 0, 120); };
-    document.getElementById('p2ToP1').onclick = ()=> { currentPart='p1'; render(); };
-    document.getElementById('p2ToP3').onclick = ()=> { currentPart='p3'; render(); };
-    if(inMemoryAudio['p2-0']) document.getElementById('p2Download').innerHTML = `<a href="${inMemoryAudio['p2-0']}" download="p2_1.webm" class="btn">⬇️ Download</a>`;
-  }
-  else if(currentPart === 'p3'){
-    const q = QUESTIONS.part3[idxP3] || '(no question)';
-    mainArea.innerHTML = `
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong class="question-title">PART 3</strong><div class="muted" style="font-size:13px">Question ${idxP3+1} / ${QUESTIONS.part3.length}</div></div>
-          <div><span class="status-badge">${STATE.p3Scores[idxP3]!==null ? 'Score: '+STATE.p3Scores[idxP3] : (STATE.p3Trans[idxP3] ? 'Saved' : 'Not recorded')}</span></div>
-        </div>
-        <div class="question-title" style="margin-top:12px">${escapeHtml(q)}</div>
-        <div class="controls">
-          <button id="p3Play" class="btn">🔊 Listen</button>
-          <button id="p3Record" class="btn primary">${isRecording?'Stop':'🎤 Record'}</button>
-          <div style="flex:1"></div>
-          <div id="p3Time" class="muted"></div>
-        </div>
-        <div class="progress"><div id="p3Bar" class="bar" style="width:0%"></div></div>
-        <div class="wave-wrap" style="display:none"><canvas id="wave"></canvas></div>
-        <div id="p3Download" style="margin-top:10px"></div>
-        <div id="p3Transcript" class="transcript" style="display:${STATE.p3Trans[idxP3] ? 'block' : 'none'}">
-          <div class="small muted">Saved transcript</div>
-          <div style="margin-top:6px">${escapeHtml(STATE.p3Trans[idxP3]||'')}</div>
-          <div style="margin-top:8px"><strong>Score:</strong> ${STATE.p3Scores[idxP3]!==null ? STATE.p3Scores[idxP3] : '—'}</div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
-          <button id="p3Prev" class="btn">◀ Prev</button>
-          <button id="p3Next" class="btn">Next ▶</button>
-        </div>
-      </div>`;
-    document.getElementById('p3Play').onclick = ()=> speakText(q);
-    document.getElementById('p3Record').onclick = ()=> { if(isRecording) stopRecording(); else startRecording('p3', idxP3, 90); };
-    document.getElementById('p3Prev').onclick = ()=> { if(idxP3>0){ idxP3--; render(); } else { currentPart='p2'; render(); } };
-    document.getElementById('p3Next').onclick = ()=> { if(idxP3 < QUESTIONS.part3.length-1){ idxP3++; render(); } else { showResults(); } };
-    const key = `p3-${idxP3}`; if(inMemoryAudio[key]) document.getElementById('p3Download').innerHTML = `<a href="${inMemoryAudio[key]}" download="${key}.webm" class="btn">⬇️ Download</a>`;
-  }
-}
+  const total = filtered.length;
+  const perPage = state.perPage;
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  state.page = Math.min(state.page, totalPages);
+  const startIndex = (state.page -1) * perPage;
+  const pageItems = filtered.slice(startIndex, startIndex + perPage);
 
-/* compute overall average */
-function computeOverall(){
-  const arr = [...STATE.p1Scores, ...STATE.p2Scores, ...STATE.p3Scores].filter(v=>v!==null && v!==undefined);
-  if(arr.length===0) return '0.0';
-  return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1);
-}
+  tableBody.innerHTML = '';
+  pageItems.forEach(it=>{
+    const tr = document.createElement('tr');
+    tr.className = 'row-item';
+    tr.dataset.id = it.id;
+    tr.draggable = true;
 
-/* mic test: visual meter */
-function bytesToRMS(bytes){
-  let sum=0; for(let i=0;i<bytes.length;i++){ const v=(bytes[i]-128)/128; sum += v*v; } return Math.sqrt(sum/bytes.length);
-}
-async function startMicTest(){
-  try{
-    micStreamTest = await navigator.mediaDevices.getUserMedia({ audio:true });
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const src = audioCtx.createMediaStreamSource(micStreamTest);
-    analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048;
-    src.connect(analyser);
-    const data = new Uint8Array(analyser.fftSize);
-    function tick(){
-      analyser.getByteTimeDomainData(data);
-      const rms = bytesToRMS(data);
-      const pct = Math.min(100, Math.round(rms*200));
-      liveLevel.style.width = pct + '%';
-      levelLabel.textContent = pct < 3 ? 'Silent' : 'Listening ('+pct+'%)';
-      rafId = requestAnimationFrame(tick);
-    }
-    tick();
-    micTestBtn.textContent = 'Stop Microphone Test';
-    toast('Microphone test: move or speak to see level');
-  }catch(e){
-    alert('Mikrofon olishda xatolik. Iltimos brauzerga ruxsat bering.');
-  }
-}
-function stopMicTest(){
-  try{ if(micStreamTest){ micStreamTest.getTracks().forEach(t=>t.stop()); micStreamTest=null; } }catch(e){}
-  try{ if(audioCtx){ audioCtx.close(); audioCtx=null; } }catch(e){}
-  if(rafId) cancelAnimationFrame(rafId);
-  liveLevel.style.width = '0%';
-  levelLabel.textContent = 'Silent';
-  micTestBtn.textContent = 'Test Microphone';
-}
-micTestBtn.addEventListener('click', ()=> { if(!micStreamTest) startMicTest(); else stopMicTest(); });
+    // drag handlers (reorder)
+    tr.addEventListener('dragstart', onRowDragStart);
+    tr.addEventListener('dragover', onRowDragOver);
+    tr.addEventListener('dragleave', onRowDragLeave);
+    tr.addEventListener('drop', onRowDrop);
+    tr.addEventListener('dragend', onRowDragEnd);
 
-/* start Prep for Part2 */
-let prepInterval = null;
-function startPrep(){
-  const btn = document.getElementById('startPrep'); if(!btn) return;
-  btn.disabled = true;
-  let secs = 60;
-  const display = document.getElementById('prepTimer'); display.textContent = '01:00';
-  prepInterval = setInterval(()=>{
-    secs--;
-    display.textContent = `00:${String(secs).padStart(2,'0')}`;
-    if(secs<=0){ clearInterval(prepInterval); prepInterval=null; btn.disabled=false; display.textContent='00:00'; const recBtn = document.getElementById('p2Record'); if(recBtn) recBtn.disabled=false; toast('Preparation finished — start speaking (2 minutes required)'); }
-  }, 1000);
-}
-
-/* Waveform drawing */
-let waveCanvas=null, waveCtx=null;
-function ensureWaveCanvas(){
-  const wrap = document.querySelector('.wave-wrap');
-  if(!wrap) return null;
-  waveCanvas = wrap.querySelector('#wave');
-  if(!waveCanvas){ wrap.innerHTML = '<canvas id="wave"></canvas>'; waveCanvas = wrap.querySelector('#wave'); }
-  waveCanvas.width = waveCanvas.clientWidth * devicePixelRatio;
-  waveCanvas.height = 80 * devicePixelRatio;
-  waveCtx = waveCanvas.getContext('2d');
-  waveCtx.scale(devicePixelRatio, devicePixelRatio);
-  return waveCanvas;
-}
-function drawWave(analyser){
-  if(!waveCanvas || !waveCtx) ensureWaveCanvas();
-  if(!analyser || !waveCtx) return;
-  const bufferLength = analyser.fftSize;
-  const arr = new Uint8Array(bufferLength);
-  function frame(){
-    if(!isRecording || !analyser) return;
-    analyser.getByteTimeDomainData(arr);
-    const width = waveCanvas.clientWidth;
-    const height = 80;
-    waveCtx.clearRect(0,0,width,height);
-    waveCtx.lineWidth = 2;
-    waveCtx.strokeStyle = 'rgba(11,108,255,0.9)';
-    waveCtx.beginPath();
-    const slice = width / bufferLength;
-    let x=0;
-    for(let i=0;i<bufferLength;i++){
-      const v = arr[i] / 128.0; // 0..2
-      const y = v * height/2;
-      if(i===0) waveCtx.moveTo(x,y); else waveCtx.lineTo(x,y);
-      x += slice;
-    }
-    waveCtx.stroke();
-    requestAnimationFrame(frame);
-  }
-  frame();
-}
-
-/* Recognizer init */
-function initRecognizer(lang='en-US'){
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-  if(!SR) return null;
-  try{
-    const r = new SR();
-    r.lang = lang; r.interimResults = true; r.continuous = true;
-    r.onresult = (ev)=>{
-      let interim=''; for(let i=ev.resultIndex;i<ev.results.length;i++){ if(ev.results[i].isFinal) finalTranscript += ev.results[i][0].transcript + ' '; else interim += ev.results[i][0].transcript + ' '; }
-      interimTranscript = interim;
-      const liveArea = document.querySelector('.transcript');
-      if(liveArea){
-        let live = (finalTranscript + ' ' + interimTranscript).trim();
-        let existing = document.getElementById('liveTranscriptArea');
-        if(!existing){ existing = document.createElement('div'); existing.id='liveTranscriptArea'; existing.className='small muted'; existing.style.marginTop='6px'; liveArea.prepend(existing); }
-        existing.innerHTML = `<div class="small muted">Live</div><div style="margin-top:6px">${escapeHtml(live)}</div>`;
-      }
-    };
-    r.onerror = (e)=> console.warn('SR error', e);
-    return r;
-  }catch(e){ return null; }
-}
-
-/* Recording flow */
-async function startRecording(part, index, maxSeconds){
-  if(isRecording) return;
-  try{
-    recorderStream = await navigator.mediaDevices.getUserMedia({ audio:true });
-  }catch(e){
-    alert('Mikrofonga ruxsat yo‘q yoki mikrofon topilmadi.');
-    return;
-  }
-  recordedChunks = []; finalTranscript=''; interimTranscript='';
-  try{ mediaRecorder = new MediaRecorder(recorderStream); }catch(e){ alert('MediaRecorder qo‘llab-quvvatlanmaydi.'); return; }
-
-  recognizer = initRecognizer('en-US');
-  if(recognizer){ try{ recognizer.start(); }catch(e){} }
-
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const src = audioCtx.createMediaStreamSource(recorderStream);
-  analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048; src.connect(analyser);
-  const waveWrap = document.querySelector('.wave-wrap'); if(waveWrap) { waveWrap.style.display='block'; ensureWaveCanvas(); drawWave(analyser); }
-
-  mediaRecorder.ondataavailable = (ev)=> { if(ev.data && ev.data.size>0) recordedChunks.push(ev.data); };
-  mediaRecorder.onstop = ()=> {
-    isRecording = false;
-    if(recognizer){ try{ recognizer.stop(); }catch(e){} recognizer=null; }
-    if(recorderStream){ try{ recorderStream.getTracks().forEach(t=>t.stop()); recorderStream=null; }catch(e){} }
-    const waveWrap2 = document.querySelector('.wave-wrap'); if(waveWrap2) waveWrap2.style.display = 'none';
-    if(recInterval){ clearInterval(recInterval); recInterval=null; }
-    const duration = Math.floor((Date.now()-recStart)/1000);
-    if(part === 'p2' && duration < 120){
-      recordedChunks = [];
-      toast(`Part 2 uchun kamida 120s kerak — siz: ${duration}s. Audio qabul qilinmadi.`, 3500);
+    // checkbox
+    const tdCheck = document.createElement('td');
+    const cb = document.createElement('span');
+    cb.className = 'checkbox ' + (state.selected.has(it.id) ? 'checked' : '');
+    cb.title = 'Select';
+    cb.onclick = () => {
+      if(state.selected.has(it.id)) state.selected.delete(it.id); else state.selected.add(it.id);
       render();
-      return;
-    }
-    const blob = new Blob(recordedChunks, { type: 'audio/webm' });
-    const key = `${part}-${index}`;
-    if(inMemoryAudio[key]) try{ URL.revokeObjectURL(inMemoryAudio[key]); }catch(e){}
-    inMemoryAudio[key] = URL.createObjectURL(blob);
-    const transcript = (finalTranscript + ' ' + interimTranscript).trim();
-    const check = aiCheck(transcript);
-    const score = scoreTranscript(transcript, check);
-    if(part==='p1'){ STATE.p1Trans[index] = transcript; STATE.p1Scores[index] = score; }
-    else if(part==='p2'){ STATE.p2Trans[index] = transcript; STATE.p2Scores[index] = score; }
-    else if(part==='p3'){ STATE.p3Trans[index] = transcript; STATE.p3Scores[index] = score; }
+    };
+    tdCheck.appendChild(cb);
+    tr.appendChild(tdCheck);
 
-    STATE.meta = STATE.meta || {}; STATE.meta.updatedAt = Date.now();
-    saveState();
+    // word
+    const tdWord = document.createElement('td');
+    tdWord.className = 'col-word';
+    tdWord.textContent = it.word;
+    tr.appendChild(tdWord);
 
-    setTimeout(()=> {
-      const tx = document.querySelector('.transcript');
-      if(tx){ tx.classList.add('pop'); setTimeout(()=> tx.classList.remove('pop'), 700); }
-    }, 80);
+    // translate
+    const tdTrans = document.createElement('td');
+    tdTrans.className = 'col-translate';
+    tdTrans.textContent = it.translate;
+    tr.appendChild(tdTrans);
 
-    toast(`Recording saved (duration: ${duration}s). Score: ${score}`, 2800);
-    render();
+    // status
+    const tdStatus = document.createElement('td');
+    tdStatus.className = 'col-status';
+    const span = document.createElement('span');
+    span.className = 'badge';
+    span.textContent = it.status || 'Faol';
+    tdStatus.appendChild(span);
+    tr.appendChild(tdStatus);
+
+    // audio
+    const tdAudio = document.createElement('td');
+    tdAudio.className = 'col-audio';
+    const audioBtn = document.createElement('button');
+    audioBtn.className = 'audio-btn';
+    audioBtn.title = 'Play audio';
+    audioBtn.innerHTML = '&#9658;';
+    audioBtn.onclick = ()=> playWord(it.word);
+    tdAudio.appendChild(audioBtn);
+    tdAudio.appendChild(createWaveElement());
+    tr.appendChild(tdAudio);
+
+    // actions
+    const tdAct = document.createElement('td');
+    tdAct.className = 'actions';
+    const menu = document.createElement('span');
+    menu.className = 'three-dots';
+    menu.textContent = '⋮';
+    menu.onclick = (e)=>{
+      showRowMenu(e.currentTarget, it);
+    };
+    tdAct.appendChild(menu);
+    tr.appendChild(tdAct);
+
+    tableBody.appendChild(tr);
+  });
+
+  totalCountEl.textContent = state.items.length;
+  const first = Math.min(state.items.length, startIndex + 1);
+  const last = Math.min(state.items.length, startIndex + pageItems.length);
+  pageInfo.textContent = `${first}–${last} of ${state.items.length}`;
+
+  // columns
+  Object.keys(state.columns).forEach(c=>{
+    qsa('.' + c).forEach(el=>{
+      el.style.display = state.columns[c] ? '' : 'none';
+    });
+  });
+
+  // density
+  const table = qs('#mainTable');
+  table.classList.remove('density-compact','density-comfort');
+  table.classList.add(state.density === 'compact' ? 'density-compact' : 'density-comfort');
+
+  // select all visual
+  const selectAll = qs('#selectAll');
+  const allVisibleIds = filtered.slice(startIndex, startIndex + perPage).map(i=>i.id);
+  const allSelected = allVisibleIds.length > 0 && allVisibleIds.every(id => state.selected.has(id));
+  selectAll.classList.toggle('checked', allSelected);
+}
+
+// waveform visual
+function createWaveElement(){
+  const wrapper = document.createElement('span');
+  wrapper.className = 'wave-canvas';
+  for(let i=0;i<12;i++){
+    const bar = document.createElement('span');
+    bar.className = 'bar';
+    bar.style.height = (6 + Math.round(Math.random()*18)) + 'px';
+    bar.style.animationDelay = (Math.random()*0.6)+'s';
+    wrapper.appendChild(bar);
+  }
+  return wrapper;
+}
+
+// ---------- Row menu ----------
+function showRowMenu(anchor, item){
+  qsa('.row-popover').forEach(e=>e.remove());
+  const pop = document.createElement('div');
+  pop.className = 'popover row-popover';
+  pop.style.minWidth = '140px';
+  pop.style.left = (anchor.getBoundingClientRect().left + window.scrollX - 150) + 'px';
+  pop.style.top = (anchor.getBoundingClientRect().bottom + window.scrollY + 6) + 'px';
+  pop.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn" id="editRowBtn">Edit</button>
+      <button class="btn" id="deleteRowBtn" style="color:${getComputedStyle(document.documentElement).getPropertyValue('--danger')||'#ef4444'}">Delete</button>
+    </div>
+  `;
+  document.body.appendChild(pop);
+
+  pop.querySelector('#editRowBtn').onclick = ()=>{
+    pop.remove(); openModal('edit', item);
+  };
+  pop.querySelector('#deleteRowBtn').onclick = ()=>{
+    pop.remove();
+    if(confirm('O\'chirishni tasdiqlaysizmi?')) { state.items = state.items.filter(x=>x.id !== item.id); state.selected.delete(item.id); saveState(); render(); }
   };
 
-  mediaRecorder.start();
-  isRecording = true;
-  recStart = Date.now();
-  document.querySelectorAll('.rec-dot').forEach(n=>n.classList.add('recording'));
-  recInterval = setInterval(()=>{
-    const elapsed = Math.floor((Date.now()-recStart)/1000);
-    const pct = Math.min(100, Math.round((elapsed/maxSeconds)*100));
-    if(part==='p1'){ const el = document.getElementById('p1Bar'); if(el) el.style.width = pct + '%'; const t = document.getElementById('p1Time'); if(t) t.textContent = `Recording: ${elapsed}s`; }
-    if(part==='p2'){ const el = document.getElementById('p2Bar'); if(el) el.style.width = pct + '%'; }
-    if(part==='p3'){ const el = document.getElementById('p3Bar'); if(el) el.style.width = pct + '%'; const t = document.getElementById('p3Time'); if(t) t.textContent = `Recording: ${elapsed}s`; }
-    const progressEl = document.querySelector('.progress .bar');
-    if(elapsed >= Math.floor(maxSeconds*0.75)) { if(progressEl) progressEl.style.background = 'linear-gradient(90deg,#ff8a00,#ff3b3b)'; }
-    if(elapsed >= maxSeconds){ try{ if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop(); }catch(e){} }
-  }, 250);
-}
-
-/* stop recording */
-function stopRecording(){
-  if(mediaRecorder && isRecording){
-    try{ mediaRecorder.stop(); }catch(e){}
+  setTimeout(()=>{ window.addEventListener('click', onDocClick); });
+  function onDocClick(e){
+    if(!pop.contains(e.target)) { pop.remove(); window.removeEventListener('click', onDocClick); }
   }
-  document.querySelectorAll('.rec-dot').forEach(n=>n.classList.remove('recording'));
-  if(recInterval){ clearInterval(recInterval); recInterval=null; }
 }
 
-/* immediate stop & cleanup */
-function stopRecordingImmediate(){
-  try{ if(mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop(); }catch(e){}
-  try{ if(recorderStream){ recorderStream.getTracks().forEach(t=>t.stop()); recorderStream=null; } }catch(e){}
-  try{ if(recInterval){ clearInterval(recInterval); recInterval=null; } }catch(e){}
-  if(recognizer){ try{ recognizer.stop(); }catch(e){} recognizer=null; }
-  isRecording=false;
-  document.querySelectorAll('.rec-dot').forEach(n=>n.classList.remove('recording'));
-}
-
-/* TTS */
-function speakText(text){
+// ---------- Speech ----------
+function playWord(text){
   if(!text) return;
-  if('speechSynthesis' in window){ window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang='en-US'; window.speechSynthesis.speak(u); }
-  else alert('Speech synthesis not supported in this browser.');
+  const synth = window.speechSynthesis;
+  if(!synth) { alert('Audio not supported'); return; }
+  const utter = new SpeechSynthesisUtterance(text);
+  const voices = synth.getVoices();
+  const enVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) || voices[0];
+  if(enVoice) utter.voice = enVoice;
+  synth.cancel();
+  synth.speak(utter);
 }
 
-/* Results view */
-function showResults(){
-  let html = `<div style="font-family:Inter,arial;padding:18px"><h2>Results</h2>`;
-  let total=0,count=0;
-  html += '<h3>Part 1</h3>';
-  QUESTIONS.part1.forEach((q,i)=>{
-    const t = STATE.p1Trans[i] || '';
-    const sc = STATE.p1Scores[i] !== null ? STATE.p1Scores[i] : scoreTranscript(t, aiCheck(t));
-    if(typeof sc === 'number'){ total+=sc; count++; }
-    html += `<div style="margin-bottom:10px"><strong>Q${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc}</div></div>`;
-  });
-  html += '<h3>Part 2</h3>';
-  QUESTIONS.part2.forEach((q,i)=>{
-    const t = STATE.p2Trans[i] || '';
-    const sc = STATE.p2Scores[i] !== null ? STATE.p2Scores[i] : scoreTranscript(t, aiCheck(t));
-    if(typeof sc === 'number'){ total+=sc; count++; }
-    html += `<div style="margin-bottom:10px"><strong>C${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc}</div></div>`;
-  });
-  html += '<h3>Part 3</h3>';
-  QUESTIONS.part3.forEach((q,i)=>{
-    const t = STATE.p3Trans[i] || '';
-    const sc = STATE.p3Scores[i] !== null ? STATE.p3Scores[i] : scoreTranscript(t, aiCheck(t));
-    if(typeof sc === 'number'){ total+=sc; count++; }
-    html += `<div style="margin-bottom:10px"><strong>Q${i+1}:</strong> ${escapeHtml(q)}<div style="margin-top:6px"><em>Transcript:</em> ${escapeHtml(t||'(no transcript)')}</div><div style="margin-top:6px"><em>Score:</em> ${sc}</div></div>`;
-  });
-  const avg = count ? (total/count).toFixed(2) : '0.00';
-  html = `<div style="padding:12px"><strong>Overall average:</strong> ${avg} / 9</div>` + html;
-  const w = window.open('', '_blank', 'noopener');
-  if(w){ w.document.write(html); w.document.close(); } else alert('Pop-up blocked — allow to view results.');
-}
+// ---------- Modal ----------
+const modalRoot = qs('#modalRoot');
+function openModal(mode, item){
+  modalRoot.innerHTML = '';
+  modalRoot.classList.remove('hidden');
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop';
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700">${mode==='add' ? 'So\'z qo\'shish' : 'So\'zni tahrirlash'}</div>
+      <div><button class="btn" id="closeModalBtn">✕</button></div>
+    </div>
+    <div style="margin-top:10px" class="small">So'z va tarjimasini kiriting</div>
+    <div class="form-row" style="margin-top:12px">
+      <input id="modalWord" placeholder="So'z (EN)"/>
+      <input id="modalTrans" placeholder="Tarjimasi (UZ)"/>
+    </div>
+    <div class="form-row">
+      <select id="modalStatus">
+        <option>Faol</option>
+        <option>Faolsiz</option>
+      </select>
+      <input id="modalId" style="display:none"/>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+      <button class="btn" id="cancelModal">Bekor</button>
+      <button class="btn primary" id="saveModal">Saqlash</button>
+    </div>
+  `;
+  backdrop.appendChild(modal);
+  modalRoot.appendChild(backdrop);
 
-/* restart: clear saved data */
-restartBtn.addEventListener('click', ()=>{
-  if(!confirm('Restart: barcha saqlangan transcriptlar va ballar o‘chiriladi. Davom etilsinmi?')) return;
-  stopRecordingImmediate();
-  Object.values(inMemoryAudio).forEach(u=>{ try{ URL.revokeObjectURL(u); }catch(e){} });
-  inMemoryAudio = {};
-  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-  STATE = loadState();
-  saveState();
+  // populate
+  if(mode==='edit' && item){
+    modal.querySelector('#modalWord').value = item.word;
+    modal.querySelector('#modalTrans').value = item.translate;
+    modal.querySelector('#modalStatus').value = item.status || 'Faol';
+    modal.querySelector('#modalId').value = item.id;
+  }
+
+  // autofocus the word input so Add immediately allows typing
+  setTimeout(()=>{ const w = modal.querySelector('#modalWord'); if(w){ w.focus(); w.select(); } }, 50);
+
+  modal.querySelector('#closeModalBtn').onclick = ()=> closeModal();
+  modal.querySelector('#cancelModal').onclick = ()=> closeModal();
+  modal.querySelector('#saveModal').onclick = ()=> {
+    const w = modal.querySelector('#modalWord').value.trim();
+    const t = modal.querySelector('#modalTrans').value.trim();
+    const s = modal.querySelector('#modalStatus').value;
+    if(!w) { alert('So\'z kiriting'); return; }
+    const idVal = modal.querySelector('#modalId').value;
+    if(idVal){
+      const id = Number(idVal);
+      const idx = state.items.findIndex(x=>x.id===id);
+      if(idx>=0){ state.items[idx].word = w; state.items[idx].translate = t; state.items[idx].status = s; saveState(); render(); }
+    } else {
+      const id = (state.items.reduce((m,x)=>Math.max(m,x.id||0),0) || 0) + 1;
+      state.items.unshift({ id, word: w, translate: t, status: s, created: nowISO() });
+      saveState(); render();
+    }
+    closeModal();
+  };
+}
+function closeModal(){ modalRoot.innerHTML = ''; modalRoot.classList.add('hidden'); }
+
+// ---------- Selection & pagination ----------
+qs('#selectAll').onclick = ()=>{
+  const filtered = state.items.filter(it=>{
+    const f = state.filter.trim().toLowerCase();
+    if(!f) return true;
+    return (it.word||'').toLowerCase().includes(f) || (it.translate||'').toLowerCase().includes(f);
+  });
+  const startIndex = (state.page-1) * state.perPage;
+  const visible = filtered.slice(startIndex, startIndex + state.perPage).map(i=>i.id);
+  const allSelected = visible.every(id => state.selected.has(id));
+  if(allSelected){
+    visible.forEach(id => state.selected.delete(id));
+  } else {
+    visible.forEach(id => state.selected.add(id));
+  }
   render();
-  toast('All saved speaking data cleared');
+};
+
+qs('#prevPage').onclick = ()=>{ if(state.page > 1) { state.page--; render(); } };
+qs('#nextPage').onclick = ()=>{ const filteredCount = state.items.filter(it=>{ const f = state.filter.trim().toLowerCase(); if(!f) return true; return (it.word||'').toLowerCase().includes(f) || (it.translate||'').toLowerCase().includes(f); }).length; const totalPages = Math.max(1, Math.ceil(filteredCount / state.perPage)); if(state.page < totalPages){ state.page++; render(); } };
+qs('#rowsPerPage').onchange = (e) => { state.perPage = Number(e.target.value); state.page = 1; render(); };
+
+// ---------- Search ----------
+qs('#searchInput').addEventListener('input', (e)=>{
+  state.filter = e.target.value;
+  state.page = 1;
+  render();
 });
 
-/* reload questions */
-reloadQBtn.addEventListener('click', ()=>{ loadQuestions(); STATE = loadState(); saveState(); render(); toast('Questions reloaded'); });
+// ---------- Add/Edit -->
+qs('#addBtn').onclick = ()=> openModal('add');
 
-/* nav bindings */
-navP1.addEventListener('click', ()=>{ currentPart='p1'; render(); });
-navP2.addEventListener('click', ()=>{ currentPart='p2'; render(); });
-navP3.addEventListener('click', ()=>{ currentPart='p3'; render(); });
+// ---------- Import/Export ----------
+qs('#importBtn').onclick = ()=> qs('#importFile').click();
+qs('#importFile').onchange = (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const text = ev.target.result;
+    try{
+      if(f.name.toLowerCase().endsWith('.json')){
+        const arr = JSON.parse(text);
+        if(Array.isArray(arr)){
+          arr.forEach((r, idx)=>{
+            const id = (state.items.reduce((m,x)=>Math.max(m,x.id||0),0) || 0) + idx + 1;
+            state.items.push({ id, word: r.word||r.WORD||r.word_en||'', translate: r.translate||r.tarjima||r.translate_uz||'', status: r.status||'Faol', created: nowISO()});
+          });
+          saveState(); render(); alert('JSON import qilindi');
+        } else {
+          alert('JSON array bo\'lishi kerak');
+        }
+      } else {
+        const lines = text.split(/\r?\n/).filter(Boolean);
+        const header = lines.shift().split(',');
+        lines.forEach(line=>{
+          const cols = line.split(',');
+          const row = {};
+          header.forEach((h,i)=> row[h.trim().toLowerCase()] = (cols[i]||'').trim());
+          const id = (state.items.reduce((m,x)=>Math.max(m,x.id||0),0) || 0) + 1;
+          state.items.push({ id, word: row.word||row.wod||'', translate: row.translate||row.tarjima||'', status: row.status||'Faol', created: nowISO() });
+        });
+        saveState(); render(); alert('CSV import qilindi');
+      }
+    }catch(err){ console.error(err); alert('Importda xato: ' + err.message); }
+  };
+  reader.readAsText(f);
+  e.target.value = '';
+};
 
-/* keyboard shortcuts */
-document.addEventListener('keydown', (e)=>{
-  const active = document.activeElement;
-  if(active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
-  if(e.code === 'Space'){ e.preventDefault(); if(isRecording) stopRecording(); else {
-    if(currentPart==='p1') startRecording('p1', idxP1, 90);
-    else if(currentPart==='p2') startRecording('p2', 0, 120);
-    else if(currentPart==='p3') startRecording('p3', idxP3, 90);
-  } }
-  if(e.key === 'Enter'){
-    if(currentPart==='p1'){ const btn = document.querySelector('#p1Next'); if(btn) btn.click(); }
-    else if(currentPart==='p2'){ const btn = document.querySelector('#p2ToP3'); if(btn) btn.click(); }
-    else if(currentPart==='p3'){ const btn = document.querySelector('#p3Next'); if(btn) btn.click(); }
+function downloadJSON(arr, filename='export.json'){
+  const blob = new Blob([JSON.stringify(arr, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function downloadCSV(arr, filename='export.csv'){
+  if(!arr.length) { alert('No rows'); return; }
+  const headers = Object.keys(arr[0]);
+  const rows = [headers.join(',')].concat(arr.map(r => headers.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(',')));
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+qs('#downloadSelectedBtn').onclick = ()=>{
+  const sel = state.items.filter(it => state.selected.has(it.id));
+  if(!sel.length){ alert('Iltimos, satrlarni tanlang'); return; }
+  const type = prompt('Format: json yoki csv ?', 'json');
+  if(!type) return;
+  if(type.toLowerCase().startsWith('c')) downloadCSV(sel, 'selected.csv'); else downloadJSON(sel, 'selected.json');
+};
+
+qs('#exportAllBtn').onclick = ()=>{
+  const type = prompt('Export format: json yoki csv ?', 'json');
+  if(!type) return;
+  if(type.toLowerCase().startsWith('c')) downloadCSV(state.items, 'all_words.csv'); else downloadJSON(state.items, 'all_words.json');
+};
+
+// ---------- Columns popover ----------
+qs('#columnsBtn').onclick = (e) => { qs('#columnsPop').classList.toggle('hidden'); };
+qsa('#columnsPop input[type="checkbox"]').forEach(ch => { ch.onchange = (ev) => { const col = ev.target.dataset.col; state.columns[col] = ev.target.checked; render(); }; });
+
+// ---------- density switch ----------
+qs('#densityBtn').onclick = ()=>{ state.density = state.density === 'comfort' ? 'compact' : 'comfort'; render(); };
+
+// ---------- Drag & Drop handlers for rows (improved) ----------
+function onRowDragStart(e){
+  const tr = e.currentTarget;
+  dragSrcId = Number(tr.dataset.id);
+  e.dataTransfer.effectAllowed = 'move';
+  try{ e.dataTransfer.setData('application/x-item', String(dragSrcId)); }
+  catch(err){}
+  // also set text/plain for external detection (for some browsers)
+  try{ e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'row', id: dragSrcId })); }catch(err){}
+  tr.style.opacity = '0.4';
+}
+function onRowDragOver(e){
+  // allow drop and visually mark
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+function onRowDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+function onRowDrop(e){
+  e.preventDefault();
+  const tr = e.currentTarget;
+  tr.classList.remove('drag-over');
+
+  // first try internal data
+  let srcId = null;
+  try{
+    const data = e.dataTransfer.getData('application/x-item');
+    if(data) srcId = Number(data);
+  }catch(err){ srcId = null; }
+
+  if(!srcId){
+    // fallback to JSON text
+    try{
+      const txt = e.dataTransfer.getData('text/plain');
+      const parsed = JSON.parse(txt || '');
+      if(parsed && parsed.type === 'row' && parsed.id) srcId = Number(parsed.id);
+    }catch(err){}
+  }
+
+  if(srcId){
+    const targetId = Number(tr.dataset.id);
+    // compute indices
+    const idxSrc = state.items.findIndex(i=>i.id === srcId);
+    const idxT = state.items.findIndex(i=>i.id === targetId);
+    if(idxSrc >=0 && idxT >=0){
+      // remove source
+      const [item] = state.items.splice(idxSrc, 1);
+      // if source was before target, after removal the target index decreases by 1
+      const insertAt = idxSrc < idxT ? idxT : idxT;
+      state.items.splice(insertAt, 0, item);
+      saveState();
+      render();
+    }
+    dragSrcId = null;
+    return;
+  }
+
+  // if not internal, check for external text drop (text/plain or text/html)
+  let raw = '';
+  try{ raw = e.dataTransfer.getData('text/plain') || e.dataTransfer.getData('text/html') || ''; }catch(err){ raw = ''; }
+  const txt = raw && typeof raw === 'string' ? raw.trim() : '';
+  if(txt){
+    const parsedText = parseDroppedText(txt);
+    insertNewWordAt(parsedText.word, parsedText.translate, Number(tr.dataset.id));
+  }
+}
+function onRowDragEnd(e){
+  e.currentTarget.style.opacity = '';
+  dragSrcId = null;
+  qsa('tr.row-item').forEach(r=> r.classList.remove('drag-over'));
+}
+
+// ---------- External drop on tableWrap ----------
+function onTableDragOver(e){ e.preventDefault(); tableWrap.classList.add('drop-active'); e.dataTransfer.dropEffect = 'copy'; }
+function onTableDragLeave(e){ tableWrap.classList.remove('drop-active'); }
+function onTableDrop(e){ e.preventDefault(); tableWrap.classList.remove('drop-active'); let raw = ''; try{ raw = e.dataTransfer.getData('text/plain') || e.dataTransfer.getData('text/html') || ''; }catch(err){ raw = ''; } const txt = raw && typeof raw === 'string' ? raw.trim() : ''; if(!txt) return; const el = document.elementFromPoint(e.clientX, e.clientY); const tr = el ? el.closest('tr.row-item') : null; const parsedText = parseDroppedText(txt); if(tr){ insertNewWordAt(parsedText.word, parsedText.translate, Number(tr.dataset.id)); } else { insertNewWordAt(parsedText.word, parsedText.translate, null); } }
+
+tableWrap.addEventListener('dragover', onTableDragOver);
+tableWrap.addEventListener('dragleave', onTableDragLeave);
+tableWrap.addEventListener('drop', onTableDrop);
+
+// ---------- Parse dropped text ----------
+function parseDroppedText(txt){
+  // if HTML fragment (from selection) contains element text, extract visible text
+  if(txt.startsWith('<') && txt.includes('>')){
+    // naive strip tags
+    const div = document.createElement('div');
+    div.innerHTML = txt;
+    txt = div.textContent || div.innerText || txt;
+  }
+  // common separators
+  const separators = [' - ', ' — ', ' – ', ':', '|', '\t', ',', '\n'];
+  for(const sep of separators){
+    if(txt.includes(sep)){
+      const parts = txt.split(sep);
+      if(parts.length >= 2){
+        return { word: parts[0].trim(), translate: parts.slice(1).join(sep).trim() };
+      }
+    }
+  }
+  // fallback: if contains multiple words, take first word as word, rest as translate
+  const tokens = txt.split(/\s+/).filter(Boolean);
+  if(tokens.length === 1) return { word: txt.trim(), translate: '' };
+  const first = tokens.shift();
+  return { word: first.trim(), translate: tokens.join(' ').trim() };
+}
+
+// ---------- Insert new word ----------
+function insertNewWordAt(word, translate, beforeId){
+  const id = (state.items.reduce((m,x)=>Math.max(m,x.id||0),0) || 0) + 1;
+  const newItem = { id, word: word || '', translate: translate || '', status: 'Faol', created: nowISO() };
+  if(beforeId){
+    const idx = state.items.findIndex(i=>i.id === beforeId);
+    if(idx >= 0) state.items.splice(idx, 0, newItem);
+    else state.items.unshift(newItem);
+  } else {
+    state.items.unshift(newItem);
+  }
+  saveState();
+  render();
+  showTempToast(`So'z qo'shildi: ${newItem.word}`);
+}
+
+// small toast
+const toast = document.createElement('div');
+toast.style.position = 'fixed';
+toast.style.right = '18px';
+toast.style.bottom = '18px';
+toast.style.background = 'rgba(11,17,22,0.95)';
+toast.style.padding = '8px 12px';
+toast.style.borderRadius = '8px';
+toast.style.border = '1px solid rgba(255,255,255,0.04)';
+toast.style.display = 'none';
+document.body.appendChild(toast);
+function showTempToast(msg, ms=1600){ toast.textContent = msg; toast.style.display = 'block'; setTimeout(()=>{ toast.style.display = 'none'; }, ms); }
+
+// ---------- initialize & rest ----------
+loadState();
+render();
+
+// close popovers on outside click
+window.addEventListener('click', (e)=>{
+  const pop = qs('#columnsPop');
+  if(pop && !pop.classList.contains('hidden')){
+    if(!qs('#columnsBtn').contains(e.target) && !pop.contains(e.target)) pop.classList.add('hidden');
   }
 });
 
-/* storage event: listen for dashboard updates */
-window.addEventListener('storage', (e)=>{
-  if(e.key === QUESTIONS_KEY){
-    loadQuestions(); STATE = loadState(); saveState(); render(); toast('Questions updated from Dashboard');
-  }
+// keyboard shortcuts (N = new)
+window.addEventListener('keydown', (e)=>{
+  if(e.key === 'n' || e.key === 'N'){ openModal('add'); }
 });
 
-/* show results button */
-showResultsBtn.addEventListener('click', showResults);
-
-/* init */
-(function init(){
-  loadQuestions();
-  STATE = loadState();
-  saveState();
-  render();
-  const dot = document.createElement('div'); dot.className='rec-dot'; dot.style.position='fixed'; dot.style.top='22px'; dot.style.right='22px'; dot.title='Recording indicator'; document.body.appendChild(dot);
-  toast('App ready — space: start/stop, enter: next');
-})();
 </script>
 </body>
 </html>
+
+
+
+
